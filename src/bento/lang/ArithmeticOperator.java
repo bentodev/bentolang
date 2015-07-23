@@ -49,6 +49,9 @@ abstract public class ArithmeticOperator extends BinaryOperator {
         		if (obj1 instanceof BentoArray) {
         			obj1 = ((BentoArray) obj1).getArrayObject();
                 }
+        		if (obj1 == null) {
+        		    obj1 = new Object[0];
+        		}
 
         	} else if (firstObj instanceof Value) {
                 obj1 = ((Value) firstObj).getValue();
@@ -64,6 +67,9 @@ abstract public class ArithmeticOperator extends BinaryOperator {
         		if (obj2 instanceof BentoArray) {
         			obj2 = ((BentoArray) obj2).getArrayObject();
         		}
+                if (obj2 == null) {
+                    obj2 = new Object[0];
+                }
 
         	} else if (secondObj instanceof Value) {
                 obj2 = ((Value) secondObj).getValue();
