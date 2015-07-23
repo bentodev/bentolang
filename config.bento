@@ -7,7 +7,7 @@
 
 
     /** The primary site. **/
-	site_config main_site = test_config
+    site_config main_site = test_config
 
     /** All the other sites that the server should make available.  It is not
      *  necessary to include the primary site in this list, but it is allowed.
@@ -49,32 +49,32 @@
     always_handle_extensions[] = [ "css", "js" ]
 
 
-	/--- configuration variables queried by the server ---/
+    /--- configuration variables queried by the server ---/
     file_base = main_site.filepath
     boolean files_first = main_site.files_first
     bentopath = main_site.bentopath
-	sitename = main_site.name
-	sitepath = main_site.sitepath
-	
-	file_separator = "/"
+    sitename = main_site.name
+    sitepath = main_site.sitepath
+    
+    file_separator = "/"
 
-	/** A generic website configuration. **/
-	site_config [=
-		name [?]
+    /** A generic website configuration. **/
+    site_config [=
+        name [?]
 
-		bentopath [?]
-		boolean recursive = false;
+        bentopath [?]
+        boolean recursive = false;
 
-		filepath = "."
-		boolean files_first = false;
-		
-		/** If non-empty, respond only to the listed addresses.  The addresses are
-		 *  allowed, but are not automatically enabled; addresses must also appear in 
-		 *  the listen_to array.  If empty, respond to any address.
-		 **/
+        filepath = "."
+        boolean files_first = false;
+        
+        /** If non-empty, respond only to the listed addresses.  The addresses are
+         *  allowed, but are not automatically enabled; addresses must also appear in 
+         *  the listen_to array.  If empty, respond to any address.
+         **/
         respond_only_to[] = []  
-	=]
-	
+    =]
+
 
     /--- config objects for available sites ---/
 
