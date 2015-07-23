@@ -1,0 +1,336 @@
+/* Bento
+ *
+ * $Id: ElementDefinition.java,v 1.46 2015/05/31 17:11:45 sthippo Exp $
+ *
+ * Copyright (c) 2002-2015 by bentodev.org
+ *
+ * Use of this code in source or compiled form is subject to the
+ * Bento Poetic License at http://www.bentodev.org/poetic-license.html
+ */
+
+package bento.lang;
+
+import java.util.List;
+
+import bento.runtime.BentoObjectWrapper;
+import bento.runtime.Context;
+
+/**
+ * ElementDefinition defines an element in an array or table.
+ *
+ * @author Michael St. Hippolyte
+ * @version $Revision: 1.46 $
+ */
+
+public class ElementDefinition extends AnonymousDefinition {
+
+    /** Flag indicating whether the contents of the definition is
+     *  a wrapped element (as opposed to the element itself).
+     */
+    private boolean wrapped = false;
+
+    public ElementDefinition() {
+        super();
+    }
+
+    public ElementDefinition(Definition owner, Object element) {
+        super();
+        setOwner(owner);
+        setElement(element);
+    }
+
+    protected void setElement(Object element) {
+        if (element instanceof ElementDefinition) {
+            ElementDefinition def = (ElementDefinition) element;
+            setContents(def.getContents());
+            wrapped = def.wrapped;
+        } else if (element instanceof Value) {
+            Value value = (Value) element;
+            Definition owner = getOwner();
+            if (owner != null && owner instanceof CollectionDefinition) {
+                Type ownerType = ((CollectionDefinition) owner).getElementType();
+                if (ownerType != null) {
+                    Class<?> collectionClass = ownerType.getTypeClass(null);
+                    Class<?> elementClass = value.getValueClass();
+                    if (!collectionClass.isAssignableFrom(elementClass)) {
+                        element = new PrimitiveValue(element, collectionClass);
+                    }
+                }
+            }
+            setContents((AbstractNode) element);
+            
+        } else if (element instanceof Chunk || element instanceof Definition) {
+            setContents((AbstractNode) element);
+        } else {
+            setContents(new PrimitiveValue(element));
+            wrapped = true;
+        }
+    }
+
+    public Context getResolutionContext() {
+        AbstractNode contents = getContents();
+        if (contents instanceof ResolvedInstance) {
+            return ((ResolvedInstance) contents).getResolutionContext();
+        } else {
+            return ((AnonymousDefinition) getOwner()).initContext;
+        }
+    }
+
+    public Object getElement() {
+    	return getElement(null);
+    }
+    
+    public Object getElement(Context context) {
+        AbstractNode contents = getContents();
+
+        if (wrapped) {
+            return ((Value) contents).getValue();
+
+        } else if (contents instanceof Instantiation && !(contents instanceof ResolvedInstance)) {
+            if (context == null) {
+            	context = getResolutionContext();
+            }
+            if (context != null) {
+                contents = new ResolvedInstance((Instantiation) contents, context);
+            }
+        }
+        return contents;
+    }
+
+    public String getName() {
+        Context context = ((AnonymousDefinition) getOwner()).initContext;
+        Object element = getElement(context);
+        if (element == null) {
+            return "";
+        } else if (element instanceof Name) {
+            return ((Name) element).getName();
+        } else if (element instanceof Instantiation) {
+            return "";
+            //return ((Instantiation) element).getName();
+        } else if (element instanceof Value) {
+            return ((Value) element).getValueClass().getName();
+        } else {
+            return element.getClass().getName();
+        }
+    }
+
+    public Definition getChildDefinition(NameNode name, Context context) {
+        Context elementContext = ((AnonymousDefinition) getOwner()).initContext;
+        if (elementContext != null) {
+            context = elementContext;
+        }
+        Object element = getElement(context);
+        if (context == null && element instanceof AbstractNode) {
+            AbstractNode node = (AbstractNode) element;
+            try {
+                context = new Context(node.getOwner());
+            } catch (Redirection r) {
+            	throw new IllegalStateException("Unable to create context for child definition " + name.getName() + ": " + r.getMessage());
+                //context = new Context();
+            }
+        }
+        if (element instanceof Definition) {
+            return ((Definition) element).getChildDefinition(name, context);
+        } else if (element instanceof Instantiation) {
+            Instantiation instance = (Instantiation) element;
+            Definition def = instance.getDefinition(context);
+            if (def != null) {
+                return def.getChildDefinition(name, context);
+            }
+        } else if (element instanceof ValueMap) {
+            ValueMap map = (ValueMap) element;
+            return new ElementDefinition(this, map.get(name)); 
+        }
+        return null;
+    }
+
+
+    public Object getChild(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+        Object element = getElement(context);
+        if (element instanceof Definition) {
+            return ((Definition) element).getChild(name, args, indexes, parentArgs, context, generate, trySuper, parentObj);
+        } else if (element instanceof Instantiation) {
+            Instantiation instance = (Instantiation) element;
+            Definition def = instance.getDefinition(context);
+            if (def != null) {
+                Context resolutionContext = context;
+                ArgumentList childArgs = args;
+                if (instance instanceof ResolvedInstance) {
+                    resolutionContext = ((ResolvedInstance) instance).getResolutionContext();
+                    childArgs = ResolvedInstance.resolveArguments(args, context);
+                }
+                ArgumentList elementArgs = instance.getArguments();
+                ParameterList elementParams = def.getParamsForArgs(elementArgs, resolutionContext);
+                resolutionContext.push(def, elementParams, elementArgs, false);
+                try {
+                    Object child = def.getChild(name, childArgs, null, parentArgs, resolutionContext, generate, trySuper, parentObj);
+                    if (child != null && !generate) {
+                        Definition childDef = ((DefinitionInstance) child).def;
+                        if (childDef != null && childDef.isAliasInContext(context)) {
+                            Instantiation aliasInstance = childDef.getAliasInstanceInContext(context);
+                            ArgumentList aliasArgs = aliasInstance.getArguments();
+                            ParameterList aliasParams = childDef.getParamsForArgs(aliasArgs, resolutionContext);
+                            resolutionContext.push(childDef, aliasParams, aliasArgs, false);
+                            try {
+                                Definition aliasDef = aliasInstance.getDefinition(resolutionContext, this);
+                                if (aliasDef != null) {
+                                    child = aliasDef.getDefInstance(aliasArgs, aliasInstance.getIndexes());
+                                }
+                            } finally {
+                                resolutionContext.pop();
+                            }
+                        }
+                    }
+                    return child;
+                } finally {
+                    resolutionContext.pop();
+                }
+            }
+        } else if (element instanceof Value) {
+             if (name.getName().equals(Name.COUNT)) {
+                if (generate) {
+                    return new PrimitiveValue(1);
+                } else {
+                    Definition countDef = new SingleElementCount(this);
+                    return countDef.getDefInstance(null, null);
+                }
+            } else {
+            	Object obj = ((Value) element).getValue();
+            	if (obj instanceof BentoObjectWrapper) {
+            		BentoObjectWrapper wrapper = (BentoObjectWrapper) obj;
+            		if (generate) {
+            			return wrapper.getChildData(name.getName(), null, args);
+            		} else {
+            			Definition def = wrapper.getDefinition();
+            			return def.getDefInstance(args, indexes);
+            		}
+            	}
+            }
+        } else if (element instanceof ValueMap) {
+            ValueMap map = (ValueMap) element;
+            Object obj = map.get(name.getName());
+            if (generate) {
+                return obj;
+            } else {
+                Definition def = new ElementDefinition(this, obj);
+                return def.getDefInstance(args, indexes);
+            }
+        }
+        return null;
+    }
+
+
+    /** Instantiates a child definition in a specified context and returns the result. */
+    public Object getChildData(NameNode childName, Type type, Context context, ArgumentList args) throws Redirection {
+        Object data = null;
+//        ArgumentList args = childName.getArguments();
+
+        Object element = getElement(context);
+        if (element instanceof Definition) {
+            // should we maybe pass null as the instance here??
+            data = ((Definition) element).getChildData(childName, type, context, args);
+        } else if (element instanceof Instantiation) {
+            Instantiation elementInstance = (Instantiation) element;
+            Definition def = elementInstance.getDefinition(context);
+            if (def != null) {
+                ArgumentList elementArgs = elementInstance.getArguments();
+                ParameterList elementParams = def.getParamsForArgs(elementArgs, context);
+                context.push(def, elementParams, elementArgs, false);
+                data = def.getChildData(childName, type, context, args);
+                context.pop();
+            }
+        } else if (element instanceof Value) {
+            String name = childName.getName();
+        	
+            // TODO: need to handle collection values here...
+            if (name == Name.COUNT) {
+                data = new PrimitiveValue(1);
+            } else if (name == Name.TYPE) {
+            	data = getType().getName();
+            }
+
+        } else if (element instanceof ValueMap) {
+            ValueMap map = (ValueMap) element;
+            data = map.get(childName.getName());
+        }
+        return data;
+    }
+
+    /** Returns the type of this element definition, which is base type of the collection
+     *  which contains it.
+     */
+    public Type getType() {
+        AbstractNode contents = getContents();
+        if (contents instanceof PrimitiveValue) {
+        	return ((PrimitiveValue) contents).getType();
+        } else {
+            Definition def = getOwner();
+            if (def != null) {
+            	if (def.isCollection() && contents instanceof Instantiation) {
+            	    List<Dim> ownerDims = ((CollectionDefinition) def).getDims();
+            	    List<Dim> dims = ((Instantiation) contents).getReferenceName().getDims();
+                    // some sort of subtraction should go here
+            	    return def.getType();  // TODO: calculate correct type
+            	} else {
+                    return def.getType();
+            	}
+            } else  {
+                return DefaultType.TYPE;
+            }
+        }
+    }
+
+    private Definition getBaseDefinition(Context context) {
+        Object element = getElement(context);
+        if (element instanceof Definition) {
+            return (Definition) element;
+        } else if (element instanceof Instantiation) {
+            Instantiation instance = (Instantiation) element;
+            Definition def = instance.getDefinition(context);
+if (def == null)
+System.err.println("***** ElementDefinition getBaseDefinition null due to no def for instance " + instance.getName());
+
+            if (def != null) {
+                return def;
+            }
+        }
+if (getOwner() == null)
+System.err.println("***** ElementDefinition getBaseDefinition null due to null owner");
+        return getOwner();
+    }
+
+    public Type getSuper() {
+        return getOwner().getSuper();
+    }
+
+    public Type getSuper(Context context) {
+        return getBaseDefinition(context).getSuper(context);
+    }
+
+    public NamedDefinition getSuperDefinition() {
+        return getOwner().getSuperDefinition();
+    }
+
+    public NamedDefinition getSuperDefinition(Context context) {
+        return getBaseDefinition(context).getSuperDefinition(context);
+    }
+    
+    public String toString(String prefix) {
+        StringBuffer sb = new StringBuffer(prefix);
+        sb.append(getContents().toString());
+        return sb.toString();
+    }
+    
+}
+
+class SingleElementCount extends CountDefinition {
+
+    public SingleElementCount(Definition elementDef) {
+        super(elementDef);
+    }
+
+    public AbstractNode getContents() {
+        return new PrimitiveValue(1);
+    }
+}
+

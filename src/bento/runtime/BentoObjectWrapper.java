@@ -1,0 +1,116 @@
+/* Bento
+ *
+ * $Id: BentoObjectWrapper.java,v 1.11 2015/07/10 12:51:11 sthippo Exp $
+ *
+ * Copyright (c) 2005-2015 by bentodev.org
+ *
+ * Use of this code in source or compiled form is subject to the
+ * Bento Poetic License at http://www.bentodev.org/poetic-license.html
+ */
+
+package bento.runtime;
+
+import java.util.List;
+
+import bento.lang.*;
+
+/**
+ * @author Michael St. Hippolyte
+ * @version $Revision: 1.11 $
+ */
+
+public class BentoObjectWrapper {
+
+    Construction construction;
+    Context context;
+    Type type;
+    Definition def;
+
+    /** Constructs a new BentoWrapperObject, given an arbitrary Bento construction
+     *  and a BentoSite.
+     */
+    public BentoObjectWrapper(Construction construction, BentoSite site) {
+        this.construction = construction;
+        if (construction instanceof ResolvedInstance) {
+            context = ((ResolvedInstance) construction).getResolutionContext();
+        } else {
+            context = site.getNewContext();
+        }
+        type = construction.getType(context, null);
+        def = type.getDefinition();
+    }
+
+    /** Constructs a new BentoWrapperObject, given a definition, data
+     *  and context.
+     */
+    public BentoObjectWrapper(Definition def, ArgumentList args, List<Index> indexes, Context context) throws Redirection {
+        def = def.getSubdefInContext(context);
+        ResolvedInstance ri = new ResolvedInstance(def, context, args, indexes);
+        construction = ri;
+        this.context = ri.getResolutionContext();
+        this.def = def;
+        type = def.getType();
+    }
+
+    public Definition getDefinition() {
+    	return def;
+    }
+    
+    public Type getType() {
+    	return type;
+    }
+    
+    public Construction getConstruction() {
+        return construction;
+    }
+    
+    public Object getData() throws Redirection {
+        return construction.getData(context);
+    }
+
+    public String getText() throws Redirection {
+        Object data = construction.getData(context);
+        if (data instanceof BentoObjectWrapper) {
+            return null;
+        } else {
+            return AbstractConstruction.getStringForData(data);
+        }
+    }
+
+    public Object getChildData(String name) {
+    	return getChildData(name, null, null);
+    }
+
+    public Object getChildData(String name, Type type, ArgumentList args) {
+        try {
+            return def.getChildData(new NameNode(name), type, context, args);
+        } catch (Redirection r) {
+            return null;
+        }
+    }
+
+    public boolean getChildBoolean(String name) {
+        try {
+            return PrimitiveValue.getBooleanFor(def.getChildData(new NameNode(name), null, context, null));
+        } catch (Redirection r) {
+            return false;
+        }
+    }
+
+    public String getChildText(String name) {
+        try {
+            return PrimitiveValue.getStringFor(def.getChildData(new NameNode(name), null, context, null));
+        } catch (Redirection r) {
+            return null;
+        }
+    }
+
+    public boolean isChildDefined(String name) {
+        return def.hasChildDefinition(name);
+    }
+    
+    public String toString() {
+        return "(" + construction.toString() + ")";
+    }
+}
+

@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: bento.runtime.BentoServer
+Class-Path: jetty-http-9.2.3.v20140905.jar jetty-io-9.2.3.v20140905.jar jetty-security-9.2.3.v20140905.jar jetty-server-9.2.3.v20140905.jar jetty-servlet-9.2.3.v20140905.jar jetty-util-9.2.3.v20140905.jar servlet-api-3.1.jar
+
