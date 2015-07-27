@@ -136,7 +136,21 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
     public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
         if (Name.COUNT.equals(node.getName())) {
             if (generate) {
-                return new PrimitiveValue(getSize(argContext, parentArgs, indexes));
+                if (parentObj != null) {
+                    int size = 0;
+                    if (parentObj.getClass().isArray()) {
+                        size = java.lang.reflect.Array.getLength(parentObj);
+                    } else if (parentObj instanceof List<?>) {
+                        List<?> list = (List<?>) parentObj;
+                        size = list.size();
+                    } else if (parentObj instanceof Map<?,?>) {
+                        Map<?,?> map = (Map<?,?>) parentObj;
+                        size = map.size();
+                    }
+                    return new PrimitiveValue(size);    
+                } else {
+                    return new PrimitiveValue(getSize(argContext, parentArgs, indexes));
+                }
             } else {
                 Definition countDef = new CountDefinition(this, argContext, parentArgs, null);
                 return countDef.getDefInstance(null, null);

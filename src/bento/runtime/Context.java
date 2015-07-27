@@ -927,9 +927,6 @@ public class Context {
             NamedDefinition superDef = definition.isAnonymous() ? null : definition.getSuperDefinition(this);
 
             Type st = definition.getSuper(this);
-//            if (st != null && !st.isPrimitive() && superDef == null) {
-//                throw new Redirection(Redirection.STANDARD_ERROR, "superdefinition for " + definition.getFullName() + " not found");
-//            }
             
             if (!constructed && superDef != null && definition.getName() != Name.SUB) {
                 
@@ -2640,10 +2637,6 @@ public class Context {
                 push(def, params, args, true);
                 numPushes++;
 
-//                if (def instanceof NamedDefinition) {
-//                    instantiatedDef = (NamedDefinition) def;
-//                }
-                
                 Definition superDef = def.getSuperDefinition(this);
                 while (def.isAliasInContext(this) && !def.isCollection()) {
                     Instantiation aliasInstance = def.getAliasInstanceInContext(this);
@@ -3248,12 +3241,6 @@ public class Context {
                 }
                 argDef = childDef;
 
-                if (arg instanceof Value && ((Value) arg).getValueClass().equals(BentoObjectWrapper.class)) {
-                	BentoObjectWrapper wrapper = (BentoObjectWrapper) ((Value) arg).getValue();
-                	Context argContext = wrapper.context;
-                	argDef = new BoundDefinition(argDef, argContext);
-                }
-                
                 //if (childDef != null) {
                 //    argArgs = childName.getArguments();
                 //    argParams = childDef.getParamsForArgs(argArgs, this);
@@ -3261,7 +3248,6 @@ public class Context {
                 //    argArgs = null;
                 //    argParams = null;
                 //}
-
             }
 
             if (returnClass == Entry.class) {

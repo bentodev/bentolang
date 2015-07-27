@@ -1451,12 +1451,12 @@ class MethodConstruction extends ExternalConstruction {
                         }
                     }
                 }
-                if (argVal instanceof BentoObjectWrapper) {
-                    argVal = ((BentoObjectWrapper) argVal).getData();
-                    if (argVal instanceof BentoObjectWrapper) {
-                        argVal = null;
-                    }
-                }
+//                if (argVal instanceof BentoObjectWrapper) {
+//                    argVal = ((BentoObjectWrapper) argVal).getData();
+//                    if (argVal instanceof BentoObjectWrapper) {
+//                        argVal = null;
+//                    }
+//                }
                 arg = argVal;
             }
            

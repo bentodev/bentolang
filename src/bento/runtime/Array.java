@@ -2,7 +2,7 @@
 *
 * $Id: Array.java,v 1.9 2013/06/24 13:36:37 sthippo Exp $
 *
-* Copyright (c) 2007-2013 by bentodev.org
+* Copyright (c) 2007-2015 by bentodev.org
 *
 * Use of this code in source or compiled form is subject to the
 * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -40,6 +40,9 @@ import java.io.StringReader;
 public class Array {
     
     public static Object get(Object arrayObject, int index) {
+        if (arrayObject == null) {
+            return null;
+        }
         if (arrayObject.getClass().isArray()) {
             return java.lang.reflect.Array.get(arrayObject, index);
         } else if (arrayObject instanceof List<?>) {
@@ -52,36 +55,42 @@ public class Array {
 
     @SuppressWarnings("unchecked")
     public static void set(Object arrayObject, int index, Object element) {
-        if (arrayObject.getClass().isArray()) {
-            java.lang.reflect.Array.set(arrayObject, index, element);
-        } else if (arrayObject instanceof List<?>) {
-            List<Object> list = (List<Object>) arrayObject;
-            list.set(index, element);
+        if (arrayObject != null) {
+            if (arrayObject.getClass().isArray()) {
+                java.lang.reflect.Array.set(arrayObject, index, element);
+            } else if (arrayObject instanceof List<?>) {
+                List<Object> list = (List<Object>) arrayObject;
+                list.set(index, element);
+            }
+        } else {
+            throw new UnsupportedOperationException("Cannot set an element in a null array");
         }
     }
 
     @SuppressWarnings("unchecked")
     public static void add(Object arrayObject, Object element) {
-        if (arrayObject instanceof List<?>) {
+        if (arrayObject != null && arrayObject instanceof List<?>) {
             List<Object> list = (List<Object>) arrayObject;
             list.add(element);
         } else {
-            throw new IllegalArgumentException("Cannot append to a fixed array");
+            throw new UnsupportedOperationException("Cannot append to a null or fixed array");
         }
     }
 
     @SuppressWarnings("unchecked")
     public static void remove(Object arrayObject, Object element) {
-        if (arrayObject instanceof List<?>) {
+        if (arrayObject != null && arrayObject instanceof List<?>) {
             List<Object> list = (List<Object>) arrayObject;
             list.remove(element);
         } else {
-            throw new IllegalArgumentException("Cannot remove element from a fixed array");
+            throw new UnsupportedOperationException("Cannot remove element from a null or fixed array");
         }
     }
 
     public static int size(Object arrayObject) {
-        if (arrayObject.getClass().isArray()) {
+        if (arrayObject == null) {
+            return 0;
+        } else if (arrayObject.getClass().isArray()) {
             return java.lang.reflect.Array.getLength(arrayObject);
         } else if (arrayObject instanceof List<?>) {
             List<?> list = (List<?>) arrayObject;
@@ -92,7 +101,9 @@ public class Array {
     }
     
     public static Object copy(Object arrayObject) {
-        if (arrayObject.getClass().isArray()) {
+        if (arrayObject == null) {
+            return null;
+        } else if (arrayObject.getClass().isArray()) {
             int size = java.lang.reflect.Array.getLength(arrayObject);
             return Arrays.copyOf((Object[]) arrayObject, size);
         } else if (arrayObject instanceof List<?>) {
@@ -104,7 +115,9 @@ public class Array {
     }
     
     public static boolean contains(Object arrayObject, Object element) {
-        if (arrayObject.getClass().isArray()) {
+        if (arrayObject == null) {
+            return false;
+        } else if (arrayObject.getClass().isArray()) {
             Object[] array = (Object[]) arrayObject;
             for (int i = 0; i < array.length; i++) {
                 if (array[i] == null) {

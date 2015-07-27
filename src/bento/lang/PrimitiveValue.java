@@ -67,7 +67,7 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
 
     public PrimitiveValue(Object value, Class<?> valueClass) {
         Object obj = (value instanceof Value ? ((Value) value).getValue() : value);
-        if (valueClass == null) {
+        if (valueClass == null || valueClass == Void.TYPE) {
             nativeClass = Void.TYPE;
         } else if (valueClass.equals(Boolean.class) || valueClass.equals(Boolean.TYPE)) {
             if (!(obj instanceof Boolean)) {

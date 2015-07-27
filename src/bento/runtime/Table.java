@@ -2,7 +2,7 @@
 *
 * $Id: Table.java,v 1.11 2014/05/05 13:15:25 sthippo Exp $
 *
-* Copyright (c) 2007-2014 by bentodev.org
+* Copyright (c) 2007-2015 by bentodev.org
 *
 * Use of this code in source or compiled form is subject to the
 * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -36,7 +36,7 @@ import bento.parser.ParsedCollectionDefinition;
 public class Table {
     
     public static Object get(Object tableObject, Object key) {
-        if (tableObject instanceof Map<?, ?>) {
+        if (tableObject != null && tableObject instanceof Map<?, ?>) {
             @SuppressWarnings("unchecked")
             Map<Object, Object> map = (Map<Object, Object>) tableObject;
             return map.get(key.toString());
@@ -61,7 +61,9 @@ public class Table {
     }
 
     public static int size(Object tableObject) {
-        if (tableObject instanceof Map<?,?>) {
+        if (tableObject == null) {
+            return 0;
+        } else if (tableObject instanceof Map<?,?>) {
             Map<?,?> map = (Map<?,?>) tableObject;
             return map.size();
         } else {
@@ -70,7 +72,9 @@ public class Table {
     }
 
     public static Object copy(Object tableObject) {
-        if (tableObject instanceof Map<?,?>) {
+        if (tableObject == null) {
+            return null;
+        } else if (tableObject instanceof Map<?,?>) {
             @SuppressWarnings("unchecked")
             Map<String, Object> map = new HashMap<String, Object>((Map<String, Object>) tableObject);
             return map;
@@ -80,7 +84,7 @@ public class Table {
     }
     
     public static void clear(Object tableObject) {
-        if (tableObject instanceof Map<?,?>) {
+        if (tableObject != null && tableObject instanceof Map<?,?>) {
             Map<?,?> map = (Map<?,?>) tableObject;
             map.clear();
         }        
