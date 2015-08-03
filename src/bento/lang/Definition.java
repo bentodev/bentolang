@@ -383,6 +383,11 @@ public interface Definition extends Name {
     /** Returns true if this definition defines a table. */
     public boolean is_table();
     
+    /** Returns true if this definition equals or is a subdefinition of the
+     *  passed type.
+     */
+    public boolean is_a(String typeName);
+    
     /** Returns the simple name of the definition. */
     public String name();
 

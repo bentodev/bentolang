@@ -243,6 +243,7 @@ core [=
         boolean is_collection = (is_array || is_table)
         boolean is_array [&]
         boolean is_table [&]
+        boolean is_a(type_name) [&]
 
         /-- instantiate this definition as an object, an array or a table --/
         dynamic instantiate(arg[] args) [&] 
@@ -294,6 +295,8 @@ core [=
                         if (t{k} isa definition) [=
                             ".keep: ";
                             handle_def(t{k});
+                        =] else if (t{k} isa number) [=
+                            t{k};                        
                         =] else [=
                             ": \"";
                             t{k};                        

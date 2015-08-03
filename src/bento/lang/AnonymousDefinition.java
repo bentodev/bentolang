@@ -78,6 +78,13 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
 
     // methods defined by Bento definition  
 
+    /** Returns true if this definition equals or is a subdefinition of the
+     *  passed type.
+     */
+    public boolean is_a(String typeName) {
+        return getType().isTypeOf(typeName);
+    }
+
     /** Returns true if this definition defines an array. */
     public boolean is_array() {
         return isArray();

@@ -2569,7 +2569,7 @@ public class Context {
                 // if it's a NamedDefinition, but not an external definition, push the 
                 // definition of the parameter onto the context in order to properly resolve 
                 // any of its children which may be instantiated
-                if (argDef instanceof NamedDefinition && !argDef.isExternal()) {
+                if (argDef instanceof NamedDefinition) { // && !argDef.isExternal()) {
     
                     // unpop the stack since the child's arguments have to be
                     // resolved where they are, not up at the level of its parent's
@@ -3241,6 +3241,12 @@ public class Context {
                 }
                 argDef = childDef;
 
+                if (arg instanceof Value && ((Value) arg).getValueClass().equals(BentoObjectWrapper.class)) {
+                	BentoObjectWrapper wrapper = (BentoObjectWrapper) ((Value) arg).getValue();
+                	Context argContext = wrapper.context;
+                	argDef = new BoundDefinition(argDef, argContext);
+                }
+                
                 //if (childDef != null) {
                 //    argArgs = childName.getArguments();
                 //    argParams = childDef.getParamsForArgs(argArgs, this);

@@ -138,7 +138,9 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
             if (generate) {
                 if (parentObj != null) {
                     int size = 0;
-                    if (parentObj.getClass().isArray()) {
+                    if (parentObj instanceof ResolvedCollection) {
+                        size = ((ResolvedCollection) parentObj).getSize();
+                    } else if (parentObj.getClass().isArray()) {
                         size = java.lang.reflect.Array.getLength(parentObj);
                     } else if (parentObj instanceof List<?>) {
                         List<?> list = (List<?>) parentObj;
