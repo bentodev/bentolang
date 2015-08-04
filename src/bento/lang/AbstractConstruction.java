@@ -172,17 +172,17 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
     }
 
     public AbstractConstruction(AbstractConstruction construction) {
-    	super(construction);
-    	// we make a copy of the children array because it gets altered when
-    	// when an expression is resolved
-    	if (children != null) {
-        	AbstractNode[] childrenCopy = new AbstractNode[children.length];
-        	System.arraycopy(children, 0, childrenCopy, 0, children.length);
+        super(construction);
+        // we make a copy of the children array because it gets altered when
+        // when an expression is resolved
+        if (children != null) {
+            AbstractNode[] childrenCopy = new AbstractNode[children.length];
+            System.arraycopy(children, 0, childrenCopy, 0, children.length);
             children = childrenCopy;
-    	}
+        }
         
-    	setDynStat(construction.isDynamic(), construction.isStatic());
-    	setTrailingDelimiter(construction.trailingDelimiter);
+        setDynStat(construction.isDynamic(), construction.isStatic());
+        setTrailingDelimiter(construction.trailingDelimiter);
     }
     
 //    public AbstractConstruction(Definition owner) {
@@ -190,13 +190,13 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
 //    
 
     private Object generateData(Context context, Definition def, BentoDebugger debugger) throws Redirection {
-    	if (debugger == null) {
-    		return generateData(context, def);
-    	} else {
-    		Object data = generateData(context, def);
-    		debugger.constructed(this, context, data);
-    		return data;
-    	}
+        if (debugger == null) {
+            return generateData(context, def);
+        } else {
+            Object data = generateData(context, def);
+            debugger.constructed(this, context, data);
+            return data;
+        }
     }
 
     abstract public Object generateData(Context context, Definition def) throws Redirection;
@@ -351,11 +351,11 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
     
     transient private Object staticData = null;
     public Object getData(Context context, Definition def) throws Redirection {
-    	BentoDebugger debugger = (context != null ? context.getDebugger() : null);
-    	if (debugger != null) {
-    		debugger.getting(this, context);
-    	}
-    	if (isDynamic()) {
+        BentoDebugger debugger = (context != null ? context.getDebugger() : null);
+        if (debugger != null) {
+            debugger.getting(this, context);
+        }
+        if (isDynamic()) {
             return generateData(context, def, debugger);
 
         } else if (isStatic()) {
@@ -428,25 +428,25 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                             if (data == null) {
                                 //cachevlog(" - - - no data in cache for " + name + "; must instantiate - - - ");
                             } else if (debugger != null) {
-                            	debugger.retrievedFromCache(def.getFullName(), context, data);
+                                debugger.retrievedFromCache(def.getFullName(), context, data);
                             }
                         }
                     }
                 }
                 if (data == null) {
-                	if (Name.THIS.equals(name)) {
-                		return new BentoObjectWrapper(getOwner(), getArguments(), getIndexes(), context);
-                	} else if (def != null && Name.THIS.equals(def.getName()) && def instanceof AliasedDefinition) {
-                	    NameNode nameNode = getReferenceName();
-                	    if (nameNode != null) {
-                    	    int n = nameNode.numParts();
-                    	    if (n > 1 && Name.THIS.equals(nameNode.getLastPart().getName())) {
-                    	        nameNode = nameNode.getPart(n - 2);
-                    	    }
-                    	    return new BentoObjectWrapper(((AliasedDefinition) def).getAliasedDefinition(context), nameNode.getArguments(), nameNode.getIndexes(), context);
-                	    }
-                	}
-                	
+                    if (Name.THIS.equals(name)) {
+                        return new BentoObjectWrapper(getOwner(), getArguments(), getIndexes(), context);
+                    } else if (def != null && Name.THIS.equals(def.getName()) && def instanceof AliasedDefinition) {
+                        NameNode nameNode = getReferenceName();
+                        if (nameNode != null) {
+                            int n = nameNode.numParts();
+                            if (n > 1 && Name.THIS.equals(nameNode.getLastPart().getName())) {
+                                nameNode = nameNode.getPart(n - 2);
+                            }
+                            return new BentoObjectWrapper(((AliasedDefinition) def).getAliasedDefinition(context), nameNode.getArguments(), nameNode.getIndexes(), context);
+                        }
+                    }
+                    
                     List<Index> indexes = getIndexes();
                     data = generateData(context, def, debugger);
                     if ((cacheability & CACHE_STORABLE) == CACHE_STORABLE) {
@@ -456,7 +456,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                             def = getDefinition(context);
                         }
                         ArgumentList args = getArguments();
-                    	
+                        
                         // if this is an identity, then the definition of the passed instantiation
                         // should already be cached; use it instead so children etc. resolve to it
                         Definition nominalDef = def;
@@ -563,7 +563,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
         Object data = null;
         data = getData(context);
         if (data instanceof CollectionInstance) {
-        	data = ((CollectionInstance) data).getCollectionObject();
+            data = ((CollectionInstance) data).getCollectionObject();
         }
         if (data == null) {
             return new PrimitiveValue();
@@ -575,7 +575,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
     }
 
     public String getString(Context context) throws Redirection {
-    	return getText(context);
+        return getText(context);
     }
 
 //    public String getString(Context context) {
