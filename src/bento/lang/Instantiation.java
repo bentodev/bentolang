@@ -1290,7 +1290,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
     
             // 6. container superclass
             if (def == null) {
-                container = (ComplexDefinition) owner.getOwner();
+                container = ComplexDefinition.getComplexOwner(owner.getOwner());
                 while (def == null && container != null) {
                     Iterator<Context.Entry> it = context.iterator();
                     while (it.hasNext()) {
@@ -1312,7 +1312,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                         }
                         defclass = defclass.getSuperDefinition(null);  //context);
                     }
-                    container = (ComplexDefinition) container.getOwner();
+                    container = ComplexDefinition.getComplexOwner(container.getOwner());
                 }
     
                 // 7. superclass container
@@ -1323,7 +1323,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                         if (superdef == null) {
                             break;
                         }
-                        container = (ComplexDefinition) superdef.getOwner();
+                        container = ComplexDefinition.getComplexOwner(superdef.getOwner());
                         while (def == null && container != null) {
                             Iterator<Context.Entry> it = context.iterator();
                             while (it.hasNext()) {
@@ -1341,7 +1341,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                             if (def != null) {
                                 break;
                             }
-                            container = (ComplexDefinition) container.getOwner();
+                            container = ComplexDefinition.getComplexOwner(container.getOwner());
                         }
                     }
                     // classDef is the definition, if any, resolved statically by
