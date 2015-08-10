@@ -339,6 +339,9 @@ public interface Definition extends Name {
     /** Returns true if this is a collection. */
     public boolean isCollection();
     
+    /** Returns true if this is an object definition. */
+    public boolean isObject();
+    
     /** Returns this definition in the form of a collection definition.  May have unpredictable results if this
      *  definition does not actually reference a collection (i.e. if isCollection() returns false).
      */

@@ -53,8 +53,9 @@ site test [=
                               multidimensional_array_test, multidimensional_table_test,
                               multiple_inheritance_test, name_resolution_test, 
                               nested_cached_identity_test, nested_keep_test, 
-                              nested_parameter_test, over_inheritance_test, owner_type_test,
-                              parameter_test, parameter_as_child_test, parameter_child_array_test,
+                              nested_parameter_test, 
+                              object_child_test, over_inheritance_test, owner_type_test,
+                              parameter_test, parameter_child_array_test,
                               passed_cache_test, recursion_test,
                               redirection_test, return_type_test, self_referential_update_test,
                               serialization_test, simple_inheritance_test, simple_insert_test,
@@ -2871,6 +2872,62 @@ cu [=
     else [| X |]
 =]
 
+    test_case object_child_test [=
+        int category = instantiations
+        name = "Object Child Test"
+        key = "object_child"
+
+        expected = "ABCDEF"
+   
+        obj [=
+            a [| x |]
+            b [| x |]
+            c [| x |]
+            d [| x |]
+            e [| x |]
+            f [| x |]
+
+            this;
+        =]
+    
+        obj sub_1 [=
+            a [| A |]
+            b [| B |]
+            c [| C |]
+            d [| D |]
+            e [| E |]
+            f [| F |]
+        =]
+
+        dynamic obj sub_2 [=
+            sub_1;
+        =]
+
+        dynamic obj sub_3 [=
+            if (true) [=
+                sub_1;
+            =]
+        =]
+
+
+        obj cobj(obj o) = o
+        
+        sub_1.a;
+        eval(cobj(: sub_1 :));
+        cobj.b;
+        
+        sub_2.c;   
+        eval(cobj(: sub_2 :));
+        cobj.d;
+
+        sub_3.e;
+        eval(cobj(: sub_3 :));
+        cobj.f;
+        
+    
+    =]
+
+
     test_case serialization_test [=
         int category = utilities
         name = "Serialization Test"
@@ -3508,7 +3565,7 @@ def_of [=
     test_case self_referential_update_test [=
         int category = recursion
         name = "Self-Referential Update Test"
-        key = "recursion"
+        key = "self_reference"
 
         expected = "ABCDEFG"
         

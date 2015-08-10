@@ -1199,6 +1199,11 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
         return null;
     }
 
+    /** Returns true if this is an object definition; the base class returns false by default. */
+    public boolean isObject() {
+        return false;
+    }
+    
     /** Returns true if this is a collection; the base class returns false by default. */
     public boolean isCollection() {
         return false;

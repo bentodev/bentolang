@@ -722,9 +722,9 @@ public class ComplexDefinition extends NamedDefinition {
         return def;
     }
 
-    protected Definition getExternalDefinition(NameNode node, Context context) {
-        return getSite().getExternalDefinition(this, node, DefaultType.TYPE, context);
-    }
+//    protected Definition getExternalDefinition(NameNode node, Context context) {
+//        return getSite().getExternalDefinition(this, node, DefaultType.TYPE, context);
+//    }
 
     public Definition getExplicitChildDefinition(NameNode node) {
         if (definitions == null) {

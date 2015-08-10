@@ -2,7 +2,7 @@
  *
  * $Id: ParsedPrimitiveType.java,v 1.6 2010/04/23 13:41:57 sthippo Exp $
  *
- * Copyright (c) 2002-2010 by bentodev.org
+ * Copyright (c) 2002-2015 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -56,6 +56,10 @@ public class ParsedPrimitiveType extends PrimitiveType {
     void makeContinuation() {
         setType(Continuation.class);
     }
+    void makeVoid() {
+        setType(Void.TYPE);
+    }
+    
 
     /** Accept the visitor. **/
     public Object jjtAccept(BentoParserVisitor visitor, Object data) {

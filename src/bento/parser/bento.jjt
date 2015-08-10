@@ -236,6 +236,7 @@ TOKEN :
     <NUMBER: "number"> |
     <SHORT: "short"> |
     <STRING: "string"> |
+    <STRING: "void"> |
 
     // values
 
@@ -1940,7 +1941,8 @@ void PrimitiveType() :
       "number"  { jjtThis.makeNumber(); }
     |
       "@"  { jjtThis.makeContinuation(); }
-}
+    |
+      "void"  { jjtThis.makeVoid(); }}
 
 //
 // Constructions
