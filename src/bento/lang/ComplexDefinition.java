@@ -238,6 +238,14 @@ public class ComplexDefinition extends NamedDefinition {
 //                    return typeDef.getDefInstance(null, null);
 //                }
 //            }
+        } else if (lastNode.getName().equals(Name.KEYS)) {
+            Definition keysDef = new KeysDefinition(this, context);
+            if (generate) {
+                return keysDef.instantiate(args, indexes, context);
+            } else {
+                return keysDef.getDefInstance(null, indexes);
+            }
+            
         } else if (lastNode.getName() == Name.COUNT) {
             if (n <= 1) {
                 CollectionDefinition collectionDef = getCollectionDefinition(context, args);

@@ -236,7 +236,7 @@ TOKEN :
     <NUMBER: "number"> |
     <SHORT: "short"> |
     <STRING: "string"> |
-    <STRING: "void"> |
+    <VOID: "void"> |
 
     // values
 
@@ -1323,6 +1323,9 @@ void ArrayInitExpression() #Arguments(>0):
         ( ArrayElementExpression() ( LOOKAHEAD(2) "," ArrayElementExpression() )* [ LOOKAHEAD(2) "," Ellipsis() ( LOOKAHEAD(2) "," ArrayElementExpression() )* ] [ "," ] "]" )
       )
    )
+   {
+       jjtThis.setArray();
+   }
 }
 
 /** An ellipsis works like a super statement, except that it refers to a collection 
@@ -1366,7 +1369,10 @@ void TableInitExpression() #Arguments(>0):
       |
         ( TableElementExpression() ( LOOKAHEAD(2) "," TableElementExpression() )* [ "," ] "}" )
       )
-    )
+   )
+   {
+       jjtThis.setTable();
+   }
 }
 
 AbstractNode AnonymousTable() :

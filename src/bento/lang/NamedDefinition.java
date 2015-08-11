@@ -1501,13 +1501,9 @@ public class NamedDefinition extends AnonymousDefinition {
                 specialDef = getSite();
                 
             } else if (node.getName().equals(Name.KEYS)) {
-                // I'm just re-implementing what this was doing back when getChild returned 
-                // a Definition when generate is false.  Now we return a DefinitionInstance,
-                // but not when generate is true.  It doesn't really make sense though.
-                // TODO: Investigate.
                 Definition keysDef = new KeysDefinition(this, context);
                 if (generate) {
-                    return keysDef;  // this is the part that doesn't make sense
+                    return keysDef.instantiate(args, indexes, context);
                 } else {
                     return keysDef.getDefInstance(null, indexes);
                 }
@@ -1577,7 +1573,8 @@ public class NamedDefinition extends AnonymousDefinition {
             // see comment above on why we do this crazy stuff
             Definition aliasedDef = new AliasedDefinition((NamedDefinition) specialDef, node);
             if (generate) {
-                return aliasedDef;
+                //return aliasedDef;
+                return specialDef.instantiate(args, indexes, context);
             } else {
                 return aliasedDef.getDefInstance(args, indexes);
             }

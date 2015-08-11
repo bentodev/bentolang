@@ -67,8 +67,19 @@ public class ParsedCollectionDefinition extends CollectionDefinition implements 
             }
             if (dims == null || dims.size() == 0) {
                 if (typeDims == null || typeDims.size() == 0) {
-                    log("Collection " + name.getName() + " dimensions not specified in definition; will be inferred from supertype");
                     dims = null;
+                    if (children[elementIx] instanceof ArgumentList) {
+                        ArgumentList argList = (ArgumentList) children[elementIx];
+                        if (argList.isArray() || argList.isTable()) {
+                            Dim newDim = new Dim(Dim.TYPE.DEFINITE, argList.size());
+                            if (argList.isTable()) {
+                                newDim.setTable(true);
+                            }
+                            dims = new ArrayList<Dim>(1);
+                            dims.add(newDim);
+                        }
+                    }
+                    log("Collection " + name.getName() + " dimensions not specified in definition; will be inferred from supertype");
                 } else {
                     dims = typeDims;
                 }

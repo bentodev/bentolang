@@ -45,6 +45,8 @@ public class ArgumentList extends ListNode<Construction> {
 
     private boolean dynamic = false;
     private boolean concurrent = false;
+    private boolean array = false;
+    private boolean table = false;
 
     public ArgumentList() {
         super();
@@ -132,6 +134,35 @@ public class ArgumentList extends ListNode<Construction> {
     public void setConcurrent(boolean concurrent) {
         this.concurrent = concurrent;
     }
+
+    /** Returns true if this list defines the elements of an array, i.e. enclosed
+     *  in [ ] rather than ( )
+     **/ 
+    public boolean isArray() {
+        return array;
+    }
+    
+    /** Sets the flag indicating whether or not this list defines the elements of an
+     *  array.
+     **/ 
+    protected void setArray(boolean array) {
+        this.array = array;
+    }
+
+    /** Returns true if this list defines the elements of an table, i.e. enclosed
+     *  in { } rather than ( )
+     **/ 
+    public boolean isTable() {
+        return table;
+    }
+    
+    /** Sets the flag indicating whether or not this list defines the elements of an
+     *  table.
+     **/ 
+    protected void setTable(boolean table) {
+        this.table = table;
+    }
+
 
     public Object clone() {
         return new ArgumentList(this);

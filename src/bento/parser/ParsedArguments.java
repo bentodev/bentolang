@@ -2,7 +2,7 @@
  *
  * $Id: ParsedArguments.java,v 1.9 2014/11/01 19:49:40 sthippo Exp $
  *
- * Copyright (c) 2002-2014 by bentodev.org
+ * Copyright (c) 2002-2015 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -39,5 +39,13 @@ public class ParsedArguments extends ArgumentList implements Initializable {
 
     public void setConcurrent() {
         setConcurrent(true);
+    }
+    
+    public void setArray() {
+        setArray(true);
+    }
+    
+    public void setTable() {
+        setTable(true);
     }
 }
