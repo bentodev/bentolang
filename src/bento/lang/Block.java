@@ -131,14 +131,14 @@ abstract public class Block extends AbstractNode implements Construction, Constr
     }
 
     public Type getType(Context context, Definition resolver) {
-        List<Construction> constructions = getConstructions(context);
-        if (constructions != null && constructions.size() == 1) {
-            Construction construction = constructions.get(0);
+        Construction construction = getUltimateConstruction(context);
+        if (construction == null) {
+            return PrimitiveType.VOID;
+        } else if (construction != this) {
             return construction.getType(context, resolver);
-    		
-    	} else {
+        } else {
             return DefaultType.TYPE;
-    	}
+        }
     }
 
     /** Returns the name of the definition being constructed */
@@ -174,34 +174,33 @@ abstract public class Block extends AbstractNode implements Construction, Constr
     }
     
     public List<Construction> getConstructions() {
-        int n = getNumChildren();
-        if (constructions == null && n > 0) {
-            Iterator<BentoNode> it = getChildren();
-            while (it.hasNext()) {
-                BentoNode node = it.next();
-
-                if (node instanceof Block) {
-                    if (!(node.equals(catchBlock))) {
-                        List<Construction> list = ((Block) node).getConstructions();
-                        if (list != null && list.size() > 0) {
-                            if (constructions == null) {
-                                // if you want you can change the allocation back to the centralized method
-                                constructions = new ArrayList<Construction>(list); // Context.newArrayList(list);
-                            } else {
-                                constructions.addAll(list);
+        if (constructions == null) {
+            int n = getNumChildren();
+            if (n > 0) {
+                Iterator<BentoNode> it = getChildren();
+                while (it.hasNext()) {
+                    BentoNode node = it.next();
+    
+                    if (node instanceof Block) {
+                        if (!(node.equals(catchBlock))) {
+                            List<Construction> list = ((Block) node).getConstructions();
+                            if (list != null && list.size() > 0) {
+                                if (constructions == null) {
+                                    // if you want you can change the allocation back to the centralized method
+                                    constructions = new ArrayList<Construction>(list); // Context.newArrayList(list);
+                                } else {
+                                    constructions.addAll(list);
+                                }
                             }
                         }
+
+                    } else if (node instanceof Construction) {
+                        if (constructions == null) {
+                            // if you want you can change the allocation back to the centralized method
+                            constructions = new ArrayList<Construction>(Math.min(n, TYPICAL_LIST_SIZE)); //Context.newArrayList(Math.min(n, TYPICAL_LIST_SIZE));
+                        }
+                        constructions.add((Construction) node);
                     }
-              // Not sure how this next line ever worked, considering that node was then cast
-              // to a Construction, unless node is never a ContinueStatement or RedirectStatement
-              //      
-              //    } else if (node instanceof Chunk || node instanceof ContinueStatement || node instanceof RedirectStatement) {
-                } else if (node instanceof Construction) {
-                    if (constructions == null) {
-                        // if you want you can change the allocation back to the centralized method
-                        constructions = new ArrayList<Construction>(Math.min(n, TYPICAL_LIST_SIZE)); //Context.newArrayList(Math.min(n, TYPICAL_LIST_SIZE));
-                    }
-                    constructions.add((Construction) node);
                 }
             }
             if (constructions == null) {
@@ -254,6 +253,28 @@ abstract public class Block extends AbstractNode implements Construction, Constr
      *  This class is not a wrapper or alias, so it returns this construction.
      */
     public Construction getUltimateConstruction(Context context) {
+        List<Construction> constructions = getConstructions();
+        if (constructions.size() == 1) {
+            return constructions.get(0);
+        } else {
+            Construction singleConstruction = null;
+            Iterator<Construction> it = constructions.iterator();
+            while (it.hasNext()) {
+                Construction construction = it.next();
+                Type type = construction.getType(context, null);
+                if (!type.equals(PrimitiveType.VOID)) {
+                    if (singleConstruction == null) {
+                        singleConstruction = construction;
+                    } else {
+                        singleConstruction = null;
+                        break;
+                    }
+                }
+            }
+            if (singleConstruction != null) {
+                return singleConstruction;
+            }
+        }
         return this;
     }
     

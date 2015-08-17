@@ -300,11 +300,11 @@ public class Context {
     }
     
     public BentoDebugger getDebugger() {
-    	return debugger;
+        return debugger;
     }
     
     public void setDebugger(BentoDebugger debugger) {
-    	this.debugger = debugger;
+        this.debugger = debugger;
     }
     
     public Session getSession() {
@@ -324,7 +324,7 @@ public class Context {
     }
 
     public Map<String, Object> getSiteCache(String name) {
-    	return siteCaches.get(name);
+        return siteCaches.get(name);
     }
     
     public Map<String, Object> getGlobalCache(String name) {
@@ -532,12 +532,12 @@ public class Context {
     }
 
     private Object constructSuper(NamedDefinition def, ArgumentList args, NamedDefinition instantiatedDef) throws Redirection {
-    	return constructSuper(def, args, instantiatedDef, null);
+        return constructSuper(def, args, instantiatedDef, null);
     }
 
     
     private Object constructSuper(NamedDefinition def, ArgumentList args, NamedDefinition instantiatedDef, LinkedList<Definition> nextList) throws Redirection {
-    	Object data = null;
+        Object data = null;
         boolean pushed = false;
         boolean hasMore = (nextList != null && nextList.size() > 0);
         
@@ -553,19 +553,19 @@ public class Context {
             NamedDefinition superDef = def.getSuperDefinition(this);
 
             if (!hasMore && superDef != null && (superDef.hasSub(this) || numConstructions == 0)) {
-            	Type st = def.getSuper(this);
+                Type st = def.getSuper(this);
                 ArgumentList superArgs = (st != null ? st.getArguments(this) : null);
                 NamedDefinition superFlavor = (NamedDefinition) superDef.getDefinitionForArgs(superArgs, this);
                 data = constructSuper(superFlavor, superArgs, instantiatedDef);
 
             } else {
-            	
+                
                 if (hasMore) {
-                	Definition nextDef = nextList.removeFirst();
-                	constructions = nextDef.getConstructions(this);
-                	numConstructions = (constructions == null ? 0 : constructions.size());
+                    Definition nextDef = nextList.removeFirst();
+                    constructions = nextDef.getConstructions(this);
+                    numConstructions = (constructions == null ? 0 : constructions.size());
                 }
-            	
+                
                 if (numConstructions == 1) {
                     Construction object = constructions.get(0);
                     if (object instanceof SubStatement) {
@@ -580,7 +580,7 @@ public class Context {
 
                     } else if (object instanceof NextStatement) {
                         data = constructSuper(def, args, instantiatedDef, nextList);
-                    	
+                        
                     } else if (object instanceof RedirectStatement) {
                         RedirectStatement redir = (RedirectStatement) object;
                         throw redir.getRedirection(this);
@@ -645,7 +645,7 @@ public class Context {
 
                             } else if (chunk instanceof NextStatement) {
                                 chunkData = constructSuper(def, args, instantiatedDef, nextList);
-                            	
+                                
                             } else {
                                 chunkData = chunk.getData(this);
                                 if (chunkData != null && chunkData instanceof Value) {
@@ -664,9 +664,9 @@ public class Context {
                 }
             }
         } finally {
-        	if (pushed) {
+            if (pushed) {
                 pop();
-        	}
+            }
         }
         return data;
     }
@@ -677,7 +677,7 @@ public class Context {
             return data;
         }
 
-  	    LinkedList<Definition> nextList = null;
+          LinkedList<Definition> nextList = null;
         
         // call the form of getSuperDefinition that does not take
         // a context parameter, because we want the multidefinition
@@ -685,7 +685,7 @@ public class Context {
         Definition superDef = def.getSuperDefinition();
 
         if (superDef != null && superDef.hasNext(this)) {
-      	    nextList = superDef.getNextList(this);
+              nextList = superDef.getNextList(this);
         }
         
         if (nextList != null && nextList.size() > 0) {
@@ -693,12 +693,12 @@ public class Context {
             data = constructSub(nextDef, instantiatedDef, nextList);
         
         } else {
-        	try {
-        		unpush();
+            try {
+                unpush();
                 data = constructSub(def, instantiatedDef, null);
-        	} finally {
-        		repush();
-        	}
+            } finally {
+                repush();
+            }
         }
     
         if (data == null) {
@@ -713,7 +713,7 @@ public class Context {
         Object data = null;    
         List<Construction> constructions = def.getConstructions(this);
         boolean hasMoreNext = (nextList != null && nextList.size() > 0);
-        	
+            
         if (constructions == null || constructions.size() == 0) {
             NamedDefinition sub = getSubdefinition();
             data = (sub == null ? null : constructSub(sub, instantiatedDef));
@@ -731,14 +731,14 @@ public class Context {
                         } else {
                             NamedDefinition sub = getSubdefinition();
                             if (sub == null) {
-                            	data = null;
+                                data = null;
                             } else {
-	                            try {
-	                            	unpush();
-		                            data = constructSub(sub, instantiatedDef, null);
-	                            } finally {
-	                            	repush();
-	                            }
+                                try {
+                                    unpush();
+                                    data = constructSub(sub, instantiatedDef, null);
+                                } finally {
+                                    repush();
+                                }
                             }
                         }
                         
@@ -793,20 +793,20 @@ public class Context {
                         } else {
                             Object chunkData = null;
                             if  (chunk instanceof NextStatement) {
-                            	Object subData = null;
-                            	if (hasMoreNext) {
+                                Object subData = null;
+                                if (hasMoreNext) {
                                     Definition nextDef = nextList.removeFirst();
                                     subData = constructSub(nextDef, instantiatedDef, nextList);
                                 } else { 
                                     NamedDefinition sub = getSubdefinition();
                                     if (sub == null) {
-                                    	subData = null;
+                                        subData = null;
                                     } else {
                                         try {
-                                        	unpush();
-    	                                    subData = constructSub(sub, instantiatedDef, null);
+                                            unpush();
+                                            subData = constructSub(sub, instantiatedDef, null);
                                         } finally {
-                                        	repush();
+                                            repush();
                                         }
                                     }
                                 }
@@ -1083,13 +1083,13 @@ public class Context {
                                 data = null;
                             }
                         } else {
-                        	LinkedList<Definition> nextList = null;
+                            LinkedList<Definition> nextList = null;
                             if (superDef.hasNext(this)) {
-                          	    nextList = superDef.getNextList(this);
+                                  nextList = superDef.getNextList(this);
                             }
-                        	
-                        	// get the specific definition for this context
-                        	superDef = def.getSuperDefinition(this);
+                            
+                            // get the specific definition for this context
+                            superDef = def.getSuperDefinition(this);
                             if (superDef == null) {
                                 if (errorThreshhold <= Context.IGNORABLE_ERRORS) {
                                     throw new Redirection(Redirection.STANDARD_ERROR, "Undefined superdefinition reference in " + def.getFullName());
@@ -1145,13 +1145,13 @@ public class Context {
                                 str = null;
                             }
                         } else {
-                        	LinkedList<Definition> nextList = null;
+                            LinkedList<Definition> nextList = null;
                             if (superDef.hasNext(this)) {
-                          	    nextList = superDef.getNextList(this);
+                                  nextList = superDef.getNextList(this);
                             }
-                        	
-                        	// get the specific definition for this context
-                        	superDef = def.getSuperDefinition(this);
+                            
+                            // get the specific definition for this context
+                            superDef = def.getSuperDefinition(this);
                             if (superDef == null) {
                                 if (errorThreshhold <= Context.IGNORABLE_ERRORS) {
                                     throw new Redirection(Redirection.STANDARD_ERROR, "Undefined superdefinition reference in " + def.getFullName());
@@ -1159,13 +1159,13 @@ public class Context {
                                     str = null;
                                 }
                             } else {
-	                            Type st = def.getSuper(this);
-	                            ArgumentList superArgs = (st != null ? st.getArguments(this) : null);
-	                            NamedDefinition superFlavor = (NamedDefinition) superDef.getDefinitionForArgs(superArgs, this);
-	                            Object obj = constructSuper(superFlavor, superArgs, instantiatedDef, nextList);
-	                            if (obj != null && !obj.equals(NullValue.NULL_VALUE)) {
-	                                str = obj.toString();
-	                            }
+                                Type st = def.getSuper(this);
+                                ArgumentList superArgs = (st != null ? st.getArguments(this) : null);
+                                NamedDefinition superFlavor = (NamedDefinition) superDef.getDefinitionForArgs(superArgs, this);
+                                Object obj = constructSuper(superFlavor, superArgs, instantiatedDef, nextList);
+                                if (obj != null && !obj.equals(NullValue.NULL_VALUE)) {
+                                    str = obj.toString();
+                                }
                             }
                         }
                     } else if (object instanceof Value) {
@@ -1547,8 +1547,8 @@ public class Context {
      *  in the current context.
      */
     synchronized public void putData(Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, List<Index> indexes, String name, Object data, ResolvedInstance resolvedInstance) throws Redirection {
-    	if (topEntry != null && name != null && name.length() > 0) {
-    	    int maxCacheLevels = getMaxCacheLevels(nominalDef);
+        if (topEntry != null && name != null && name.length() > 0) {
+            int maxCacheLevels = getMaxCacheLevels(nominalDef);
             List<String>[] keeps = addDynamicKeeps(name, args);
 
             // use indexes as part of the key otherwise a cached element may be confused with a cached array 
@@ -1583,11 +1583,11 @@ public class Context {
             levels++;
             entry = entry.link;
             if (entry == null) {
-            	// may have been obtained by reflection or some other out-of-scope mechanism; don't try to
-            	// cache beyond local level
-            	if (!reachedScope) {
-            		levels = 0;
-            	}
+                // may have been obtained by reflection or some other out-of-scope mechanism; don't try to
+                // cache beyond local level
+                if (!reachedScope) {
+                    levels = 0;
+                }
                 break;
             }
             if (reachedScope) {
@@ -1597,7 +1597,7 @@ public class Context {
             } else {
                 entryDef = (NamedDefinition) entry.def;
                 reachedScope = (scopeOwner.equals(entryDef) || 
-                		        scopeOwner.isSubDefinition(entryDef) ||
+                                scopeOwner.isSubDefinition(entryDef) ||
                                 (scopeOwner instanceof Site && 
                                         (entry.hasSiteCacheEntryFor(def) || entry.isAdopted(scopeOwner.getNameNode()))));
             }
@@ -1645,15 +1645,15 @@ public class Context {
                 }
             }
         } else if (node.numParts() > 1) {
-        	try {
+            try {
                 Definition paramDef = getParameterDefinition(node, false);
                 if (paramDef != null) {
                     paramType = paramDef.getType();
                 }
-        	} catch (Redirection r) {
-        		;
+            } catch (Redirection r) {
+                ;
             }
-        	
+            
         } else {
             String name = node.getName();
             int numParams = topEntry.params.size();
@@ -1670,7 +1670,7 @@ public class Context {
         if (paramType != null && paramType.isCollection() && node.hasIndexes()) {
             Definition def = paramType.getDefinition();
             if (def instanceof CollectionDefinition) {
-            	paramType = ((CollectionDefinition) def).getElementType();
+                paramType = ((CollectionDefinition) def).getElementType();
             }
         }
         return paramType;
@@ -1830,9 +1830,9 @@ public class Context {
 
         } else {
             try {
-            	Object data = null;
+                Object data = null;
 
-            	for (i = 0; i < numUnpushes; i++) {
+                for (i = 0; i < numUnpushes; i++) {
                     unpush();
                 }
 
@@ -1984,8 +1984,8 @@ public class Context {
                                 }
                             }
                             if (arg instanceof ResolvedInstance) {
-                            	ResolvedInstance ri = (ResolvedInstance) arg;
-                            	if (argArgs != null && argArgs.size() > 0) {
+                                ResolvedInstance ri = (ResolvedInstance) arg;
+                                if (argArgs != null && argArgs.size() > 0) {
                                     ri.setArguments(argArgs);
                                 }
                                 data = ri.getData(ri.getResolutionContext());
@@ -2001,14 +2001,14 @@ public class Context {
                                 
                                 data = instance.getData(this);
                             }
-                    		
-                    	} else if (arg instanceof PrimitiveValue) {
+                            
+                        } else if (arg instanceof PrimitiveValue) {
                             data = arg; //((PrimitiveValue) arg).getValue();
-                        	
-                    	} else if (arg instanceof Expression) {
+                            
+                        } else if (arg instanceof Expression) {
                             data = ((ValueGenerator) arg).getData(this);
-                    	
-                    	} else if (arg instanceof Chunk) { 
+                        
+                        } else if (arg instanceof Chunk) { 
                             argDef = param.getDefinitionFor(this, (Chunk) arg);
                             // there must be a better way to avoid this, but for now...
                             if (argDef == null && numUnpushes > 0) {
@@ -2033,7 +2033,7 @@ public class Context {
                             data = arg;
                         }
     
-                    	if (data != null) {
+                        if (data != null) {
                             // if the name is indexed, and the argument is raw data, then get
                             // the appropriate item in the collection.  In such a case, the data
                             // must be of the appropriate type for the indexes.
@@ -2144,12 +2144,12 @@ public class Context {
     private Object instantiateParameterChild(ComplexName childName, DefParameter param, Object arg, List<Index> indexes) throws Redirection {
 //if ("status".equals(childName.getName()))
         if (arg instanceof Value) {
-        	Object val = ((Value) arg).getValue();
-        	if (val instanceof BentoObjectWrapper) {
-        		arg = val;
-        	}
+            Object val = ((Value) arg).getValue();
+            if (val instanceof BentoObjectWrapper) {
+                arg = val;
+            }
         }
-    	Object data = null;
+        Object data = null;
         Instantiation instance = (arg instanceof Instantiation ? (Instantiation) arg : null);
         int numUnpushes = 0;
         if (arg instanceof AbstractNode) {
@@ -2198,9 +2198,9 @@ public class Context {
                     argDef = (Definition) arg;
                 }
             } else if (arg instanceof BentoObjectWrapper) {
-            	BentoObjectWrapper wrapper = (BentoObjectWrapper) arg;
+                BentoObjectWrapper wrapper = (BentoObjectWrapper) arg;
                 // TODO: this doesn't handle children of children
-            	data = wrapper.getChildData(childName.getName());
+                data = wrapper.getChildData(childName.getName());
                 
             } else {
                 if (instance != null && instance.isParameterKind()) {
@@ -2292,14 +2292,14 @@ public class Context {
                     } else if (arg instanceof Map<?,?> && arg != null) {
                         String nm = childName.getName();
                         if (nm.equals("keys")) {
-                        	Set<?> keySet = ((Map<?,?>) arg).keySet();
-                        	List<String> keys = new ArrayList<String>(keySet.size());
-                        	Iterator<?> it = keySet.iterator();
-                        	while (it.hasNext()) {
-                        	    keys.add(it.next().toString());
-                        	}
+                            Set<?> keySet = ((Map<?,?>) arg).keySet();
+                            List<String> keys = new ArrayList<String>(keySet.size());
+                            Iterator<?> it = keySet.iterator();
+                            while (it.hasNext()) {
+                                keys.add(it.next().toString());
+                            }
                             data = keys;
-                        	
+                            
                         } else {
                             data = ((Map<?,?>) arg).get(childName.getName());
                         }
@@ -2586,7 +2586,7 @@ public class Context {
                 pop();
             }
             while (numUnpushes-- > 0) {
-            	repush();
+                repush();
             }
         }
 
@@ -2848,7 +2848,7 @@ public class Context {
             
             if (collectionDef != null) {
                 indexes = resolveIndexes(indexes);
-            	def = collectionDef.getElementReference(this, args, indexes);
+                def = collectionDef.getElementReference(this, args, indexes);
             } else {
                 def = null;
             }
@@ -3242,9 +3242,9 @@ public class Context {
                 argDef = childDef;
 
                 if (arg instanceof Value && ((Value) arg).getValueClass().equals(BentoObjectWrapper.class)) {
-                	BentoObjectWrapper wrapper = (BentoObjectWrapper) ((Value) arg).getValue();
-                	Context argContext = wrapper.context;
-                	argDef = new BoundDefinition(argDef, argContext);
+                    BentoObjectWrapper wrapper = (BentoObjectWrapper) ((Value) arg).getValue();
+                    Context argContext = wrapper.context;
+                    argDef = new BoundDefinition(argDef, argContext);
                 }
                 
                 //if (childDef != null) {
@@ -3512,8 +3512,8 @@ public class Context {
                 if (!entrySite.equals(currentSite)) {
                     Map<String, Object> siteCache = siteCaches.get(entrySite.getName());
                     if (siteCache == null) {
-                    	siteCache = newHashMap(Object.class);
-                    	siteCaches.put(entrySite.getName(), siteCache);
+                        siteCache = newHashMap(Object.class);
+                        siteCaches.put(entrySite.getName(), siteCache);
                     }
                     entry.setSiteCache(siteCache);
                 }
@@ -3677,11 +3677,11 @@ public class Context {
     }
 
     private void setRootEntry(Entry entry) {
-    	rootEntry = entry;
+        rootEntry = entry;
 
-    	Site site = entry.def.getSite();
-    	List<Name> adoptedSites = site.getAdoptedSiteList();
-    	if (adoptedSites != null) {
+        Site site = entry.def.getSite();
+        List<Name> adoptedSites = site.getAdoptedSiteList();
+        if (adoptedSites != null) {
             Iterator<Name> it = adoptedSites.iterator();
             while (it.hasNext()) {
                 Name adoptedSite = it.next();
@@ -3691,9 +3691,9 @@ public class Context {
                     siteCaches.put(adoptedSite.getName(), adoptedSiteCache);
                 }
             }
-    		rootEntry.setSiteCacheMap(siteCaches, adoptedSites);
-    	}
-    	
+            rootEntry.setSiteCacheMap(siteCaches, adoptedSites);
+        }
+        
     }
     
 //    private void checkEntry(Entry entry) {
@@ -3873,26 +3873,26 @@ public class Context {
         if (obj instanceof Context) {
             Context context = (Context) obj;
             if (rootContext == context.rootContext) {
-	            if (stateCount == context.stateCount && getLoopIndex() <= context.getLoopIndex()) {
-	                return true;
-	            } else if (stateCount < context.stateCount) {
-	                Iterator<Entry> it = context.iterator();
-	                while (it.hasNext()) {
-	                    Entry entry = (Entry) it.next();
-	                    if (entry.equals(topEntry)) {
-	                        return true;
-	                    }
-	                }
-	            }
+                if (stateCount == context.stateCount && getLoopIndex() <= context.getLoopIndex()) {
+                    return true;
+                } else if (stateCount < context.stateCount) {
+                    Iterator<Entry> it = context.iterator();
+                    while (it.hasNext()) {
+                        Entry entry = (Entry) it.next();
+                        if (entry.equals(topEntry)) {
+                            return true;
+                        }
+                    }
+                }
             }
         } else if (obj instanceof ContextMarker) {
             ContextMarker marker = (ContextMarker) obj;
             if (rootContext == marker.rootContext) {
-	            if (stateCount == marker.stateCount && getLoopIndex() <= marker.loopIndex) {
-	                return true;
-	            } else if (stateCount < marker.stateCount) {
-	            	return true;
-	            }
+                if (stateCount == marker.stateCount && getLoopIndex() <= marker.loopIndex) {
+                    return true;
+                } else if (stateCount < marker.stateCount) {
+                    return true;
+                }
             }
         }
         return false;
@@ -3903,15 +3903,15 @@ public class Context {
             if (stateCount == context.stateCount) {
                 return true;
             } else if (stateCount < context.stateCount) {
-            	if (topEntry != null) {
-	                Iterator<Entry> it = context.iterator();
-	                while (it.hasNext()) {
-	                    Entry entry = it.next();
-	                    if (entry.equals(topEntry)) {
-	                        return true;
-	                    }
-	                }
-            	}
+                if (topEntry != null) {
+                    Iterator<Entry> it = context.iterator();
+                    while (it.hasNext()) {
+                        Entry entry = it.next();
+                        if (entry.equals(topEntry)) {
+                            return true;
+                        }
+                    }
+                }
             } else if (context.topEntry != null) {
                 Iterator<Entry> it = iterator();
                 while (it.hasNext()) {
@@ -4042,8 +4042,8 @@ public class Context {
             }
         
         } else {
-        	cache = newHashMap(Object.class);
-        	siteCaches = newHashMapOfMaps(Object.class);
+            cache = newHashMap(Object.class);
+            siteCaches = newHashMapOfMaps(Object.class);
             setRootEntry(newEntry(context.rootEntry, false));
             setTop(rootEntry);
         }
@@ -4220,11 +4220,11 @@ public class Context {
         }
         
         public String getKey() {
-        	if (key instanceof Value) {
-        		return ((Value) key).getString();
-        	} else {
-        		return key.toString();
-        	}
+            if (key instanceof Value) {
+                return ((Value) key).getString();
+            } else {
+                return key.toString();
+            }
         }
         
         public String toString() {
@@ -4816,7 +4816,7 @@ public class Context {
             if (holder != null) {
                 return holder.def;
             } else {
-            	return null;
+                return null;
             }
         }
         
@@ -4966,26 +4966,26 @@ public class Context {
                 data = getCachedData(c, ckey);
                 if (data != null) {
 
-	                if (data instanceof ElementDefinition) {
-	                    def = (Definition) data;
-	                    data = ((ElementDefinition) def).getElement();
-	                } else if (data instanceof Holder) {
-	                    holder = (Holder) data;
-	                    data = (holder.data == AbstractNode.UNINSTANTIATED ? null : holder.data);
-	                    def = holder.def;
-	                    args = holder.args;
-	                    ri = holder.resolvedInstance;
-	                } else if (data instanceof Pointer) {
-	                    def = ((Pointer) data).riAs.getDefinition();
-	                    ckey = baseKey(((Pointer) data).getKey());
-	                }
-	
-	                String loopModifier = getLoopModifier();
-	                if (loopModifier != null) {
-	                    if (data instanceof Pointer && ((Pointer) data).cache == c) {
-	                        data = c.get(ckey + loopModifier);
-	                    }
-	                }
+                    if (data instanceof ElementDefinition) {
+                        def = (Definition) data;
+                        data = ((ElementDefinition) def).getElement();
+                    } else if (data instanceof Holder) {
+                        holder = (Holder) data;
+                        data = (holder.data == AbstractNode.UNINSTANTIATED ? null : holder.data);
+                        def = holder.def;
+                        args = holder.args;
+                        ri = holder.resolvedInstance;
+                    } else if (data instanceof Pointer) {
+                        def = ((Pointer) data).riAs.getDefinition();
+                        ckey = baseKey(((Pointer) data).getKey());
+                    }
+    
+                    String loopModifier = getLoopModifier();
+                    if (loopModifier != null) {
+                        if (data instanceof Pointer && ((Pointer) data).cache == c) {
+                            data = c.get(ckey + loopModifier);
+                        }
+                    }
                 }
 
                 if (data != null) {
@@ -5026,26 +5026,26 @@ public class Context {
 
             // return either the definition or the data, depending on the passed flag
             if (getDefHolder) {
-            	if (holder == null) {
-            	    
-            	    if (def == null && ri != null) {
-            	        def = ri.getDefinition();
-            	    }
-            	    
-            	    // if def is null, this might be an entry resulting from an "as" clause
-	                // in a keep statement, so look in the keep table for an entry.
-	                if (def == null && keepMap != null && keepMap.get(key) != null) {
-	                    Pointer p = keepMap.get(key);
-	                    def = p.riAs.getDefinition();
-	                }
-	                if (def != null) {
+                if (holder == null) {
+                    
+                    if (def == null && ri != null) {
+                        def = ri.getDefinition();
+                    }
+                    
+                    // if def is null, this might be an entry resulting from an "as" clause
+                    // in a keep statement, so look in the keep table for an entry.
+                    if (def == null && keepMap != null && keepMap.get(key) != null) {
+                        Pointer p = keepMap.get(key);
+                        def = p.riAs.getDefinition();
+                    }
+                    if (def != null) {
                         Definition nominalDef = def;
                         ArgumentList nominalArgs = args;
                         holder = new Holder(nominalDef, nominalArgs, def, args, null, data, ri);
-	                } else if (data != null) {
+                    } else if (data != null) {
                         holder = new Holder(null, null, null, null, null, data, null);
-	                }
-            	}
+                    }
+                }
                 return holder;
             } else {
                 return data;
@@ -5406,13 +5406,13 @@ public class Context {
         }
 
         private void checkForPut(String key, Holder holder, Context context, int maxLevels) {
-       	
-        	if ((cache != null && cache.get(key) != null) ||
+           
+            if ((cache != null && cache.get(key) != null) ||
                     (keepMap != null && keepMap.get(key) != null) ||
                     hasSiteCache(def) ||
                     this.def.hasChildDefinition(key)) {
 
-            	put(key, holder, context, maxLevels);
+                put(key, holder, context, maxLevels);
             } else {
                 if (maxLevels > 0) maxLevels--;
                 if (link != null && maxLevels != 0) {
@@ -5422,47 +5422,47 @@ public class Context {
         }
         
         boolean hasSiteCacheEntryFor(Definition def) {
-        	if (def != null) {
-        	    String key = def.getName();
-        	    if (siteCache != null) {
-        	        if (siteCache.get(key) != null) {
-        	            return true;
-        	        }
-        	    }
-        	    if (siteCacheMap != null) {
-        	        Definition defOwner = def.getOwner();
-        	        if (defOwner instanceof Site) {
-        	            String defSiteName = defOwner.getName();
-        	            Map<String, Object> cache = (Map<String, Object>) siteCacheMap.get(defSiteName);
-        	            if (cache != null) {
-        	                if (cache.get(key) != null) {
-        	                    return true;
-        	                }
-        	            }
-            		}
-        		}
-        	}
-        	return false;
+            if (def != null) {
+                String key = def.getName();
+                if (siteCache != null) {
+                    if (siteCache.get(key) != null) {
+                        return true;
+                    }
+                }
+                if (siteCacheMap != null) {
+                    Definition defOwner = def.getOwner();
+                    if (defOwner instanceof Site) {
+                        String defSiteName = defOwner.getName();
+                        Map<String, Object> cache = (Map<String, Object>) siteCacheMap.get(defSiteName);
+                        if (cache != null) {
+                            if (cache.get(key) != null) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         private boolean hasSiteCache(Definition def) {
-        	if (siteCache != null) {
-        	    return true;
-        	}
-        	if (siteCacheMap != null && def != null) {
-        		Definition defOwner = def.getOwner();
-        		if (defOwner instanceof Site) {
-        			String defSiteName = defOwner.getName();
-            		Iterator<Name> it = adoptedSites.iterator();
-            		while (it.hasNext()) {
-            	        NameNode siteName = (NameNode) it.next();
-            		    if (siteName.getName().equals(defSiteName)) {
-            	            return true;
-            			}
-            		}
-        		}
-        	}
-        	return false;
+            if (siteCache != null) {
+                return true;
+            }
+            if (siteCacheMap != null && def != null) {
+                Definition defOwner = def.getOwner();
+                if (defOwner instanceof Site) {
+                    String defSiteName = defOwner.getName();
+                    Iterator<Name> it = adoptedSites.iterator();
+                    while (it.hasNext()) {
+                        NameNode siteName = (NameNode) it.next();
+                        if (siteName.getName().equals(defSiteName)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         boolean isAdopted(Name name) {
@@ -5571,11 +5571,11 @@ public class Context {
             if (obj instanceof Entry) {
                 Entry entry = (Entry) obj;
                 if (def.equals(entry.def) && args.equals(entry.args)) {
-                	if (superdef == null) {
-                		return (entry.superdef == null);
-                	} else {
-                		return superdef.equals(entry.superdef); 
-                	}
+                    if (superdef == null) {
+                        return (entry.superdef == null);
+                    } else {
+                        return superdef.equals(entry.superdef); 
+                    }
                 }
             }
             return false;
@@ -5665,14 +5665,14 @@ public class Context {
         }
         
         Map<String, Object> getSiteCache(Definition def) {
-        	if (siteCache != null) {
-        		return siteCache;
-        	} else if (siteCacheMap != null) {
+            if (siteCache != null) {
+                return siteCache;
+            } else if (siteCacheMap != null) {
                 Site site = def.getSite();
                 if (site != null) {
-        		    return siteCacheMap.get(site.getName());
+                    return siteCacheMap.get(site.getName());
                 }
-        	}
+            }
             return null;
         }
         
@@ -5727,7 +5727,7 @@ class ContextMarker {
         if (object instanceof ContextMarker) {
             ContextMarker marker = (ContextMarker) object;
             if (loopIndex >= 0) {
-            	SiteBuilder.vlog("comparing context marker loop indices: " + loopIndex + " to " + marker.loopIndex);
+                SiteBuilder.vlog("comparing context marker loop indices: " + loopIndex + " to " + marker.loopIndex);
             }
             return (marker.rootContext == rootContext && marker.stateCount == stateCount && marker.loopIndex == loopIndex);
         } else {

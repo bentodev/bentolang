@@ -1694,54 +1694,6 @@ public class NamedDefinition extends AnonymousDefinition {
                     ArgumentList contentArgs = null;
                     ParameterList contentParams = null;
     
-//                    while (contentDef != null && (contentDef.isIdentity() || contentDef.isAlias())) {
-//                        // if this is an identity, look for the definition of the passed instance.
-//                        // Look directly in the top entry rather than calling getDefinition, which in
-//                        // some cases would cause infinite regression
-//                        if (contentDef.isIdentity()) {
-//                            Holder holder = context.peek().getDefHolder(getName(), null, null, false);
-//                            if (holder != null) {
-//                                // avoid an endless loop
-//                                if (contentDef.equals(holder.def)) {
-//                                    // should we set the args from the holder before bailing?
-//                                    //break;
-//                                    contentDef = null;
-//                                    contentArgs = null;
-//                                } else {
-//                                    contentDef = holder.def;
-//                                    contentArgs = holder.args;
-//                                }
-//                            }
-//                      
-//                            // avoid recursion!  If the context is here, go up a step.
-//                            if (contentDef != null && contentDef.equals(this)) {
-//                                contentDef = null;
-//                                contentArgs = null;
-//                                for (Context.Entry prev = context.peek().getPrevious(); prev != null; prev = prev.getPrevious()) {
-//                                    holder = prev.getDefHolder(getName(), null, null, false);
-//                                    if (holder != null && holder.def != null && !holder.def.equals(this)) {
-//                                        contentDef = holder.def;
-//                                        contentArgs = holder.args;
-//                                        break;
-//                                    }
-//                                    
-//                                    // for now, go just one step up.  Not sure if it makes sense
-//                                    // to go higher.
-//                                    break;
-//                                }
-//                            }
-//    
-//                        } else if (contentDef.isAlias()) {
-//                    		Instantiation aliasInstance = contentDef.getAliasInstance();
-//                    		Definition aliasedContentDef = aliasInstance.getDefinition(context, this);
-//                    		if (aliasedContentDef == null) {
-//                    			break;
-//                    		}
-//                    		contentDef = aliasedContentDef;
-//                    		contentArgs = aliasInstance.getArguments();  // getUltimateInstance(context).getArguments();
-//                    		contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
-//    	                }
-//                    }                 
                     if (contentDef == null || contentDef == this) {
                         Type contentType = ((Instantiation) construction).getType(context, this);
                         if (contentType != null) {

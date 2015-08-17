@@ -468,7 +468,56 @@ public class ComplexDefinition extends NamedDefinition {
                 }
             }
 
-            // not an alias; try supertypes if trySuper is true
+            // not an alias; see if it is a construction that defines the child
+            AbstractNode contents = getContents();
+            if (contents instanceof Construction) {
+                Construction construction = ((Construction) contents).getUltimateConstruction(context);
+            
+                if (construction instanceof Instantiation) {
+                    Definition contentDef = ((Instantiation) construction).getDefinition(context, this);
+                    ArgumentList contentArgs = null;
+                    ParameterList contentParams = null;
+    
+                    if (contentDef == null || contentDef == this) {
+                        Type contentType = ((Instantiation) construction).getType(context, this);
+                        if (contentType != null) {
+                            contentDef = contentType.getDefinition();
+                            if (contentDef != null) {
+                                contentArgs = ((Instantiation) construction).getArguments(); // contentType.getArguments(context);
+                                contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
+                            }
+                        }
+                    }
+    
+                    if (contentDef != null) {
+                        context.push(contentDef, contentParams, contentArgs, false);
+                        try {
+    
+                            Object child = context.getDescendant(contentDef, contentArgs, new ComplexName(node), generate, parentObj);
+                            
+                          //  Object child = contentDef.getChild(node, null, context, generate, trySuper);
+                            if ((generate && child != UNDEFINED) || (!generate && child != null)) {
+                                return child;
+                            }
+                        } finally {
+                            context.pop();
+                        }
+                    }
+                } else  {
+                    Type type = construction.getType(context, this);
+                    if (type != null) {
+                        Definition runtimeDef = type.getDefinition();
+                        if (runtimeDef != null && runtimeDef.canHaveChildDefinitions()) {
+                            Object child = runtimeDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj);
+                            if ((generate && child != UNDEFINED) || (!generate && child != null)) {
+                                return child;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // no luck yet; try supertypes if trySuper is true
             //
             // There's a problem with this code: it ignores the args when getting the superdefinition,
             // which means that if there are multiple super definitions it may not pick the right one.

@@ -553,10 +553,10 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
             return ((Definition) reference).getType();
 
         } else if (reference instanceof PrimitiveValue) {
-        	return ((PrimitiveValue) reference).getType();
-        	
+            return ((PrimitiveValue) reference).getType();
+
         } else if (reference instanceof Expression) {
-        	return ((Expression) reference).getType(context, resolver);
+            return ((Expression) reference).getType(context, resolver);
             
         } else {
 
@@ -575,6 +575,13 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
             // it's not a parameter, get the definition and return its type
             Definition def = getDefinition(context);
             if (def != null) {
+                if (def instanceof ElementReference) {
+                    try {
+                        def = ((ElementReference) def).getElementDefinition(context);
+                    } catch (Redirection r) {
+                        ;
+                    }
+                }
                 return def.getType();
             }
         }

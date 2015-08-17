@@ -262,18 +262,17 @@ public class ElementDefinition extends AnonymousDefinition {
     public Type getType() {
         AbstractNode contents = getContents();
         if (contents instanceof PrimitiveValue) {
-        	return ((PrimitiveValue) contents).getType();
+            return ((PrimitiveValue) contents).getType();
+        } else if (contents instanceof ResolvedInstance) {
+            return ((ResolvedInstance) contents).getType(null);
         } else {
             Definition def = getOwner();
             if (def != null) {
-            	if (def.isCollection() && contents instanceof Instantiation) {
-            	    List<Dim> ownerDims = ((CollectionDefinition) def).getDims();
-            	    List<Dim> dims = ((Instantiation) contents).getReferenceName().getDims();
-                    // some sort of subtraction should go here
-            	    return def.getType();  // TODO: calculate correct type
-            	} else {
+                if (def.isCollection()) {
+                    return ((CollectionDefinition) def).getElementType();  // TODO: calculate correct type
+                } else {
                     return def.getType();
-            	}
+                }
             } else  {
                 return DefaultType.TYPE;
             }
