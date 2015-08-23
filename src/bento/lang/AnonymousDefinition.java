@@ -865,6 +865,9 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
         }
         
         if (childDef != null) {
+        	if (childDef instanceof DefParameter) {
+        		return context.getParameter(childName, false, Object.class);
+        	}
 
             if (args == null) {
                 Context.Entry entry = context.peek();
