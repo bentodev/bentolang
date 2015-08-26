@@ -577,7 +577,10 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
             if (def != null) {
                 if (def instanceof ElementReference) {
                     try {
-                        def = ((ElementReference) def).getElementDefinition(context);
+                        Definition elementDef = ((ElementReference) def).getElementDefinition(context);
+                        if (elementDef != null) {
+                        	def = elementDef;
+                        }
                     } catch (Redirection r) {
                         ;
                     }

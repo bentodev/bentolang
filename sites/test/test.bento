@@ -768,16 +768,44 @@ ss1 [=
     =]
 
 ott [=
-   owner_checker [=
-    if (owner isa right_owner) [| H |]
-   =] 
-    
-   right_owner [=
-    owner_checker has_right_owner [/]
-  =]
-       
-  right_owner.has_right_owner;
- 
+        owner_base [=
+        
+            id = owner.type;
+            
+            "X";
+        =]
+        
+        owner_base A [/]
+        
+        A B [/]
+        
+        owner_base C [/]
+        
+        C D [/]
+        
+        owner_base owner_array_1[] = [ C, D ]
+        
+        owner_base E [=
+            id;
+        =]
+        
+        owner_base F [=
+            id;
+        =]
+        
+        F G [/]
+        
+        owner_base owner_array_2[] = [ F, G ]
+        
+ /---       A.id;
+        B.id;
+        for owner_base ob in owner_array_1 [=
+           ob.id;
+        =] ---/
+        E; 
+  /----      for owner_base ob in owner_array_2 [=
+           ob;
+        =]  ---/
 =]
 
     test_case simple_instantiation_test [=
@@ -4235,9 +4263,55 @@ dkt [=
         identity_sub.p2; 
     =]
 
-ci_tests [=
-cached_identity_test;
-nested_cached_identity_test;
+cit [=
+        sup [=
+            b [| X |]
+            c [?]
+ 
+            keep: d(z) = z
+            keep: child_sup child_sub(child_sup w) = w
+            
+            p1 [| X |]  
+            p2 [| X |]  
+
+            [| X |]
+        =]
+
+        sup cached_sub [=
+            b [| B |]
+            c [| C |]
+            
+          /---  d("D"); ---/
+            child_sub(child_sup_sub);
+
+            [| A |]
+        =]
+        
+        child_sup [=
+            keep: e(x) = x
+        =]
+
+        child_sup child_sup_sub [=  
+            e("E");
+        =]
+
+        sup parameterized_sub(x, y) [=
+            p1 = x
+            p2 = y
+        =]
+
+        sup identity_sub(sup s) = s        
+
+        cached_sub;
+   /--     identity_sub;
+        identity_sub.b;
+        identity_sub.c;
+        identity_sub.d;
+        identity_sub.child_sub.e;
+
+        eval(identity_sub(: parameterized_sub("F", "G") :));
+        identity_sub.p1;
+        identity_sub.p2;  ---/ 
 =]
 
     test_case nested_cached_identity_test [=
@@ -4374,8 +4448,8 @@ cnit [=
         
         eval(mwp(wp(mwo, mvo, "E")));
             
-        //mwp.cw.a;
-        //mwp.cp;
+        mwp.cw.a;
+        mwp.cp;
         mwp.cp.c;
         mwp.ct.d;
         mwp.cz;
@@ -4515,38 +4589,123 @@ ccat [=
             child = "x"
             sub;
         =]
-        obj subobj_f(w) [=
+
+        obj subobj_a [=
             keep: child(z) = z
-            child(w);
+            child("A");
         =]
+
+        obj subobj_b(y) [=
+            keep: child(z) = z
+            child(y);
+        =]
+        
+        obj subobj_c(v) [=
+            keep: val(z) = z
+            child = val
+            val(v);
+        =]
+        
+        dynamic show_child(obj ob) [=
+            ob.child;
+        =]
+        
+        obj subobj_d [=
+            keep: child(z) = z
+            child("D");
+        =]
+                
+        obj subobj_e(y) [=
+            keep: child(z) = z
+            child(y);
+        =]
+                
         keep_obj_f(x) [=
             keep: obj ob = subobj_f(x)
             ob;
         =]  
+
+        obj subobj_f(w) [=
+            keep: child(z) = z
+            child(w);
+        =]
+        
+        dynamic keep_obj_g(x) [=
+            keep: obj ob = subobj_g(x)
+            
+            if (x) [=
+                ob;
+            =] else [=
+                ob.child;
+            =]
+        =]  
+
+        obj subobj_g(u) [=
+            keep: child(z) = z
+            eval(child(u));
+            "x";
+        =]
+        
+        keep_obj_h(x) [=
+            keep: obj ob = subobj_h(x)
+            
+            if (ob) [=
+                show_child(ob);
+            =]
+        =]  
+
+        obj subobj_h(u) [=
+            keep: local_child(z) = z
+            child = local_child
+
+            eval(local_child(u));
+            "x";
+        =]
+
+        so [=
+            name = "x"
+        =]
+    
+        so iso(nm) [=
+            keep: name(y) = y
+            
+            name(nm);
+        =]
+    
+        so_ho(so_nm) [=
+            keep: so oh_so = iso(so_nm)
+
+            eval(oh_so);
+            oh_so.name;
+        =]        
+        
+        
+        obj alias_obj_a = subobj_a
+        obj alias_obj_b = subobj_b
+        obj alias_obj_c = subobj_c
+        obj alias_obj_d = subobj_d
+        obj alias_obj_e = subobj_e
         obj alias_obj_f = keep_obj_f.ob
 
-        keep_obj_f("F");
-        alias_obj_f.child;
-
-
-   sio oh_sio = isio("yo")
-   sio oh_lio = ilio("ho")
-   oh_sio; oh_lio; "~";
-   oh_sio.child; oh_lio.child;
-
-    sio ilio(ch) [=
-        keep: child(y) = y
-        child(ch);
-    =]
+        //eval(subobj_a);
+        //eval(subobj_b("B"));
+        //eval(subobj_c("C"));
+        //eval(subobj_d);
+        //eval(subobj_e("E"));
+        //eval(keep_obj_f("F"));
+        keep_obj_g("G");
+        
+        //alias_obj_a.child; 
+        //alias_obj_b.child;
+        //alias_obj_c.child;
+        //show_child(alias_obj_d);
+        //show_child(alias_obj_e);
+        //alias_obj_f.child;
+        //keep_obj_g;
+        //keep_obj_h("H");
+        //so_ho("I");
 =]
-    sio [=
-        child = "x"
-    =]
-    sio isio(ch) [=
-        keep: child(y) = y
-        child(ch);
-    =]
-   
+    
     
     test_case cached_aliased_parameter_test [=
         int category = parameters

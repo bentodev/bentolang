@@ -677,7 +677,7 @@ public class Context {
             return data;
         }
 
-          LinkedList<Definition> nextList = null;
+        LinkedList<Definition> nextList = null;
         
         // call the form of getSuperDefinition that does not take
         // a context parameter, because we want the multidefinition
@@ -900,7 +900,10 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-            
+if ("E".equals(definition.getName())) {
+ System.out.println("Ctxt 904");	
+}
+        	
             // get the arguments and parameters, if any, to push on the
             // context stack with the definition
 
@@ -936,10 +939,12 @@ public class Context {
                 Definition aliasDef = null;
                 if (definition.isAliasInContext(this)) {
                     Instantiation aliasInstance = definition.getAliasInstanceInContext(this);
-                    if (definition.isParamAlias()) {
-                        aliasInstance = aliasInstance.getUltimateInstance(this);
+                    if (aliasInstance != null) {
+                        if (definition.isParamAlias()) {
+                            aliasInstance = aliasInstance.getUltimateInstance(this);
+                        }
+                        aliasDef = aliasInstance.getDefinition(this, definition);
                     }
-                    aliasDef = aliasInstance.getDefinition(this, definition);
                 }
                 AbstractNode contents = definition.getContents();
                 Definition constructedDef = null;
@@ -2640,8 +2645,11 @@ public class Context {
                 Definition superDef = def.getSuperDefinition(this);
                 while (def.isAliasInContext(this) && !def.isCollection()) {
                     Instantiation aliasInstance = def.getAliasInstanceInContext(this);
-                    if (def.isParamAlias()) {
+                    if (def.isParamAlias() && aliasInstance != null) {
                         aliasInstance = aliasInstance.getUltimateInstance(this);
+                    }
+                    if (aliasInstance == null) {
+                    	break;
                     }
                     NameNode aliasName = aliasInstance.getReferenceName();
                     if (aliasName.isComplex()) {
@@ -3159,6 +3167,9 @@ public class Context {
                 }
                 ArgumentList aliasArgs = alias.getArguments();
                 Instantiation aliasInstance = argDef.getAliasInstanceInContext(this);
+                if (aliasInstance == null) {
+                	break;
+                }
                 numPushes += pushParts(aliasInstance);
                 
                 Context.Entry aliasEntry = getParameterEntry(alias, aliasInstance.isContainerParameter(this));

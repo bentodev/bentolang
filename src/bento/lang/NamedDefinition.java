@@ -364,7 +364,10 @@ public class NamedDefinition extends AnonymousDefinition {
                 ;
             }
             if (holder != null) {
-                return holder.resolvedInstance;
+            	ResolvedInstance ri = holder.resolvedInstance;
+            	if (ri != null && !this.equals(ri.getDefinition())) {
+                    return holder.resolvedInstance;
+            	}
             }
         }
         return getAliasInstance();

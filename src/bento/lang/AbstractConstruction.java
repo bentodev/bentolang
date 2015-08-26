@@ -365,7 +365,10 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
             return staticData;
 
         } else {
-            Definition defInCache = null;
+if ("child".equals(getReferenceName())) {
+ System.out.println("AbsConst 369");
+}
+        	Definition defInCache = null;
             Definition nominalDefInCache = null;
             String name = getDefinitionName();
             Holder holder = null;

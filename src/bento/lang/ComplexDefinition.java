@@ -472,37 +472,36 @@ public class ComplexDefinition extends NamedDefinition {
             AbstractNode contents = getContents();
             if (contents instanceof Construction) {
                 Construction construction = ((Construction) contents).getUltimateConstruction(context);
-            
                 if (construction instanceof Instantiation) {
-                    Definition contentDef = ((Instantiation) construction).getDefinition(context, this);
-                    ArgumentList contentArgs = null;
-                    ParameterList contentParams = null;
-    
-                    if (contentDef == null || contentDef == this) {
-                        Type contentType = ((Instantiation) construction).getType(context, this);
-                        if (contentType != null) {
-                            contentDef = contentType.getDefinition();
-                            if (contentDef != null) {
-                                contentArgs = ((Instantiation) construction).getArguments(); // contentType.getArguments(context);
-                                contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
+                	Instantiation instance = (Instantiation) construction;
+                	if (!node.equals(instance.getReferenceName())) {
+                        Definition contentDef = instance.getDefinition(context, this);
+                        ArgumentList contentArgs = null;
+                        ParameterList contentParams = null;
+        
+                        if (contentDef == null || contentDef == this) {
+                            Type contentType = instance.getType(context, this);
+                            if (contentType != null) {
+                                contentDef = contentType.getDefinition();
+                                if (contentDef != null) {
+                                    contentArgs = instance.getArguments(); // contentType.getArguments(context);
+                                    contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
+                                }
                             }
                         }
-                    }
-    
-                    if (contentDef != null) {
-                        context.push(contentDef, contentParams, contentArgs, false);
-                        try {
-    
-                            Object child = context.getDescendant(contentDef, contentArgs, new ComplexName(node), generate, parentObj);
-                            
-                          //  Object child = contentDef.getChild(node, null, context, generate, trySuper);
-                            if ((generate && child != UNDEFINED) || (!generate && child != null)) {
-                                return child;
+        
+                        if (contentDef != null) {
+                            context.push(contentDef, contentParams, contentArgs, false);
+                            try {
+                                Object child = context.getDescendant(contentDef, contentArgs, new ComplexName(node), generate, parentObj);
+                                if ((generate && child != UNDEFINED) || (!generate && child != null)) {
+                                    return child;
+                                }
+                            } finally {
+                                context.pop();
                             }
-                        } finally {
-                            context.pop();
                         }
-                    }
+                	}
                 } else  {
                     Type type = construction.getType(context, this);
                     if (type != null) {

@@ -250,7 +250,6 @@ abstract public class Block extends AbstractNode implements Construction, Constr
 
     /** Return the construction that this construction resolves to, if it
      *  is a wrapper or alias of some sort, or else return this construction.
-     *  This class is not a wrapper or alias, so it returns this construction.
      */
     public Construction getUltimateConstruction(Context context) {
         List<Construction> constructions = getConstructions();
@@ -261,14 +260,16 @@ abstract public class Block extends AbstractNode implements Construction, Constr
             Iterator<Construction> it = constructions.iterator();
             while (it.hasNext()) {
                 Construction construction = it.next();
-                Type type = construction.getType(context, null);
-                if (!type.equals(PrimitiveType.VOID)) {
-                    if (singleConstruction == null) {
-                        singleConstruction = construction;
-                    } else {
-                        singleConstruction = null;
-                        break;
+                if (construction instanceof Instantiation) {
+                    if ("eval".equals(((Instantiation) construction).getReferenceName())) {
+              	        continue;
                     }
+                }
+                if (singleConstruction == null) {
+                    singleConstruction = construction;
+                } else {
+                    singleConstruction = null;
+                    break;
                 }
             }
             if (singleConstruction != null) {
