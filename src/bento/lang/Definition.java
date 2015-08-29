@@ -238,7 +238,7 @@ public interface Definition extends Name {
      *  instantiations which must be resolved, a context should be supplied, otherwise
      *  argContext may be null.
      */
-    public Definition getChildDefinition(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext);
+    public Definition getChildDefinition(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, Definition resolver);
 
     /** Returns the definition by the specified name if it belongs to this definition.  This
      *  version of getChildDefinition does not attempt to resolve the definition for a

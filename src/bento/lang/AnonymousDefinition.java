@@ -788,7 +788,7 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
         return false;
     }
 
-    public Definition getChildDefinition(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext) {
+    public Definition getChildDefinition(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, Definition resolver) {
         try {
             Object obj = getChild(name, args, indexes, parentArgs, argContext, false, true, null);
             if (obj instanceof Definition) {
@@ -839,7 +839,7 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
         List<Index> childIndexes = childName.getIndexes();
 
         // see if the argument definition has a child definition by that name
-        Definition childDef = getChildDefinition(childName, childArgs, childIndexes, args, context);
+        Definition childDef = getChildDefinition(childName, childArgs, childIndexes, args, context, null);
 
         // if not, then look for alternatives 
         if (childDef == null) {

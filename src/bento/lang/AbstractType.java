@@ -267,11 +267,7 @@ abstract public class AbstractType extends NameNode implements Type {
                     owner = owner.getOwner().getOwner();
                 }
 
-                try {
-                    def = (Definition) owner.getChild(this, args, null, null, context, false, true, null);
-                } catch (Redirection r) {
-                    ;
-                }
+                def = owner.getChildDefinition(this, args, null, null, context, null);
                 if (def != null) {
                     break;
                 }

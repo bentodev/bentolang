@@ -121,8 +121,8 @@ public class BoundDefinition extends NamedDefinition {
         return def.getChild(name, args, indexes, parentArgs, boundContext, generate, trySuper, parentObj);
     }
 
-    public Definition getChildDefinition(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext) {
-        return def.getChildDefinition(name, args, indexes, parentArgs, boundContext);
+    public Definition getChildDefinition(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, Definition resolver) {
+        return def.getChildDefinition(name, args, indexes, parentArgs, boundContext, resolver);
     }
 
     public Definition getChildDefinition(NameNode name, Context context) {

@@ -115,7 +115,7 @@ public class ExternalDefinition extends ComplexDefinition {
                 // either externalDef was null to begin with, or getDefForContext above
                 // returned a non-ExternalDefinition.
                 if (externalDef == null) {
-                    def = ((DefinitionInstance) def.getChild(namePart, namePart.getArguments(), namePart.getIndexes(), null, context, false, true, null)).def;
+                    def = def.getChildDefinition(namePart, namePart.getArguments(), namePart.getIndexes(), null, context, null);
                 }
                 if (def == null) {
                     SiteBuilder.log("No " + namePart.getName() + " belonging to external definition " + nameNode.getName());

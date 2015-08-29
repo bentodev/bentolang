@@ -2387,12 +2387,12 @@ if ("local_counter".equals(definition.getName())) {
                 if (def.isExternal()) {
                     push(def, params, args, false);
                     numPushes++;
-                    childDef = def.getChildDefinition(childName, childName.getArguments(), childName.getIndexes(), null, this);
+                    childDef = def.getChildDefinition(childName, childName.getArguments(), childName.getIndexes(), null, this, null);
 
                 } else {
                     push(def, params, args, false);
                     numPushes++;
-                    childDef = def.getChildDefinition(childName, childName.getArguments(), childName.getIndexes(), null, this);
+                    childDef = def.getChildDefinition(childName, childName.getArguments(), childName.getIndexes(), null, this, null);
                     //pop();
                     //numPushes--;
                 }
@@ -2956,7 +2956,7 @@ if ("local_counter".equals(definition.getName())) {
         return (Entry) getParameter(name, inContainer, Entry.class);
     }
     
-    public Object getParameter(NameNode name, boolean inContainer, Class returnClass) throws Redirection {        
+    public Object getParameter(NameNode name, boolean inContainer, Class<?> returnClass) throws Redirection {        
         if (topEntry == null) {
             return null;
         }
@@ -3067,8 +3067,7 @@ if ("local_counter".equals(definition.getName())) {
                     List<Index> aliasIndexes = alias.getIndexes();
                     for (Definition owner = argDef.getOwner(); owner != null; owner = owner.getOwner()) {
                         owner = getSubdefinitionInContext(owner);
-                        DefinitionInstance aliasDefInstance = (DefinitionInstance) owner.getChild(alias, aliasArgs, aliasIndexes, args, this, false, true, null);
-                        Definition aliasDef = (aliasDefInstance == null ? null : aliasDefInstance.def);
+                        Definition aliasDef = owner.getChildDefinition(alias, aliasArgs, aliasIndexes, args, this, null);
                         if (aliasDef != null) {
                             argDef = aliasDef;
                             argArgs = aliasArgs;
@@ -3112,7 +3111,7 @@ if ("local_counter".equals(definition.getName())) {
 
                 // see if the argument definition has a child definition by that name
                 ArgumentList childArgs = childName.getArguments();
-                Definition childDef = argDef.getChildDefinition(childName, childArgs, childName.getIndexes(), args, this);
+                Definition childDef = argDef.getChildDefinition(childName, childArgs, childName.getIndexes(), args, this, null);
 
                 // if not, then look for an aliased external definition
                 if (childDef == null) {

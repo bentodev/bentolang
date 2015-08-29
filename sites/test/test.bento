@@ -489,6 +489,47 @@ ss1 [=
         
     =]
 
+    children_of_overridden_super_test [=
+        int category = instantiations
+        name = "Children of Overridden Super Test"
+        key = "base_child_subclass"
+
+        expected = "ABCDE"
+    
+    
+        super_parent [=
+            a [| A |]
+            b [| B |]
+            char c = 'C'
+            d [| D |]
+            char e = 'E'
+            show(char x) = x
+            
+            "x";
+        =]
+    
+        super_parent sub_parent [=
+            dynamic show(x) = x
+
+            a;
+            (true ? b : "x");
+            show(: c :);
+        =]
+        
+        sub_parent sub_of_sub [=
+            d;
+        =]
+
+        super_parent single_const_parent [=
+            show(: e :);
+        =]
+
+        //sub_parent;
+        //sub_of_sub;
+        single_const_parent;
+    =]
+    
+
     test_case base_child_subclass_test [=
         int category = types
         name = "Base Child Subclass Test"

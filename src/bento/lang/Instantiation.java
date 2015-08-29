@@ -1166,7 +1166,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
 //                        def2 = defclass.getChildDefinition(name, args, indexes, null, context);
 //                    }
 //                    def = def1;
-                    def = defclass.getChildDefinition(name, args, indexes, null, context);
+                    def = defclass.getChildDefinition(name, args, indexes, null, context, resolver);
                     if (def != null && indexes != null) {
                         indexes = null;
                     }
@@ -1188,7 +1188,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                         ComplexDefinition cdef = (ComplexDefinition) entry.def;
                         if (owner.equals(cdef) || owner.isSubDefinition(cdef)) {
                             if (!cdef.equals(resolver) && cdef.getChildDefinition(name, context) != null) {
-                                def = cdef.getChildDefinition(name, args, indexes, null, context);
+                                def = cdef.getChildDefinition(name, args, indexes, null, context, resolver);
                                 if (def != null && indexes != null) {
                                     indexes = null;
                                 }
@@ -1478,7 +1478,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                     if (classDef != null) {
                         Definition defclass = context.peek().def;
                         if (!defclass.equals(resolver)) {
-                            def = defclass.getChildDefinition(name, args, indexes, null, context);
+                            def = defclass.getChildDefinition(name, args, indexes, null, context, resolver);
                         }
                         if (def == null) {
                             def = classDef;
@@ -1509,7 +1509,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                                 continue;
                             }
  
-                            def = defcon.getChildDefinition(name, args, indexes, null, context);
+                            def = defcon.getChildDefinition(name, args, indexes, null, context, resolver);
                             if (def != null) {
                                 indexes = null;
                                 break;
@@ -1540,7 +1540,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                                     //vlog("getInstanceDef: context entry owner " + owner.getFullName() + " doesn't have child " + name.getName());
                                     continue;
                                 }
-                                def = owner.getChildDefinition(name, args, indexes, null, context);
+                                def = owner.getChildDefinition(name, args, indexes, null, context, resolver);
                                 if (def != null) {
                                     indexes = null;
                                     break;
@@ -1623,7 +1623,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                 Definition underOwnerOwner = underOwner.getOwner();
                 Definition superdef = underOwnerOwner.getSuperDefinition(context);
                 while (superdef != null) {
-                    def = superdef.getChildDefinition(underOwnerName, underOwnerName.getArguments(), underOwnerName.getIndexes(), null, context);
+                    def = superdef.getChildDefinition(underOwnerName, underOwnerName.getArguments(), underOwnerName.getIndexes(), null, context, null);
                     if (def != null) {
                         break;
                     }
@@ -1637,7 +1637,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                 Definition overOwnerOwner = overOwner.getOwner();
                 Definition subdef = overOwnerOwner.getImmediateSubdefinition(context);
                 while (subdef != null) {
-                    def = subdef.getChildDefinition(overOwnerName, overOwnerName.getArguments(), overOwnerName.getIndexes(), null, context);
+                    def = subdef.getChildDefinition(overOwnerName, overOwnerName.getArguments(), overOwnerName.getIndexes(), null, context, null);
                     if (def != null) {
                         break;
                     }

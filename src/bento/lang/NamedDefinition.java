@@ -939,7 +939,55 @@ public class NamedDefinition extends AnonymousDefinition {
     	}
     }
 
-    public Object new_getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+
+    protected Definition getExplicitDefinition(NameNode node, ArgumentList args, Context context) throws Redirection {
+        Definition def = getExplicitChildDefinition(node);
+        if (def != null) {
+            if (def.isFormalParam()) {
+
+                // we should allow DefParameters if this is being called in scope,
+                // but I haven't figured the best way to do that
+                def = null;
+               
+            } else if (def instanceof NamedDefinition && args != null) {
+                NamedDefinition ndef = (NamedDefinition) def;
+                int numUnpushes = 0;
+                try {
+                    NamedDefinition argsOwner = (NamedDefinition) args.getOwner();
+                    if (argsOwner != null) {
+                        int limit = context.size() - 1;
+                        while (numUnpushes < limit) {
+                            NamedDefinition nextdef = (NamedDefinition) context.peek().def;
+                            if (argsOwner.equals(nextdef) || argsOwner.isSubDefinition(nextdef)) {
+                                break;
+                            }
+                            numUnpushes++;
+                            context.unpush();
+                        }
+                        // if we didn't find the owner in the stack, put it back the way it came
+                        if (numUnpushes == limit) {
+                            while (numUnpushes-- > 0) {
+                                context.repush();
+                            }
+                        }
+                    }
+                    def = ndef.getDefinitionForArgs(args, context);
+
+                } finally {
+                    while (numUnpushes-- > 0) {
+                        context.repush();
+                    }
+                }
+            }
+        }
+        return def;
+    }
+
+    protected Definition getExternalDefinition(NameNode node, Context context) {
+        return getSite().getExternalDefinition(this, node, DefaultType.TYPE, context);
+    }
+
+    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
         if (context == null) {
             throw new Redirection(Redirection.STANDARD_ERROR, "getChild requires a context; none provided.");
         } else if (context.peek() == null) {
@@ -984,6 +1032,15 @@ public class NamedDefinition extends AnonymousDefinition {
                 return aliasedDef.getDefInstance(args, indexes);
             }
             
+        } else if (node.getName() == Name.TYPE) {
+            Definition ultimateDef = getUltimateDefinition(context);
+            if (generate) {
+                return new PrimitiveValue(ultimateDef.getType());
+            } else {
+                Definition typeDef = new TypeDefinition(ultimateDef);
+                return typeDef.getDefInstance(null, null);
+            }
+
         // strip off the owner prefix, if present
         } else if (node.isComplex() && ((Name) node.getChild(0)).getName() == Name.OWNER) {
             int n = node.getNumChildren();
@@ -994,43 +1051,21 @@ public class NamedDefinition extends AnonymousDefinition {
             }
         }
 
-        // if this is an alias, call the superclass to look up the definition
-        // in the alias
-//       if (isAlias()) {
-//           return super.getChild(node, args, context, generate);
-//       }
-
-        // not an alias.  Check to see if this is a built-in field such as <code>type</code>
-        // or <code>count</code>
+        // Check for complex names includinga built-in field such as <code>count</code>
         NameNode lastNode = node;
         int n = (node.isComplex() ? node.getNumChildren() : 0);
         if (n > 0) {
             lastNode = (NameNode) node.getChild(n - 1);
         }
 
-        if (/* lastNode */ node.getName() == Name.TYPE) {
-//            if (n <= 1) {
-                Definition ultimateDef = getUltimateDefinition(context);
-                if (generate) {
-                    return new PrimitiveValue(ultimateDef.getType());
-                } else {
-                    Definition typeDef = new TypeDefinition(ultimateDef);
-                    return typeDef.getDefInstance(null, null);
-                }
-
-//            } else {
-//                NameNode typeNode = new ComplexName(node, 0, n - 1);
-//                if (generate) {
-//                    return new PrimitiveValue(typeNode.getName());
-//                } else {
-//                    Definition typeDef = ((DefinitionInstance) getChild(typeNode, args, indexes, context, false, trySuper, parentObj)).def;
-//                    if (typeDef == null) {
-//                        return null;
-//                    }
-//                    typeDef = new TypeDefinition(typeDef);
-//                    return typeDef.getDefInstance(null, null);
-//                }
-//            }
+        if (lastNode.getName().equals(Name.KEYS)) {
+            Definition keysDef = new KeysDefinition(this, context);
+            if (generate) {
+                return keysDef.instantiate(args, indexes, context);
+            } else {
+                return keysDef.getDefInstance(null, indexes);
+            }
+            
         } else if (lastNode.getName() == Name.COUNT) {
             if (n <= 1) {
                 CollectionDefinition collectionDef = getCollectionDefinition(context, args);
@@ -1119,18 +1154,6 @@ public class NamedDefinition extends AnonymousDefinition {
                     NameNode alias = prefixDef.isParamAlias() ? prefixDef.getParamAlias() : prefixDef.getAliasInContext(context);
                     ArgumentList aliasArgs = alias.getArguments();
                     List<Index> aliasIndexes = alias.getIndexes();
-
-                    //                    int pushedParams = 0;
-//                    boolean local = prefixDef.getAccess() == Definition.LOCAL_ACCESS;
-//                    if (local) {
-//                        pushedParams = (prefixParams == null ? 0 : prefixParams.size());
-//                        for (int i = 0; i < pushedParams; i++) {
-//                            context.pushParam((DefParameter) prefixParams.get(i), prefixArgs.get(i));
-//                        }
-//                    } else {
-//                        context.push(instantiatedDef, prefixParams, prefixArgs, false);
-//                    }
-
                     Definition aliasDef = null;
                     Context.Entry aliasEntry = context.getParameterEntry(alias, false);
                     if (aliasEntry == null) {
@@ -1158,14 +1181,6 @@ public class NamedDefinition extends AnonymousDefinition {
                         prefixParams = prefixDef.getParamsForArgs(prefixArgs, context);
                         prefixIndexes = null;
                     }
-
-//                    if (local) {
-//                        for (int i = 0; i < pushedParams; i++) {
-//                           context.popParam();
-//                        }
-//                    } else {
-//                        context.pop();
-//                    }
                 }
                 if (prefixDef != null) {
                     try {
@@ -1179,14 +1194,6 @@ public class NamedDefinition extends AnonymousDefinition {
                             if (externalDef != null) {
                                 child = externalDef.getDefInstance(childName.getArguments(), childName.getIndexes());
                             }
-                        }
-                        if (child != null && child instanceof DefinitionInstance) {
-                            //Definition childDef = ((DefinitionInstance) child).def;
-                            //if (childDef.isAliasInContext(context)) {
-                            //    Instantiation aliasInstance = childDef.getAliasInstanceInContext(context);
-                            //    Definition aliasDef = aliasInstance.getDefinition(context, childDef);
-                            //    child = aliasDef.getDefInstance(aliasInstance.getArguments(), aliasInstance.getIndexes());
-                            //}
                         }
                         if (child == null && isAlias()) {
                             return super.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj);
@@ -1218,9 +1225,6 @@ public class NamedDefinition extends AnonymousDefinition {
         // next see if this is a fully named definition or an immediate child
         if (def == null) {
             def = getExplicitDefinition(node, args, context);
-            //if (def != null) {
-            //    def = def.getUltimateDefinition(context);
-            //}
         }
         
         // if not, then try supertypes or alias.
@@ -1253,7 +1257,55 @@ public class NamedDefinition extends AnonymousDefinition {
                 }
             }
 
-            // not an alias; try supertypes if trySuper is true
+            // not an alias; see if it is a construction that defines the child
+            AbstractNode contents = getContents();
+            if (contents instanceof Construction) {
+                Construction construction = ((Construction) contents).getUltimateConstruction(context);
+                if (construction instanceof Instantiation) {
+                    Instantiation instance = (Instantiation) construction;
+                    if (!node.equals(instance.getReferenceName())) {
+                        Definition contentDef = instance.getDefinition(context, this);
+                        ArgumentList contentArgs = null;
+                        ParameterList contentParams = null;
+        
+                        if (contentDef == null || contentDef == this) {
+                            Type contentType = instance.getType(context, this);
+                            if (contentType != null) {
+                                contentDef = contentType.getDefinition();
+                                if (contentDef != null) {
+                                    contentArgs = instance.getArguments(); // contentType.getArguments(context);
+                                    contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
+                                }
+                            }
+                        }
+        
+                        if (contentDef != null) {
+                            context.push(contentDef, contentParams, contentArgs, false);
+                            try {
+                                Object child = context.getDescendant(contentDef, contentArgs, new ComplexName(node), generate, parentObj);
+                                if ((generate && child != UNDEFINED) || (!generate && child != null)) {
+                                    return child;
+                                }
+                            } finally {
+                                context.pop();
+                            }
+                        }
+                    }
+                } else  {
+                    Type type = construction.getType(context, this);
+                    if (type != null) {
+                        Definition runtimeDef = type.getDefinition();
+                        if (runtimeDef != null && runtimeDef.canHaveChildDefinitions()) {
+                            Object child = runtimeDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj);
+                            if ((generate && child != UNDEFINED) || (!generate && child != null)) {
+                                return child;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // no luck yet; try supertypes if trySuper is true
             //
             // There's a problem with this code: it ignores the args when getting the superdefinition,
             // which means that if there are multiple super definitions it may not pick the right one.
@@ -1408,7 +1460,7 @@ public class NamedDefinition extends AnonymousDefinition {
                             Definition defcon = entry.def;
                             // avoid infinite recursion
                             if (!defcon.equals(this)) {
-                                def = defcon.getChildDefinition(node, args, null, parentArgs, context);
+                                def = defcon.getChildDefinition(node, args, null, parentArgs, context, this);
                                 if (def != null && def instanceof CollectionDefinition) {
                                     collectionDef = (CollectionDefinition) def;
                                     break;
@@ -1423,7 +1475,7 @@ public class NamedDefinition extends AnonymousDefinition {
                                 // avoid infinite recursion
                                 if (!defcon.equals(this)) {
                                     for (owner = defcon.getOwner(); owner != null; owner = owner.getOwner()) {
-                                        def = owner.getChildDefinition(node, args, null, parentArgs, context);
+                                        def = owner.getChildDefinition(node, args, null, parentArgs, context, this);
                                         if (def != null && def instanceof CollectionDefinition) {
                                             collectionDef = (CollectionDefinition) def;
                                             break;
@@ -1442,9 +1494,6 @@ public class NamedDefinition extends AnonymousDefinition {
                     }
                 }
      
-                //collectionDef = new SubcollectionDefinition(collectionDef);
-    
-                //List<Index> indexes = node.getIndexes();
                 while (numPushes-- > 0) {
                     context.pop();
                 }
@@ -1472,54 +1521,7 @@ public class NamedDefinition extends AnonymousDefinition {
         }
     }
 
-    protected Definition getExplicitDefinition(NameNode node, ArgumentList args, Context context) throws Redirection {
-        Definition def = getExplicitChildDefinition(node);
-        if (def != null) {
-            if (def.isFormalParam()) {
-
-                // we should allow DefParameters if this is being called in scope,
-                // but I haven't figured the best way to do that
-                def = null;
-               
-            } else if (def instanceof NamedDefinition && args != null) {
-                NamedDefinition ndef = (NamedDefinition) def;
-                int numUnpushes = 0;
-                try {
-                    NamedDefinition argsOwner = (NamedDefinition) args.getOwner();
-                    if (argsOwner != null) {
-                        int limit = context.size() - 1;
-                        while (numUnpushes < limit) {
-                            NamedDefinition nextdef = (NamedDefinition) context.peek().def;
-                            if (argsOwner.equals(nextdef) || argsOwner.isSubDefinition(nextdef)) {
-                                break;
-                            }
-                            numUnpushes++;
-                            context.unpush();
-                        }
-                        // if we didn't find the owner in the stack, put it back the way it came
-                        if (numUnpushes == limit) {
-                            while (numUnpushes-- > 0) {
-                                context.repush();
-                            }
-                        }
-                    }
-                    def = ndef.getDefinitionForArgs(args, context);
-
-                } finally {
-                    while (numUnpushes-- > 0) {
-                        context.repush();
-                    }
-                }
-            }
-        }
-        return def;
-    }
-
-    protected Definition getExternalDefinition(NameNode node, Context context) {
-        return getSite().getExternalDefinition(this, node, DefaultType.TYPE, context);
-    }
-
-    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+    public Object dummy_getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
         // forward to special definition if appropriate
         NamedDefinition specialDef = null;
         boolean isContainer = false;
