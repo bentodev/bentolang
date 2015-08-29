@@ -184,10 +184,6 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
         setDynStat(construction.isDynamic(), construction.isStatic());
         setTrailingDelimiter(construction.trailingDelimiter);
     }
-    
-//    public AbstractConstruction(Definition owner) {
-//        super(owner);
-//    
 
     private Object generateData(Context context, Definition def, BentoDebugger debugger) throws Redirection {
         if (debugger == null) {
@@ -365,7 +361,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
             return staticData;
 
         } else {
-if ("child".equals(getReferenceName())) {
+if ("n".equals(getReferenceName())) {
  System.out.println("AbsConst 369");
 }
         	Definition defInCache = null;
@@ -426,7 +422,6 @@ if ("child".equals(getReferenceName())) {
                             def = getDefinition(context);
                         }
                         if (def != null) {
-                            //cachevlog(" - - - retrieving " + name + " from cache - - - ");
                             data = context.getData(def, name, getArguments(), getIndexes());
                             if (data == null) {
                                 //cachevlog(" - - - no data in cache for " + name + "; must instantiate - - - ");
@@ -514,8 +509,6 @@ if ("child".equals(getReferenceName())) {
                         //    name = nominalDef.getName();
                         //}
                         context.putData(nominalDef, nominalArgs, def, args, indexes, name, data, ri);
-                    } else {
-                        //cachevlog(" - - - " + name + " not cache storable - - - ");
                     }
                 }
                 return data;
@@ -580,24 +573,6 @@ if ("child".equals(getReferenceName())) {
     public String getString(Context context) throws Redirection {
         return getText(context);
     }
-
-//    public String getString(Context context) {
-//        try {
-//            Object data = null;
-//            data = getData(context);
-//            if (data == null) {
-//                return "";
-//            } else if (data instanceof String) {
-//                return (String) data;
-//            } else if (data instanceof Value) {
-//                return ((Value) data).getString();
-//            } else {
-//                return data.toString();
-//            }
-//        } catch (Redirection r) {
-//            return "";
-//        }
-//    }
 
     public boolean getBoolean(Context context) {
         Object data = null;

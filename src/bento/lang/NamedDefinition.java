@@ -140,23 +140,6 @@ public class NamedDefinition extends AnonymousDefinition {
             if (node instanceof Instantiation) {
                 instance = (Instantiation) node; 
             }
-
-        } else if (!isCollection()) {
-//            List list = null;
-//
-//            if (contents instanceof List) {
-//                list = (List) contents;
-//            } else if (contents instanceof Block) {
-//                list = ((Block) contents).getConstructions();
-//            }
-// 
-//            if (list != null && list.size() == 1) {
-//                BentoNode node = (BentoNode) list.get(0);
-//                if (node instanceof Instantiation) {
-//                    instance = (Instantiation) node;
-//                    contents = instance;
-//                }
-//            }
         }
         if (instance != null) {
             BentoNode reference = instance.getReference();
@@ -730,57 +713,104 @@ public class NamedDefinition extends AnonymousDefinition {
 
         // if not found, try supertypes and supertype aliases
         if (def == null) {
-            for (NamedDefinition nd = getSuperDefinition(); nd != null && !nd.isPrimitive(); nd = nd.getSuperDefinition()) {
-                def = nd.getExplicitChildDefinition(node);
-                if (def != null) {
-                   break;
-                }
-               
-                if (nd.isAlias()) {
-                    NamedDefinition aliasDef = nd;
-                    int numAliasPushes = 0;
-                    try {
-                        do {
-                            Instantiation aliasInstance = aliasDef.getAliasInstance();
-                            NameNode aliasName = aliasInstance.getReferenceName();
-                            
-                            // avoid infinite recursion
-                            if (node.equals(aliasName)) {
-                            	break;
-                            }
-                            aliasDef = (NamedDefinition) aliasInstance.getDefinition(context);  //, aliasDef);
-                            if (aliasDef == null) {
-                                break;
-                            }
-                            if (aliasDef instanceof ExternalDefinition) {
-                                // should we be retrieving the external object from the cache here?  We're just
-                                // getting a definition, so maybe it doesn't matter.
-                                Object obj = aliasDef.getChild(node, node.getArguments(), node.getIndexes(), null, context, false, true, null);
-                                if (obj != UNDEFINED && obj != null) {
-                                    def = ((DefinitionInstance) obj).def;
-                                }
-                           	
-                            } else {
-                                def = aliasDef.getExplicitChildDefinition(node);
-                            }
-                            if (def != null) {
-                                break;
-                            }
-                            ArgumentList aliasArgs = aliasInstance.getArguments();
-                            ParameterList aliasParams = aliasDef.getParamsForArgs(aliasArgs, context);
-                            context.push(nd, aliasParams, aliasArgs, false);
-                            numAliasPushes++;
-   
-                        } while (aliasDef.isAlias());
-                    } catch (Redirection r) {
-                        ;
-                    } finally {
-                        while (numAliasPushes-- > 0) {
-                            context.pop();
-                        }
-                    }
+
+//            AbstractNode contents = getContents();
+//            if (contents instanceof Construction) {
+//                Construction construction = ((Construction) contents).getUltimateConstruction(context);
+//            
+//                if (construction instanceof Instantiation) {
+//                    Definition contentDef = ((Instantiation) construction).getDefinition(context, this);
+//                    ArgumentList contentArgs = null;
+//                    ParameterList contentParams = null;
+//    
+//                    if (contentDef == null || contentDef == this) {
+//                        Type contentType = ((Instantiation) construction).getType(context, this);
+//                        if (contentType != null) {
+//                            contentDef = contentType.getDefinition();
+//                            if (contentDef != null) {
+//                                contentArgs = ((Instantiation) construction).getArguments(); // contentType.getArguments(context);
+//                                contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
+//                            }
+//                        }
+//                    }
+//    
+//                    if (contentDef != null) {
+//                        try {
+//                            context.push(contentDef, contentParams, contentArgs, false);
+//                            DefinitionInstance defInstance = (DefinitionInstance) context.getDescendant(contentDef, contentArgs, node, false, null);
+//                            if (defInstance != null) {
+//                                def = defInstance.def;
+//                            }
+//                        } catch (Redirection r) {
+//                            ;
+//                        } finally {
+//                            context.pop();
+//                        }
+//                    }
+//                } else  {
+//                    Type type = construction.getType(context, this);
+//                    if (type != null) {
+//                        Definition runtimeDef = type.getDefinition();
+//                        if (runtimeDef != null && !runtimeDef.equals(this) && runtimeDef.canHaveChildDefinitions()) {
+//                            def = runtimeDef.getChildDefinition(node, context);
+//                        }
+//                    }
+//                }
+//            }
+            
+            if (def == null) {
+                for (NamedDefinition nd = getSuperDefinition(); nd != null && !nd.isPrimitive(); nd = nd.getSuperDefinition()) {
+                    def = nd.getExplicitChildDefinition(node);
                     if (def != null) {
-                        break;
+                       break;
+                    }
+                   
+                    if (nd.isAlias()) {
+                        NamedDefinition aliasDef = nd;
+                        int numAliasPushes = 0;
+                        try {
+                            do {
+                                Instantiation aliasInstance = aliasDef.getAliasInstance();
+                                NameNode aliasName = aliasInstance.getReferenceName();
+                                
+                                // avoid infinite recursion
+                                if (node.equals(aliasName)) {
+                                    break;
+                                }
+                                aliasDef = (NamedDefinition) aliasInstance.getDefinition(context);  //, aliasDef);
+                                if (aliasDef == null) {
+                                    break;
+                                }
+                                if (aliasDef instanceof ExternalDefinition) {
+                                    // should we be retrieving the external object from the cache here?  We're just
+                                    // getting a definition, so maybe it doesn't matter.
+                                    Object obj = aliasDef.getChild(node, node.getArguments(), node.getIndexes(), null, context, false, true, null);
+                                    if (obj != UNDEFINED && obj != null) {
+                                        def = ((DefinitionInstance) obj).def;
+                                    }
+                                
+                                } else {
+                                    def = aliasDef.getExplicitChildDefinition(node);
+                                }
+                                if (def != null) {
+                                    break;
+                                }
+                                ArgumentList aliasArgs = aliasInstance.getArguments();
+                                ParameterList aliasParams = aliasDef.getParamsForArgs(aliasArgs, context);
+                                context.push(nd, aliasParams, aliasArgs, false);
+                                numAliasPushes++;
+       
+                            } while (aliasDef.isAlias());
+                        } catch (Redirection r) {
+                            ;
+                        } finally {
+                            while (numAliasPushes-- > 0) {
+                                context.pop();
+                            }
+                        }
+                        if (def != null) {
+                            break;
+                        }
                     }
                 }
             }
@@ -1612,10 +1642,6 @@ public class NamedDefinition extends AnonymousDefinition {
                     if (aliasDef != null) {
                         int numPushes = 0;
                         
-                        //List<Index> aliasIndexes = aliasInstance.getIndexes();
-                        //if (aliasIndexes != null) {
-                        //    aliasDef = context.dereference(aliasDef, aliasArgs, aliasIndexes);
-                        //}
                         try {
                             NameNode nameNode = aliasInstance.getReferenceName();
                             for (int i = 0; i < nameNode.numParts() - 1; i++) {

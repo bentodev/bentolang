@@ -797,15 +797,15 @@ ott [=
         
         owner_base owner_array_2[] = [ F, G ]
         
- /---       A.id;
+        A.id;
         B.id;
         for owner_base ob in owner_array_1 [=
            ob.id;
-        =] ---/
+        =]
         E; 
-  /----      for owner_base ob in owner_array_2 [=
+        for owner_base ob in owner_array_2 [=
            ob;
-        =]  ---/
+        =]
 =]
 
     test_case simple_instantiation_test [=

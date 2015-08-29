@@ -573,7 +573,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
             }
 
             // it's not a parameter, get the definition and return its type
-            Definition def = getDefinition(context);
+            Definition def = getDefinition(context, resolver);
             if (def != null) {
                 if (def instanceof ElementReference) {
                     try {
@@ -745,42 +745,17 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         return modifier;
     }
 
-   /** Returns true if this is the instantiation of a child of a parameter. */
-//   private boolean isParameterChildDefinition(Context context) {
-//       if (isParamChild) {
-//           return true;
-//       } else if (reference instanceof NameNode && context != null) {
-//           return (context.isParameterChildDefinition((NameNode) reference));
-//       } else {
-//           return false;
-//       }
-//   }
 
    /** Returns the definition associated with this instance in the given context
     *  on behalf of another definition (an alias, for example).
     */
-   public Definition getDefinition(Context context, Definition resolver) {
-       return getDefinition(context);
-//       if (externalDef != null) {
-//           return externalDef;
-//       } else if (explicitDef != null) {
-//           // a bit of a hack, but necessary for param lists to get initialized
-//           if (explicitDef instanceof PartialDefinition) {
-//               return ((PartialDefinition) explicitDef).completeForContext(context);
-//           } else {
-//               return explicitDef;
-//           }
-//       }
-//       try {
-//           return getInstanceDef(context, true, resolver);
-//       } catch (Redirection r) {
-//           return null;
-//       }
+   public Definition getDefinition(Context context) {
+       return getDefinition(context, null);
    }
 
 
    /** Returns the definition associated with this instance in the given context. */
-   public Definition getDefinition(Context context) {
+   public Definition getDefinition(Context context, Definition resolver) {
        if (reference instanceof Definition) {
            return (Definition) reference;
 
@@ -799,7 +774,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                return context.getParameterDefinition((NameNode) reference, isContainerParameter(context));
        
            } else {
-               return (Definition) lookup((NameNode) reference, context, false);
+               return (Definition) lookup((NameNode) reference, context, false, resolver);
            }
        } catch (Redirection r) {
            return null;
@@ -870,7 +845,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
      *  definition; if no definition is found, AbstractNode.UNDEFINED, which is a static
      *  instance of Object, is returned.
      */
-    private Object lookup(NameNode name, Context context, boolean generate) throws Redirection {
+    private Object lookup(NameNode name, Context context, boolean generate, Definition resolver) throws Redirection {
         if (context == null) {
             throw new Redirection(Redirection.STANDARD_ERROR, "Instantiation requires a context; none provided.");
         }
@@ -1048,7 +1023,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
 //                }
 //            }
             if (def == null) {
-                def = lookupDef(name, indexes, getParent(), owner, classDef, context);
+                def = lookupDef(name, indexes, getParent(), owner, classDef, context, resolver);
                 dereferencedIndexes = true;
                 if (def == null) {
                     return (generate ? UNDEFINED : null);
@@ -1148,7 +1123,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         return data;
     }
 
-    private static Definition lookupDef(NameNode name, List<Index> indexes, BentoNode parent, NamedDefinition owner, Definition classDef, Context context) throws Redirection {
+    private static Definition lookupDef(NameNode name, List<Index> indexes, BentoNode parent, NamedDefinition owner, Definition classDef, Context context, Definition resolver) throws Redirection {
         Definition def = null;
         ArgumentList args = name.getArguments();
         NamedDefinition defclass = (NamedDefinition) context.peek().def;
@@ -1184,6 +1159,13 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
             }
             if (owner.equals(defclass) || owner.isSubDefinition(defclass)) {
                 if (!name.equals(defclass.getAlias()) && defclass.getChildDefinition(name, context) != null) {
+//                    Definition def1 = defclass.getChildDefinition(name, context);
+//                    Definition def2 = defclass.getChildDefinition(name, args, indexes, null, context);
+//                    if (!def1.equals(def2)) {
+//                        def1 = defclass.getChildDefinition(name, context);
+//                        def2 = defclass.getChildDefinition(name, args, indexes, null, context);
+//                    }
+//                    def = def1;
                     def = defclass.getChildDefinition(name, args, indexes, null, context);
                     if (def != null && indexes != null) {
                         indexes = null;
@@ -1205,7 +1187,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                     if (entry.def instanceof ComplexDefinition) {
                         ComplexDefinition cdef = (ComplexDefinition) entry.def;
                         if (owner.equals(cdef) || owner.isSubDefinition(cdef)) {
-                            if (cdef.getChildDefinition(name, context) != null) {
+                            if (!cdef.equals(resolver) && cdef.getChildDefinition(name, context) != null) {
                                 def = cdef.getChildDefinition(name, args, indexes, null, context);
                                 if (def != null && indexes != null) {
                                     indexes = null;
@@ -1631,21 +1613,6 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                     def = context.peek().def;
                 }
                
-//               ComplexDefinition container = (ComplexDefinition) getOwner().getOwner();
-//               int limit = context.size() - 1;
-//               while (numUnpushes < limit) {
-//                   numUnpushes++;
-//                   context.unpush();
-//                   Definition cdef = context.peek().def;
-//                   if (cdef instanceof NamedDefinition && (container.equals(cdef) || container.isSubDefinition((NamedDefinition) cdef))) {
-//                       def = cdef;
-//                       break;
-//                   }
-//               }
-//               if (def == null) {
-//                   def = container;
-//               }
-   
             } else if (name == Name.SUPER) {
                 def = owner.getSuperDefinition(context);
 
@@ -1680,7 +1647,6 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
 
             } else if (name == Name.SITE || name == Name.CORE) {
                 def = context.getRootEntry().def;
-                //def = getOwner();
                 while (def != null) {
                     if (def instanceof Site && name == Name.SITE) {
                         break;
@@ -1801,7 +1767,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                 data = instantiate(context, definition);
 
             } else {
-                data = lookup(nameNode, context, true);
+                data = lookup(nameNode, context, true, null);
             }
 
         } else if (reference instanceof Definition) {
@@ -1893,13 +1859,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                    }
                }
 
-//               if (def != null && def instanceof CollectionDefinition) {
-//                   constructions = ((CollectionDefinition) def).generateConstructions(context, instance.getArguments(), instance.getIndexes());
-//               } else {
-                   Instantiation newInstance = new ResolvedInstance(instance, context);
-                   constructions = new SingleItemList<Construction>(newInstance);
-//                   constructions = new SingleItemList(this);
-//               }
+               Instantiation newInstance = new ResolvedInstance(instance, context);
+               constructions = new SingleItemList<Construction>(newInstance);
 
            } finally {
                 while (numPushes > 0) {
@@ -1920,45 +1881,6 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         }
         return constructions;
     }
-
-   /***********
-   protected Object instantiateCollectionObject(Context context, CollectionDefinition def, Object collection) throws Redirection {
-       if (collection == null) {
-           return null;
-
-       } else if (collection instanceof Object[]) {
-           Object[] elementArray = (Object[]) collection;
-           Object[] array = new Object[elementArray.length];
-           for (int i = 0; i < elementArray.length; i++) {
-               array[i] = getObjectValue(context, def.getObjectForElement(elementArray[i]));
-           }
-           return array;
-
-       } else if (collection instanceof List) {
-           List elementList = (List) collection;
-           List list = Context.newArrayList(elementList.size());
-           Iterator it = elementList.iterator();
-           while (it.hasNext()) {
-               list.add(getObjectValue(context, def.getObjectForElement(it.next())));
-           }
-           return list;
-
-       } else if (collection instanceof Map) {
-           Map map = new InstantiatedMap((Map) collection, context);
-//           Map map  = new HashMap();
-//           Set entries = ((Map) collection).entrySet();
-//           Iterator it = entries.iterator();
-//           while (it.hasNext()) {
-//               Map.Entry entry = (Map.Entry) it.next();
-//               map.put(entry.getKey(), getObjectValue(context, def.getObjectForElement(entry.getValue())));
-//           }
-           return map;
-
-       } else {
-           return collection;
-       }
-   }
-******************/
 
     public Object instantiate(Context context, Definition def) throws Redirection {
         return instantiate(context, def, getArguments(), getIndexes());

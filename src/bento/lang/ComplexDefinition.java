@@ -334,18 +334,6 @@ public class ComplexDefinition extends NamedDefinition {
                     NameNode alias = prefixDef.isParamAlias() ? prefixDef.getParamAlias() : prefixDef.getAliasInContext(context);
                     ArgumentList aliasArgs = alias.getArguments();
                     List<Index> aliasIndexes = alias.getIndexes();
-
-                    //                    int pushedParams = 0;
-//                    boolean local = prefixDef.getAccess() == Definition.LOCAL_ACCESS;
-//                    if (local) {
-//                        pushedParams = (prefixParams == null ? 0 : prefixParams.size());
-//                        for (int i = 0; i < pushedParams; i++) {
-//                            context.pushParam((DefParameter) prefixParams.get(i), prefixArgs.get(i));
-//                        }
-//                    } else {
-//                        context.push(instantiatedDef, prefixParams, prefixArgs, false);
-//                    }
-
                     Definition aliasDef = null;
                     Context.Entry aliasEntry = context.getParameterEntry(alias, false);
                     if (aliasEntry == null) {
@@ -373,14 +361,6 @@ public class ComplexDefinition extends NamedDefinition {
                         prefixParams = prefixDef.getParamsForArgs(prefixArgs, context);
                         prefixIndexes = null;
                     }
-
-//                    if (local) {
-//                        for (int i = 0; i < pushedParams; i++) {
-//                           context.popParam();
-//                        }
-//                    } else {
-//                        context.pop();
-//                    }
                 }
                 if (prefixDef != null) {
                     try {
@@ -433,9 +413,6 @@ public class ComplexDefinition extends NamedDefinition {
         // next see if this is a fully named definition or an immediate child
         if (def == null) {
             def = getExplicitDefinition(node, args, context);
-            //if (def != null) {
-            //    def = def.getUltimateDefinition(context);
-            //}
         }
         
         // if not, then try supertypes or alias.
@@ -777,10 +754,6 @@ public class ComplexDefinition extends NamedDefinition {
         }
         return def;
     }
-
-//    protected Definition getExternalDefinition(NameNode node, Context context) {
-//        return getSite().getExternalDefinition(this, node, DefaultType.TYPE, context);
-//    }
 
     public Definition getExplicitChildDefinition(NameNode node) {
         if (definitions == null) {

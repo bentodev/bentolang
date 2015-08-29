@@ -39,7 +39,7 @@ public class BinaryExpression extends Expression {
         for (int i = 1; i < len - 1; i += 2) {
             BinaryOperator op = (BinaryOperator) getChild(i);
             ValueSource nextVal = (ValueSource) getChild(i + 1);
-            val = op.operate(val, nextVal, context, def);
+            val = op.operate(val, nextVal, context, getOwner());
         }
         return val;
 

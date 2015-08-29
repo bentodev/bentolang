@@ -163,13 +163,6 @@ public class Context {
 
     public static String makeGlobalKey(String fullName) {
         return fullName;
-//        if (fullName == null || fullName.indexOf('.') < 0) {
-//            return fullName;
-//        } else {
-//        
-//            // strip off the site name
-//            return fullName.substring(fullName.indexOf('.') + 1);
-//        }
     }
 
     /** Takes a cache key and strips off modifiers indicating arguments or loop index. */
@@ -900,7 +893,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if ("E".equals(definition.getName())) {
+if ("local_counter".equals(definition.getName())) {
  System.out.println("Ctxt 904");	
 }
         	
@@ -908,27 +901,15 @@ if ("E".equals(definition.getName())) {
             // context stack with the definition
 
             params = definition.getParamsForArgs(args, this);
-
-            // Local definitions share the current level, rather than
-            // start a new level.
-//            if (definition.getAccess() == Definition.LOCAL_ACCESS) {
-//                pushedParams = (params == null ? 0 : params.size());
-//                for (int i = 0; i < pushedParams; i++) {
-//                    pushParam((DefParameter) params.get(i), args.get(i));
-//                }
-//
-//            } else {
-
-                push(definition, params, args, true);
-                pushedContext = true;
-//            }
+            push(definition, params, args, true);
+            pushedContext = true;
         }
 
         try {
             List<Construction> constructions = definition.getConstructions(this);
             boolean constructed = false;
-            NamedDefinition superDef = definition.isAnonymous() ? null : definition.getSuperDefinition(this);
 
+            NamedDefinition superDef = definition.getSuperDefinition(this);
             Type st = definition.getSuper(this);
             
             if (!constructed && superDef != null && definition.getName() != Name.SUB) {
@@ -2528,20 +2509,6 @@ if ("E".equals(definition.getName())) {
 
         try {
 
-//            Definition argOwner = argDef.getOwner();
-//            Entry entry = topEntry;
-//            while (!entry.def.equalsOrExtends(argOwner)) {
-//                if (entry.link == null || entry.link == rootEntry) {
-//                    numUnpushes = 0;
-//                    break;
-//                }
-//                numUnpushes++;
-//                entry = entry.link;
-//            }
-//            for (int i = 0; i < numUnpushes; i++) {
-//                unpush();
-//            }
-
             while (argDef.isAliasInContext(this)) {
                 ParameterList params = argDef.getParamsForArgs(argArgs, this);
                 push(argDef, params, argArgs, false);
@@ -2733,11 +2700,6 @@ if ("E".equals(definition.getName())) {
             }            
             
             if (!generate) {
-                //while (childDef.isAlias()) {
-                //    Instantiation aliasInstance = childDef.getAliasInstance();
-                //    childDef = aliasInstance.getDefinition(this, childDef);
-                //}
-                
                 if (childDefInstance != null) {
                     return childDefInstance;
                 } else if (childDef != null) {
@@ -2829,31 +2791,6 @@ if ("E".equals(definition.getName())) {
         if (indexes != null && indexes.size() > 0 && def.isCollection()) {
             CollectionDefinition collectionDef = def.getCollectionDefinition(this, args);
 
-//            // if this is an alias, delegate to the aliased definition
-//            if (collectionDef == null && def.isAlias()) {
-//                int numPushes = 0;
-//                try {
-//                    Definition aliasDef = def;
-//                    ArgumentList aliasArgs = args;
-//                    ParameterList aliasParams = def.getParamsForArgs(args, this);
-//                    while (collectionDef == null && aliasDef != null && aliasDef.isAlias()) {
-//                        push(instantiatedDef, aliasParams, aliasArgs, false);
-//                        numPushes++;
-//                        Instantiation aliasInstance = (Instantiation) aliasDef.getContents();
-//                        aliasDef = (Definition) aliasInstance.lookup(this, false);
-//                        aliasArgs = aliasInstance.getArguments();
-//                        if (aliasDef != null) {
-//                            aliasParams = aliasDef.getParamsForArgs(aliasArgs, this);
-//                            collectionDef = aliasDef.getCollectionDefinition();
-//                        }
-//                    }
-//                } finally {
-//                    while (numPushes-- > 0) {
-//                        pop();
-//                    }
-//                }
-//            }
-            
             if (collectionDef != null) {
                 indexes = resolveIndexes(indexes);
                 def = collectionDef.getElementReference(this, args, indexes);
@@ -3007,31 +2944,6 @@ if ("E".equals(definition.getName())) {
         }
     }
 
-    /** Gets the definition associated with the parameter at the nth position
-     *  in this context's parameter list.
-     */
-    private Definition getParameterDefinitionAt(int n) {
-        if (topEntry == null) {
-            return null;
-        }
-        Entry entry = topEntry;
-        Definition argDef = null;
-        Object arg = entry.args.get(n);
-        if (arg instanceof Definition) {
-            argDef = (Definition) arg;
-        } else if (topEntry.link != null) {
-            // temporarily pop the stack to match the context of the
-            // argument in lookup operations
-            unpush();
-            DefParameter param = entry.params.get(n);
-            argDef = param.getDefinitionFor(this, arg);
-            // unpop the stack to restore the proper context for the parameter
-            repush();
-        }
-
-        return argDef;
-    }
-
     /** Checks to see if a name corresponds to a parameter, and if so returns
      *  the definition associated with it (i.e., the argument passed as the
      *  parameter's value).
@@ -3068,9 +2980,6 @@ if ("E".equals(definition.getName())) {
                 }
             }
             return paramObj;
-
-        //} else if (name.getOwner() != null && !topEntry.def.equalsOrExtends(name.getOwner()) && name.hasArguments()) {
-        //    vlog("param owner: " + name.getOwner().getFullName() + ", topEntry: " + topEntry.def.getFullName()); 
         }
 
         boolean checkForChild = (name.numParts() > 1);
@@ -3138,25 +3047,6 @@ if ("E".equals(definition.getName())) {
             numPushes++;
             
             paramType = param.getType();
-
-            
-//                // if the argument references a parameter in the container, recursively
-//                // resolve it
-//                if (argDef.isFormalParam()) {
-//                    // get the corresponding argument.  Push the original
-//                    // context back on the stack because the parameter lookup
-//                    // will pop it again.
-//                    if (mustUnpush) {
-//                        repush();
-//                    }
-//                    Definition paramDef = getParameterDefinitionAt(i);
-//                    argDef = paramDef;
-//
-//                    if (mustUnpush) {
-//                        unpush();
-//                    }
-//                } else 
-
             Definition lastDef = null;
             // don't dereference global definitions, or we might miss a globally cached value
             while (!(arg instanceof ResolvedInstance) && argDef != lastDef && !argDef.isGlobal() && argDef.isAliasInContext(this)) {
@@ -3237,13 +3127,6 @@ if ("E".equals(definition.getName())) {
                     if (childDef == null) {
                         if (paramType != null && paramType.getName().equals("definition")) {
                             childDef = ((AnonymousDefinition) argDef).getDefinitionChild(childName, this, args);
-
-                     //   } else {
-                     //       String cName = childName.getName();
-                     //       if (cName.equals("defs") || cName.equals("descendants_of_type") || cName.equals("full_name")) {
-                     //           ExternalDefinition externalDef = new ExternalDefinition("bento.lang.AnonymousDefinition", argDef, argDef, paramType, argDef.getAccess(), argDef.getDurability(), this, null);
-                     //           childDef = externalDef.getExternalChildDefinition(childName, this);
-                     //       }
                         }
                     }
                     
@@ -3257,14 +3140,6 @@ if ("E".equals(definition.getName())) {
                     Context argContext = wrapper.context;
                     argDef = new BoundDefinition(argDef, argContext);
                 }
-                
-                //if (childDef != null) {
-                //    argArgs = childName.getArguments();
-                //    argParams = childDef.getParamsForArgs(argArgs, this);
-                //} else {
-                //    argArgs = null;
-                //    argParams = null;
-                //}
             }
 
             if (returnClass == Entry.class) {
@@ -3274,9 +3149,6 @@ if ("E".equals(definition.getName())) {
                     return newEntry(argDef, argDef, argParams, argArgs);
                 }
             } else if (returnClass == Definition.class) {
-                //if (argArgs != null && !(argDef instanceof BoundDefinition)) {
-                //    argDef = new BoundDefinition(argDef, this);
-                //}
                 return argDef;
             } else {
                 Object data = (argDef == null ? null : construct(argDef, argArgs));
@@ -3472,16 +3344,6 @@ if ("E".equals(definition.getName())) {
         return kind;
     }
     
-//    private boolean isSuperDef(NamedDefinition def, NamedDefinition subDef) {
-//        for (NamedDefinition superDef = subDef.getSuperDefinition(); superDef != null; superDef = superDef.getSuperDefinition()) {
-//            if (superDef.equals(def)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
-
     public int size() {
         return size;
     }
@@ -3500,7 +3362,6 @@ if ("E".equals(definition.getName())) {
     }
 
     public void push(Definition instantiatedDef, Definition superdef, ParameterList params, ArgumentList args) throws Redirection {
-//        Entry entry = newEntry(getContextDefinition(instantiatedDef), superdef, params, args);
         Entry entry = newEntry(getContextDefinition(instantiatedDef), getContextDefinition(superdef), params, args);
         push(entry);
     }
@@ -3531,7 +3392,6 @@ if ("E".equals(definition.getName())) {
             }
         }
         
-//        ArgumentList args = entry.args;
         stateCount = stateFactory.nextState();
         entry.setState(stateCount);
         _push(entry);
@@ -3707,16 +3567,6 @@ if ("E".equals(definition.getName())) {
         
     }
     
-//    private void checkEntry(Entry entry) {
-//        // check to see if the parameters have been properly cleaned up
-//        if (entry != null) {
-//            if (entry.params != null && entry.origParamsSize != entry.params.size()) {
-//                int n = entry.params.size() - entry.origParamsSize;
-//                vlog(" !!! " + n + " parameters have not been popped");
-//            }
-//        }
-//    }
-
     public synchronized void pop() {
         Entry entry = _pop();
 
@@ -3742,7 +3592,6 @@ if ("E".equals(definition.getName())) {
             Entry entry = topEntry;
             setTop(entry.getPrevious());
             size--;
-            //entry.setPrevious(null);
             return entry;
         } else {
             return null;
@@ -3938,13 +3787,8 @@ if ("E".equals(definition.getName())) {
 
     public void clear() {
 
-//        Entry entries = unpushedEntries;
         setUnpushed(null);
-//        clearEntries(entries);
-
-//        entries = topEntry;
         setTop(null);
-//        clearEntries(entries);
 
         definingDef = null;
         instantiatedDef = null;
@@ -3977,19 +3821,6 @@ if ("E".equals(definition.getName())) {
             topEntry.incRefCount();
         }
     }
-
-    // remove an entry; if the ref count of the entry it links to is zero, remove
-    // it, and son on.  Return null if the whole chain is cleared, else the leading
-    // entry of the remaining chain.
-//    private Entry clearEntries(Entry entry) {
-//        while (entry != null && entry.refCount == 0) {
-//            Entry link = entry.getPrevious();
-//            entry.setPrevious(null);
-//            oldEntry(entry);
-//            entry = link;
-//        }
-//        return entry;
-//    }
 
     /** Makes this context a copy of the passed context. */
     synchronized public void copy(Context context, boolean clearCache) {
