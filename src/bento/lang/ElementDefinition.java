@@ -145,10 +145,10 @@ public class ElementDefinition extends AnonymousDefinition {
     }
 
 
-    public Object getChild(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+    public Object getChild(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
         Object element = getElement(context);
         if (element instanceof Definition) {
-            return ((Definition) element).getChild(name, args, indexes, parentArgs, context, generate, trySuper, parentObj);
+            return ((Definition) element).getChild(name, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
         } else if (element instanceof Instantiation) {
             Instantiation instance = (Instantiation) element;
             Definition def = instance.getDefinition(context);
@@ -163,7 +163,7 @@ public class ElementDefinition extends AnonymousDefinition {
                 ParameterList elementParams = def.getParamsForArgs(elementArgs, resolutionContext);
                 resolutionContext.push(def, elementParams, elementArgs, false);
                 try {
-                    Object child = def.getChild(name, childArgs, null, parentArgs, resolutionContext, generate, trySuper, parentObj);
+                    Object child = def.getChild(name, childArgs, null, parentArgs, resolutionContext, generate, trySuper, parentObj, resolver);
                     if (child != null && !generate) {
                         Definition childDef = ((DefinitionInstance) child).def;
                         if (childDef != null && childDef.isAliasInContext(context)) {

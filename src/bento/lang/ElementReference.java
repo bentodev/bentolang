@@ -181,12 +181,12 @@ public class ElementReference extends AnonymousDefinition {
         return getBaseDefinition(context).getSuperDefinition(context); //collectionDef.getSuperDefinition(context);
     }
 
-    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
         Definition def = getElementDefinition(argContext);
         if (def == null) {
             return (generate ? UNDEFINED : null);
         } else {
-            return def.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj);
+            return def.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj, resolver);
         }
     }
 

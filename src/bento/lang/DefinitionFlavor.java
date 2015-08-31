@@ -206,8 +206,8 @@ public class DefinitionFlavor extends ComplexDefinition {
         return def.getOwner();
     }
 
-    public Object getChild(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
-        return def.getChild(name, args, indexes, parentArgs, argContext, generate, trySuper, parentObj);
+    public Object getChild(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
+        return def.getChild(name, args, indexes, parentArgs, argContext, generate, trySuper, parentObj, resolver);
     }
 
     /** Returns the child definition by the specified name.

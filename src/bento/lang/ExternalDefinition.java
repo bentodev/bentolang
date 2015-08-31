@@ -387,7 +387,7 @@ public class ExternalDefinition extends ComplexDefinition {
     	    context = initContext;
     	}
         try {
-            DefinitionInstance defInstance = (DefinitionInstance) getChild(node, node.getArguments(), node.getIndexes(), null, context, false, true, null);
+            DefinitionInstance defInstance = (DefinitionInstance) getChild(node, node.getArguments(), node.getIndexes(), null, context, false, true, null, null);
             return (ExternalDefinition) (defInstance == null ? null : defInstance.def);
         } catch (Redirection r) {
             log("Unable to find definition for " + node.getName() + " in external definition " + getFullName());
@@ -395,16 +395,16 @@ public class ExternalDefinition extends ComplexDefinition {
         }
     }
 
-    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
 
         ComplexName restOfName = null;
         int numNameParts = node.numParts();
         if (numNameParts > 1) {
             restOfName = new ComplexName(node, 1, numNameParts);
             node = node.getFirstPart();
-            DefinitionInstance defInstance = (DefinitionInstance) getChild(node, node.getArguments(), node.getIndexes(), parentArgs, context, false, trySuper, parentObj);
+            DefinitionInstance defInstance = (DefinitionInstance) getChild(node, node.getArguments(), node.getIndexes(), parentArgs, context, false, trySuper, parentObj, resolver);
             if (defInstance != null && defInstance.def != null) {
-                return defInstance.def.getChild(restOfName, args, indexes, parentArgs, context, generate, trySuper, null);
+                return defInstance.def.getChild(restOfName, args, indexes, parentArgs, context, generate, trySuper, null, resolver);
             } else {
                 return (generate ? UNDEFINED : null);
             }
@@ -590,7 +590,7 @@ public class ExternalDefinition extends ComplexDefinition {
                 } else if (parentObj instanceof ResolvedInstance) {
                     ResolvedInstance ri = (ResolvedInstance) parentObj;
                     Definition parentDef = ri.getDefinition();
-                    return parentDef.getChild(node, args, indexes, parentArgs, ri.getResolutionContext(), generate, trySuper, parentObj);
+                    return parentDef.getChild(node, args, indexes, parentArgs, ri.getResolutionContext(), generate, trySuper, parentObj, resolver);
 
                 } else {
                     field = null;
@@ -996,12 +996,12 @@ class PartialDefinition extends ExternalDefinition {
         return new PartialDefinition(this, args, nameParts);
     }
 
-    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
         Definition def = completeForContext(argContext);
         if (def == null) {
             return (generate ? null : UNDEFINED);
         } else {
-            return def.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj);
+            return def.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj, resolver);
         }
     }
 
@@ -1373,7 +1373,7 @@ class MethodDefinition extends ExternalDefinition {
         return this;
     }
     
-    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
         if (parentObj == null && generate == true) {
             Class<?> c = getExternalClass(argContext);
             if (ResolvedInstance.class.isAssignableFrom(c)) {
@@ -1383,7 +1383,7 @@ class MethodDefinition extends ExternalDefinition {
                 }
             }
         }
-        return super.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj);
+        return super.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj, resolver);
     }
     
     

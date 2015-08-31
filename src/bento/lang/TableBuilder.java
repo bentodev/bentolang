@@ -57,7 +57,7 @@ public class TableBuilder extends CollectionBuilder {
                 if (def != null && def.hasChildDefinition("decorate_element")) {
                     List<Construction> list = new SingleItemList<Construction>(construction);
                     ArgumentList args = new ArgumentList(list);
-                    Object data = def.getChild(new NameNode("decorate_element"), args, null, null, context, true, true, null);
+                    Object data = def.getChild(new NameNode("decorate_element"), args, null, null, context, true, true, null, null);
                     sb.append(data.toString());
                
                 } else {

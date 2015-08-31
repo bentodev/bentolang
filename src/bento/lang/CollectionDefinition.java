@@ -133,7 +133,7 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
      */
     public void resolveKeeps() {}
 
-    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
         if (Name.COUNT.equals(node.getName())) {
             if (generate) {
                 if (parentObj != null) {
@@ -169,7 +169,7 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
         	
         	
         }
-        return super.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj);
+        return super.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj, resolver);
     }
 
     public int getSize() {

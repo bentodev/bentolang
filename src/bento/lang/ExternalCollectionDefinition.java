@@ -87,11 +87,11 @@ public class ExternalCollectionDefinition extends CollectionDefinition {
         return true;
     }
 
-    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
         if (externalDef != null) {
-            return externalDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj);
+            return externalDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, null);
         } else {
-            return super.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj);
+            return super.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
         }
     }
 

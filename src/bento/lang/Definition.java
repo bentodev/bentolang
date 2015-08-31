@@ -230,8 +230,9 @@ public interface Definition extends Name {
      * 
      *  If <code>parentObj</code> is not null, and the child is a method of an external object, then
      *  the method will be called on <code>parentObj</code> when instantiated.
+     * @param resolver TODO
      */
-    public Object getChild(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj) throws Redirection;
+    public Object getChild(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection;
 
     /** Returns the child definition of the specified name, argument listand indexes if it 
      *  belongs to this definition or one of its superclasses.  If the argument list contains

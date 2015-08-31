@@ -755,7 +755,7 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
      *  false, return the definition, else instantiate it and return the result.  If <code>generate</code>
      *  is true and a definition is not found, return UNDEFINED.
      */
-    public Object getChild(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+    public Object getChild(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
         if (generate) {
             return UNDEFINED;
         } else {
@@ -790,7 +790,7 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
 
     public Definition getChildDefinition(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, Definition resolver) {
         try {
-            Object obj = getChild(name, args, indexes, parentArgs, argContext, false, true, null);
+            Object obj = getChild(name, args, indexes, parentArgs, argContext, false, true, null, resolver);
             if (obj instanceof Definition) {
                 return (Definition) obj;
             } else if (obj instanceof DefinitionInstance) {
@@ -808,7 +808,7 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
 
     public final DefinitionInstance getChildDefInstance(NameNode name, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext) {
         try {
-            Object obj = getChild(name, args, indexes, parentArgs, argContext, false, true, null);
+            Object obj = getChild(name, args, indexes, parentArgs, argContext, false, true, null, null);
             if (obj instanceof DefinitionInstance) {
                 return (DefinitionInstance) obj;
             // presume obj is UNDEFINED

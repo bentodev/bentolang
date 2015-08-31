@@ -127,7 +127,7 @@ public class IndexedInstanceReference extends NamedDefinition {
         return instance.getDefinition(context).getSuperDefinition(context); //collectionDef.getSuperDefinition(context);
     }
 
-    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj) throws Redirection {
+    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
         if (Name.COUNT.equals(node.getName())) {
             if (generate) {
                 CollectionInstance collection = getCollection();
@@ -146,7 +146,7 @@ public class IndexedInstanceReference extends NamedDefinition {
                 return keysDef.getDefInstance(null, indexes);
             }
         }
-        return super.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj);
+        return super.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj, resolver);
     }
 
     public CollectionInstance getCollection() throws Redirection {

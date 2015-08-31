@@ -2573,7 +2573,7 @@ if ("local_counter".equals(definition.getName())) {
             Definition elementDef = ((ElementReference) def).getElementDefinition(this);
             if (elementDef instanceof ElementDefinition) {
                 // might have to fix the args and parentArgs here
-                return ((ElementDefinition) elementDef).getChild(name, args, null, null, this, generate, true, parentObj); 
+                return ((ElementDefinition) elementDef).getChild(name, args, null, null, this, generate, true, parentObj, null); 
             }
         }
         
@@ -2681,7 +2681,7 @@ if ("local_counter".equals(definition.getName())) {
             }
             
             if (childDef == null) {
-                return def.getChild(name, name.getArguments(), name.getIndexes(), args, this, generate, true, parentObj);
+                return def.getChild(name, name.getArguments(), name.getIndexes(), args, this, generate, true, parentObj, null);
             }
 
             DefinitionInstance childDefInstance = null;
