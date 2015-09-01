@@ -421,6 +421,10 @@ abstract public class AbstractType extends NameNode implements Type {
         }
         return false;
     }
+    
+    public String toString() {
+        return getName();
+    }
 
     abstract public List<Dim> getDims();
 

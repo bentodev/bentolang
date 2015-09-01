@@ -1248,7 +1248,7 @@ public class NamedDefinition extends AnonymousDefinition {
                         ArgumentList aliasArgs = aliasInstance.getArguments();
                         ParameterList aliasParams = aliasDef.getParamsForArgs(aliasArgs, context, false);
                         context.push(instantiatedDef, aliasParams, aliasArgs, false);
-                        Object child = aliasDef.getChild(node, args, null, parentArgs, context, generate, trySuper, parentObj, null);
+                        Object child = aliasDef.getChild(node, args, null, parentArgs, context, generate, trySuper, parentObj, resolver);
                         context.pop();
                         if ((generate && child != UNDEFINED) || (!generate && child != null)) {
                             return child;
