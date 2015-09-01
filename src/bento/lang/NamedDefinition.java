@@ -1263,7 +1263,8 @@ public class NamedDefinition extends AnonymousDefinition {
                 Construction construction = ((Construction) contents).getUltimateConstruction(context);
                 if (construction instanceof Instantiation) {
                     Instantiation instance = (Instantiation) construction;
-                    if (!node.equals(instance.getReferenceName())) {
+                    NameNode name = instance.getReferenceName();
+                    if (!node.equals(name) && (resolver == null || !resolver.getNameNode().equals(name))) {
                         Definition contentDef = instance.getDefinition(context, this);
                         ArgumentList contentArgs = null;
                         ParameterList contentParams = null;
