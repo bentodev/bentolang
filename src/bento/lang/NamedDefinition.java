@@ -987,7 +987,7 @@ public class NamedDefinition extends AnonymousDefinition {
         return getSite().getExternalDefinition(this, node, DefaultType.TYPE, context);
     }
 
-    public Object getComplexChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
+    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
         if (context == null) {
             throw new Redirection(Redirection.STANDARD_ERROR, "getChild requires a context; none provided.");
         } else if (context.peek() == null) {
@@ -1112,6 +1112,88 @@ public class NamedDefinition extends AnonymousDefinition {
             return def.getDefInstance(args, indexes);
         }
 
+        // if this is an alias, look up the definition in the aliased definition
+        if (isAlias()) {
+            String name = node.getName();
+            String aliasName = alias != null ? alias.getName() : paramAlias.getName();
+            //avoid recursion
+            if (!name.equals(aliasName)) {
+                Instantiation nearAliasInstance = getAliasInstance(); 
+                Instantiation aliasInstance = nearAliasInstance.getUltimateInstance(context);
+                ArgumentList aliasArgs = aliasInstance.getArguments();     // aliasInstance.getUltimateInstance(context).getArguments();
+                // avoid recursion
+                boolean nameEqualsArg = false;
+                if (aliasArgs != null && aliasArgs.size() > 0) {
+                    Iterator<Construction> it = aliasArgs.iterator();
+                     while (it.hasNext()) {
+                         Construction aliasArg = it.next();
+                         if (aliasArg instanceof Instantiation) {
+                             if (name.equals(((Instantiation) aliasArg).getDefinitionName())) {
+                                 nameEqualsArg = true;
+                                 vlog(name + " is also an alias arg; skipping lookup");
+                                 break;
+                            }
+                        }
+                    }
+                }
+                if (!nameEqualsArg) {
+                    Definition aliasDef = aliasInstance.getDefinition(context);
+                    if (aliasDef != null) {
+                        int numPushes = 0;
+                        
+                        try {
+                            NameNode nameNode = aliasInstance.getReferenceName();
+                            for (int i = 0; i < nameNode.numParts() - 1; i++) {
+                                NameNode partName = (NameNode) nameNode.getChild(i);
+                                Instantiation partInstance = new Instantiation(partName, aliasInstance.getOwner());
+                                partInstance.setKind(context.getParameterKind(partName.getName()));
+                                Definition partDef = partInstance.getDefinition(context);
+                                if (partDef == null) {
+                                    break;
+                                }
+                                ArgumentList partArgs = partInstance.getArguments();
+                                List<Index> partIndexes = partInstance.getIndexes();
+                                if (partIndexes == null || partIndexes.size() == 0) {
+                                    String nm = partName.getName();
+                                    String fullNm = partDef.getFullNameInContext(context);
+                                    Holder holder = context.getDefHolder(nm, fullNm, partArgs, partIndexes, false);
+                                    if (holder != null) {
+                                        Definition nominalDef = holder.nominalDef;
+                                        if (nominalDef != null && !nominalDef.isCollection() && nominalDef.getDurability() != Definition.DYNAMIC) { 
+                                            if (nominalDef.isIdentity()) {
+                                                partDef = holder.def;
+                                                if (partArgs == null) {
+                                                    partArgs = holder.args;
+                                                }
+                                            } else {
+                                                partDef = nominalDef;
+                                                if (partArgs == null) {
+                                                    partArgs = holder.nominalArgs;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                ParameterList partParams = partDef.getParamsForArgs(partArgs, context, false);
+                                context.push(partDef, partParams, partArgs, false);
+                                numPushes++;
+                            }
+                            ParameterList aliasParams = aliasDef.getParamsForArgs(aliasArgs, context, false);
+                            context.push(aliasDef, aliasParams, aliasArgs, generate);
+                            numPushes++;
+                            Object child = aliasDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
+                            return child;
+
+                        } finally {
+                            while (numPushes-- > 0) {
+                                context.pop();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         // now see if it's a complex name
         if (n > 1 && node.isComplex()) {
             NameNode prefix = (NameNode) node.getChild(0);
@@ -1522,12 +1604,12 @@ public class NamedDefinition extends AnonymousDefinition {
         }
     }
 
-    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
+    public Object dummy_getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context context, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
 
-        if (this instanceof ComplexDefinition) {
-            return getComplexChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
+        if (this instanceof Definition) {
+            return getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
         }
-        
+
         // forward to special definition if appropriate
         NamedDefinition specialDef = null;
         boolean isContainer = false;
@@ -1817,6 +1899,7 @@ public class NamedDefinition extends AnonymousDefinition {
                 }
             }
         }
+
         return (generate ? UNDEFINED : null);
     }
 
