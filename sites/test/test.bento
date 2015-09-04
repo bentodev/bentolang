@@ -524,8 +524,8 @@ ss1 [=
             show(: e :);
         =]
 
-        //sub_parent;
-        //sub_of_sub;
+        sub_parent;
+        sub_of_sub;
         single_const_parent;
     =]
     

@@ -1348,6 +1348,7 @@ public class NamedDefinition extends AnonymousDefinition {
                     NameNode name = instance.getReferenceName();
                     if (!node.equals(name) && (resolver == null || !resolver.getNameNode().equals(name))) {
                         Definition contentDef = instance.getDefinition(context, this);
+                        
                         ArgumentList contentArgs = null;
                         ParameterList contentParams = null;
         
@@ -1362,7 +1363,7 @@ public class NamedDefinition extends AnonymousDefinition {
                             }
                         }
         
-                        if (contentDef != null) {
+                        if (contentDef != null && contentDef.getNameNode() != null && !contentDef.getNameNode().equals(name) && !contentDef.equals(resolver)) {
                             context.push(contentDef, contentParams, contentArgs, false);
                             try {
                                 Object child = context.getDescendant(contentDef, contentArgs, new ComplexName(node), generate, parentObj);

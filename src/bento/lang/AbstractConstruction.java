@@ -361,7 +361,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
             return staticData;
 
         } else {
-if ("n".equals(getReferenceName())) {
+if ("local_counter".equals(getReferenceName())) {
  System.out.println("AbsConst 369");
 }
         	Definition defInCache = null;
