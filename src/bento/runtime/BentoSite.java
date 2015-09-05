@@ -39,18 +39,18 @@ public class BentoSite extends BentoDomain {
     private static void mlog(String string) {
         SiteBuilder.mlog(string);
         if (LOG_MEMORY) {
-	        if (mps == null) {
-	            try {
-	                mps = new PrintStream(new FileOutputStream("bento_mem.log", true));
-	            } catch (FileNotFoundException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
-	                mps = System.err;
-	            }
-	            Date now = new Date();
-	            mps.println("\n=========== begin logging for site " + currentSiteName + " on " + now.toString() + " ============");
-	        }
-	        mps.println(string);
+        if (mps == null) {
+            try {
+                mps = new PrintStream(new FileOutputStream("bento_mem.log", true));
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                mps = System.err;
+            }
+            Date now = new Date();
+            mps.println("\n=========== begin logging for site " + currentSiteName + " on " + now.toString() + " ============");
+        }
+        mps.println(string);
         }
     }
 
@@ -306,11 +306,11 @@ public class BentoSite extends BentoDomain {
 
     /** Remove or switch characters that are illegal in a Bento name. */
     private String cleanForBento(String name) {
-    	StringBuffer sb = new StringBuffer(name);
+    StringBuffer sb = new StringBuffer(name);
         for (int i = 0; i < sb.length(); i++) {
             char c = sb.charAt(i);
             if (c <= ' ' || c == '-') {
-            	sb.setCharAt(i, '_');
+            sb.setCharAt(i, '_');
             }
         }
         return sb.toString();
@@ -333,10 +333,10 @@ public class BentoSite extends BentoDomain {
             boolean handleAsObj = (pageName.charAt(0) == '$' || handleAsObject(pageName));
 
             if (pageName.equalsIgnoreCase("$debug")) {
-            	BentoDebugger debugger = context.getDebugger();
-            	if (debugger == null) {
-            		debugger = createDebugger();
-            	}
+            BentoDebugger debugger = context.getDebugger();
+            if (debugger == null) {
+            debugger = createDebugger();
+            }
             
             } else if (pageName.equalsIgnoreCase("$stat")) {
                 recordRequest("$stat", pageTracker);
@@ -348,7 +348,7 @@ public class BentoSite extends BentoDomain {
                 printSource(out);
 
             } else if (hasGeneralResponse || handleAsObj || pageName.indexOf(".$") > -1) {
-            	respondWithPage = false;
+            respondWithPage = false;
                 Instantiation instance = null;
                 String objName = null;
                 if (handleAsObj) {
@@ -439,11 +439,11 @@ public class BentoSite extends BentoDomain {
                 } catch (Redirection r) {
                     String location = r.getLocation();
                     if (location.equals(Redirection.STANDARD_ERROR)) {
-                    	if (respondWithPage) {
-                    		r.setLocation(Redirection.STANDARD_ERROR_PAGE);
-                    	} else {
-                    		r.setLocation(Redirection.STANDARD_ERROR_DIV);
-                    	}
+                    if (respondWithPage) {
+                    r.setLocation(Redirection.STANDARD_ERROR_PAGE);
+                    } else {
+                    r.setLocation(Redirection.STANDARD_ERROR_DIV);
+                    }
                     }
                     recordRequest(location, redirectTracker);
                     throw r;
@@ -456,10 +456,10 @@ public class BentoSite extends BentoDomain {
     }
 
     private BentoDebugger createDebugger() {
-		return new SimpleDebugger();
-	}
+return new SimpleDebugger();
+}
 
-	public boolean respond(Instantiation page, Context context, PrintWriter out) throws Redirection {
+public boolean respond(Instantiation page, Context context, PrintWriter out) throws Redirection {
         
         String pageName = page.getName();
         recordRequest(pageName, pageTracker);
@@ -582,7 +582,7 @@ public class BentoSite extends BentoDomain {
                 while (it.hasNext()) {
                     Object element = it.next();
                     if (element instanceof Value) {
-                    	element = ((Value) element).getValue();
+                    element = ((Value) element).getValue();
                     }
                     if (isCollection(element)) {
                         sb.append(getStringForCollection(element));
@@ -619,10 +619,10 @@ public class BentoSite extends BentoDomain {
                     sb.append(": ");
                     Object element = map.get(key);
                     if (element == null) {
-                    	sb.append("null");
+                    sb.append("null");
                     } else {
                         if (element instanceof Value) {
-                        	element = ((Value) element).getValue();
+                        element = ((Value) element).getValue();
                         }
                         if (isCollection(element)) {
                             sb.append(getStringForCollection(element));

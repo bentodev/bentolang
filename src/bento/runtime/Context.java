@@ -893,13 +893,9 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if ("local_counter".equals(definition.getName())) {
- System.out.println("Ctxt 904");	
-}
-        	
+
             // get the arguments and parameters, if any, to push on the
             // context stack with the definition
-
             params = definition.getParamsForArgs(args, this);
             push(definition, params, args, true);
             pushedContext = true;
@@ -2653,7 +2649,7 @@ if ("local_counter".equals(definition.getName())) {
                 }
             }
 
-            if (childIndexes == null) {
+            //if (childIndexes == null) {
                 String nm = childName.getName();
                 String fullNm = parentDef.getFullNameInContext(this) + "." + nm;
                 Holder holder = getDefHolder(nm, fullNm, childArgs, childIndexes, false);
@@ -2678,7 +2674,7 @@ if ("local_counter".equals(definition.getName())) {
                         //}
                     }
                 }
-            }
+            //}
             
             if (childDef == null) {
                 return def.getChild(name, name.getArguments(), name.getIndexes(), args, this, generate, true, parentObj, null);

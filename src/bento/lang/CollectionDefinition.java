@@ -158,16 +158,16 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
                 return countDef.getDefInstance(null, null);
             }
         } else if (Name.KEYS.equals(node.getName())) {
-        	CollectionDefinition keysDef = new KeysDefinition(this, argContext, parentArgs, null);
-        	if (generate) {
-        		//return keysDef.getCollectionInstance(argContext, args, indexes).getCollectionObject();
+            CollectionDefinition keysDef = new KeysDefinition(this, argContext, parentArgs, null);
+            if (generate) {
+                //return keysDef.getCollectionInstance(argContext, args, indexes).getCollectionObject();
                 return keysDef.construct(argContext, args, indexes);
-        		
-        	} else {
-        		return keysDef.getDefInstance(null, indexes);
-        	}
-        	
-        	
+                
+            } else {
+                return keysDef.getDefInstance(null, indexes);
+            }
+            
+            
         }
         return super.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj, resolver);
     }
@@ -285,13 +285,13 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
      *  arguments.
      */
     public CollectionInstance getCollectionInstance(Context context, ArgumentList args, List<Index> indexes) throws Redirection {
-    	CollectionInstance collection = null;
+        CollectionInstance collection = null;
         String name = getName();
         String fullName = getFullNameInContext(context);
         Definition defInCache = null;
         Definition nominalDefInCache = null;
 
-    	if (getDurability() != Definition.DYNAMIC && (args == null || !args.isDynamic())) {
+        if (getDurability() != Definition.DYNAMIC && (args == null || !args.isDynamic())) {
             //cachevlog("  = = =]  collection: retrieving " + name + " from cache [= = = ");
 
             Object collectionObject = null;
@@ -306,7 +306,7 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
 
             // externally-created collections might not be wrapped in a CollectionInstance yet
             } else if (collectionObject != null) {
-        		collection = createCollectionInstance(context, args, indexes, collectionObject);
+                collection = createCollectionInstance(context, args, indexes, collectionObject);
                 //context.putData(this, args, null, name, modifier, collection);
             }
 
@@ -319,8 +319,8 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
             //cachevlog("  = = =]  " + name + " collection data: " + (collection == null ? "null" : collection.toString()));
         }
 
-    	if (collection == null || !(equals(defInCache) || equals(nominalDefInCache))) {
-    		collection = createCollectionInstance(context, args, indexes);
+        if (collection == null || !(equals(defInCache) || equals(nominalDefInCache))) {
+            collection = createCollectionInstance(context, args, indexes);
             //cachevlog("  = = =]  collection: storing data for " + name + " in cache [= = = ");
             ResolvedInstance ri = null;
             if (collection instanceof ResolvedInstance) {
@@ -329,17 +329,17 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
             
             context.putData(this, args, this, args, null, name, collection, ri);
             //cachevlog("  = = =]  " + name + " collection data: " + (collection == null ? "null" : collection.toString()));
-    		
-    	}
-    	return collection;
-    	
+            
+        }
+        return collection;
+        
     }
 
     /** Creates a resolved instance of this collection in the specified context with the specified
      *  arguments.
      */
     public CollectionInstance createCollectionInstance(Context context, ArgumentList args, List<Index> indexes) throws Redirection {
-    	return builder.createCollectionInstance(context, args, indexes);
+        return builder.createCollectionInstance(context, args, indexes);
     }
 
     /** Wraps the passed data in a collection instance in the specified context with the specified

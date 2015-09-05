@@ -994,7 +994,10 @@ public class NamedDefinition extends AnonymousDefinition {
             throw new Redirection(Redirection.STANDARD_ERROR, "getChild requires a non-empty context; passed context is empty.");
         }
         NamedDefinition instantiatedDef = (NamedDefinition) context.peek().def;
-
+if (node.getName().equals("is_available")) {
+  System.out.println("NamedDef 998");
+}
+    
         if (node.getName() == Name.OWNER) {
             Definition owner = getOwnerInContext(context);
             if (owner == null) {

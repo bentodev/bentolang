@@ -43,42 +43,42 @@ abstract public class ArithmeticOperator extends BinaryOperator {
         
         if ((type1 != null && type1.isArray()) || (type2 != null && type2.isArray())) {
             Object obj1 = null;
-        	if (type1 != null && type1.isArray()) {
-        		Value val = firstObj.getValue(context);
-        		obj1 = val.getValue();
-        		if (obj1 instanceof BentoArray) {
-        			obj1 = ((BentoArray) obj1).getArrayObject();
+            if (type1 != null && type1.isArray()) {
+                Value val = firstObj.getValue(context);
+                obj1 = val.getValue();
+                if (obj1 instanceof BentoArray) {
+                    obj1 = ((BentoArray) obj1).getArrayObject();
                 }
-        		if (obj1 == null) {
-        		    obj1 = new Object[0];
-        		}
+                if (obj1 == null) {
+                    obj1 = new Object[0];
+                }
 
-        	} else if (firstObj instanceof Value) {
+            } else if (firstObj instanceof Value) {
                 obj1 = ((Value) firstObj).getValue();
-        		
-        	} else {
-        		obj1 = firstObj.getValue(context);
-        	}
+                
+            } else {
+                obj1 = firstObj.getValue(context);
+            }
 
             Object obj2 = null;
-        	if (type2 != null && type2.isArray()) {
-        		Value val = secondObj.getValue(context);
-        		obj2 = val.getValue();
-        		if (obj2 instanceof BentoArray) {
-        			obj2 = ((BentoArray) obj2).getArrayObject();
-        		}
+            if (type2 != null && type2.isArray()) {
+                Value val = secondObj.getValue(context);
+                obj2 = val.getValue();
+                if (obj2 instanceof BentoArray) {
+                    obj2 = ((BentoArray) obj2).getArrayObject();
+                }
                 if (obj2 == null) {
                     obj2 = new Object[0];
                 }
 
-        	} else if (secondObj instanceof Value) {
+            } else if (secondObj instanceof Value) {
                 obj2 = ((Value) secondObj).getValue();
-        		
-        	} else {
-        		obj2 = secondObj.getValue(context);
-        	}
-        	
-        	Object resultArray = arrayOperate(obj1, obj2);
+                
+            } else {
+                obj2 = secondObj.getValue(context);
+            }
+            
+            Object resultArray = arrayOperate(obj1, obj2);
             return new PrimitiveValue(resultArray);
         } else {
             return operate(firstObj.getValue(context), new DeferredValue(secondObj, context));
