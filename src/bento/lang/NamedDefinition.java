@@ -1366,7 +1366,7 @@ if (node.getName().equals("is_available")) {
                             }
                         }
         
-                        if (contentDef != null && contentDef.getNameNode() != null && !contentDef.getNameNode().equals(name) && !contentDef.equals(resolver)) {
+                        if (contentDef != null && contentDef.getNameNode() != null && (!contentDef.isIdentity() || !contentDef.getNameNode().equals(name))) { // && !contentDef.equals(resolver)) {
                             context.push(contentDef, contentParams, contentArgs, false);
                             try {
                                 Object child = context.getDescendant(contentDef, contentArgs, new ComplexName(node), generate, parentObj);
