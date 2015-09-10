@@ -1380,7 +1380,7 @@ if (node.getName().equals("is_available")) {
                     }
                 } else  {
                     Type type = construction.getType(context, this);
-                    if (type != null) {
+                    if (type != null && type != DefaultType.TYPE && !type.isPrimitive()) {
                         Definition runtimeDef = type.getDefinition();
                         if (runtimeDef != null && runtimeDef.canHaveChildDefinitions()) {
                             Object child = runtimeDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
@@ -1477,6 +1477,13 @@ if (node.getName().equals("is_available")) {
             int numPushes = 0;
             try {
                 while (def.isReference() && !(def instanceof CollectionDefinition)) {
+                    if (def.isIdentity()) {
+                        Holder holder = context.peek().getDefHolder(def.getName(), def.getFullNameInContext(context), null, false);
+                        if (holder != null && holder.def != null && holder.def != def) {
+                            def = holder.def;
+                            continue;
+                        }
+                    }
                     params = def.getParamsForArgs(args, context);
                     context.push(def, params, args, false);
                     numPushes++;
