@@ -1479,9 +1479,16 @@ if (node.getName().equals("is_available")) {
                 while (def.isReference() && !(def instanceof CollectionDefinition)) {
                     if (def.isIdentity()) {
                         Holder holder = context.peek().getDefHolder(def.getName(), def.getFullNameInContext(context), null, false);
-                        if (holder != null && holder.def != null && holder.def != def) {
-                            def = holder.def;
-                            continue;
+                        if (holder != null && holder.def != null) {
+                            Definition hdef = holder.def;
+                            if (holder.data != null) {
+                                while (hdef != null && !(hdef instanceof CollectionDefinition)) {
+                                    hdef = hdef.getSuperDefinition(context);
+                                }
+                                if (hdef != null && hdef instanceof CollectionDefinition) {
+                                    def = ((CollectionDefinition) hdef).createCollectionInstance(context, args, indexes, holder.data).getDefinition();
+                                }
+                            }
                         }
                     }
                     params = def.getParamsForArgs(args, context);
@@ -1494,7 +1501,7 @@ if (node.getName().equals("is_available")) {
                     if (def instanceof ElementReference) {
                         Definition elementDef = ((ElementReference) def).getElementDefinition(context);
                         childDef = (elementDef != null ? elementDef : (Definition) refInstance.getDefinition(context));  // lookup(context, false);
-                    } else {
+                    } else if (refInstance != null) {
                         childDef = (Definition) refInstance.getDefinition(context);  // lookup(context, false);
                     }
                     if (childDef != null) {
