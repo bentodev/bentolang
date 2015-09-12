@@ -65,6 +65,11 @@ public interface Type extends Name {
      */
     public List<Dim> getDims();
 
+    /** Returns the collection (array or table) type this type 
+     * represents or is a subtype of, if any, else null.
+     */
+    public Type getCollectionType();
+
     /** Returns true if this type represents a collection. */
     public boolean isCollection();
     
@@ -82,7 +87,7 @@ public interface Type extends Name {
 
     /** Returns the table type this type represents or is a subtype of, if any, else null. */
     public Type getTableType();
-    	
+
     /** Returns the base type, not including dimensions, represented by this type. */
     public Type getBaseType();
 

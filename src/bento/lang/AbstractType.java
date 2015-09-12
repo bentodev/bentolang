@@ -90,8 +90,8 @@ abstract public class AbstractType extends NameNode implements Type {
             } else if (def instanceof AliasedDefinition && name.equals(((AliasedDefinition) def).getAliasedDefinition(context).getName())) {
                 return true;
             } else if (def.isSuperType(name)) {
-            	return true;
-            	
+                return true;
+                
             } else if (def instanceof ElementReference) {
                 try {
                     Definition elementDef = ((ElementReference) def).getElementDefinition(context);
@@ -125,7 +125,7 @@ abstract public class AbstractType extends NameNode implements Type {
             // if the type is not undefined, return false
 
             if (def.getSuperDefinition() != null) {
-            	return false;
+                return false;
             }
         }
 
@@ -325,6 +325,28 @@ abstract public class AbstractType extends NameNode implements Type {
     }
 
     
+    /** Returns the collection (array or table) type this type 
+     * represents or is a subtype of, if any, else null.
+     */
+    public Type getCollectionType() {
+        Class<?> c = getTypeClass(null);
+        if (c != null && (c.isArray() || List.class.isAssignableFrom(c) || Map.class.isAssignableFrom(c))) {
+            return this;
+        }
+        Definition def = getDefinition();
+        if (def != null) {
+            if (def instanceof CollectionDefinition) {
+                return this;
+            } else {
+                Type st = def.getSuper();
+                if (st != null) {
+                    return st.getCollectionType();
+                }
+            }
+        }
+        return null;
+    }
+
     /** Returns true if this type represents an array. */
     public boolean isArray() {
         return getArrayType() != null;
@@ -338,12 +360,12 @@ abstract public class AbstractType extends NameNode implements Type {
         }
         Definition def = getDefinition();
         if (def != null) {
-        	if (def instanceof CollectionDefinition && ((CollectionDefinition) def).isArray()) {
-        		return this;
-        	} else {
-        		Type st = def.getSuper();
-        		if (st != null) {
-        			return st.getArrayType();
+            if (def instanceof CollectionDefinition && ((CollectionDefinition) def).isArray()) {
+                return this;
+            } else {
+                Type st = def.getSuper();
+                if (st != null) {
+                    return st.getArrayType();
                 }
             }
         }
@@ -357,18 +379,18 @@ abstract public class AbstractType extends NameNode implements Type {
   
     /** Returns the table type this type represents or is a subtype of, if any, else null. */
     public Type getTableType() {
-    	Class<?> c = getTypeClass(null);
+        Class<?> c = getTypeClass(null);
         if (c != null && Map.class.isAssignableFrom(c)) {
             return this;
         }
         Definition def = getDefinition();
         if (def != null) {
             if (def instanceof CollectionDefinition && ((CollectionDefinition) def).isTable()) {
-        		return this;
-        	} else {
-        		Type st = def.getSuper();
-        		if (st != null) {
-        			return st.getTableType();
+                return this;
+            } else {
+                Type st = def.getSuper();
+                if (st != null) {
+                    return st.getTableType();
                 }
             }
         }

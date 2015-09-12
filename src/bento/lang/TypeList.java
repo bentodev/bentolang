@@ -232,7 +232,6 @@ public class TypeList extends ListNode<Type> implements Type {
 
     /** Returns true if any of the types in the list inherits a collection. */
     public boolean inheritsCollection() {
-        boolean iscoll = false;
         Iterator<Type> it = iterator();
         while (it.hasNext()) {
             Type t = it.next();
@@ -243,6 +242,23 @@ public class TypeList extends ListNode<Type> implements Type {
         return false;
     }
 
+    /** Returns the collection (array or table) type this type 
+     * represents or is a subtype of, if any, else null.
+     */
+    public Type getCollectionType() {
+        Type collectionType = null;
+        Iterator<Type> it = iterator();
+        while (it.hasNext()) {
+            Type t = it.next();
+            if (collectionType == null) {
+                collectionType = t.getCollectionType();
+            } else {
+                collectionType = addTypes(collectionType, t.getCollectionType());
+            }
+        }
+        return collectionType;
+    }
+    
     /** Returns true if this type represents an array. */
     public boolean isArray() {
         boolean isarray = false;

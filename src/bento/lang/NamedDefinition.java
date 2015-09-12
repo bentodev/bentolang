@@ -1477,20 +1477,20 @@ if (node.getName().equals("is_available")) {
             int numPushes = 0;
             try {
                 while (def.isReference() && !(def instanceof CollectionDefinition)) {
-                    if (def.isIdentity()) {
-                        Holder holder = context.peek().getDefHolder(def.getName(), def.getFullNameInContext(context), null, false);
-                        if (holder != null && holder.def != null) {
-                            Definition hdef = holder.def;
-                            if (holder.data != null) {
-                                while (hdef != null && !(hdef instanceof CollectionDefinition)) {
-                                    hdef = hdef.getSuperDefinition(context);
-                                }
-                                if (hdef != null && hdef instanceof CollectionDefinition) {
-                                    def = ((CollectionDefinition) hdef).createCollectionInstance(context, args, indexes, holder.data).getDefinition();
-                                }
-                            }
-                        }
-                    }
+//                    if (def.isIdentity()) {
+//                        Holder holder = context.peek().getDefHolder(def.getName(), def.getFullNameInContext(context), null, false);
+//                        if (holder != null && holder.def != null) {
+//                            Definition hdef = holder.def;
+//                            if (holder.data != null) {
+//                                while (hdef != null && !(hdef instanceof CollectionDefinition)) {
+//                                    hdef = hdef.getSuperDefinition(context);
+//                                }
+//                                if (hdef != null && hdef instanceof CollectionDefinition) {
+//                                    def = ((CollectionDefinition) hdef).createCollectionInstance(context, args, indexes, holder.data).getDefinition();
+//                                }
+//                            }
+//                        }
+//                    }
                     params = def.getParamsForArgs(args, context);
                     context.push(def, params, args, false);
                     numPushes++;

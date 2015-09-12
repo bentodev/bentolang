@@ -11,6 +11,7 @@
 package bento.lang;
 
 import bento.runtime.Context;
+
 import java.util.*;
 
 /**
@@ -21,10 +22,10 @@ import java.util.*;
  */
 public class InsertedType extends NameNode implements Type {
 
-	private Type insertedType;
-	private Type supertype;
-	private NamedDefinition insertedDefinition;
-	
+    private Type insertedType;
+    private Type supertype;
+    private NamedDefinition insertedDefinition;
+    
     public InsertedType(Type insertedType, Type supertype) {
         super(insertedType.getName());
         this.insertedType = insertedType;
@@ -33,11 +34,11 @@ public class InsertedType extends NameNode implements Type {
     }
     
     Type getInsertedType() {
-    	return insertedType;
+        return insertedType;
     }
     
     Type getSuperType() {
-    	return supertype;
+        return supertype;
     }
 
     /** Returns true if the passed value is an instance of the inserted type or the supertype.
@@ -84,7 +85,7 @@ public class InsertedType extends NameNode implements Type {
     }
 
     public Type[] getChildTypes() {
-    	return insertedType.getChildTypes();
+        return insertedType.getChildTypes();
     }
 
     public Type[] getPersistableChildTypes() {
@@ -109,6 +110,13 @@ public class InsertedType extends NameNode implements Type {
         return insertedType.isCollection();
     }
 
+    /** Returns the collection (array or table) type this type 
+     * represents or is a subtype of, if any, else null.
+     */
+    public Type getCollectionType() {
+        return insertedType.getCollectionType();
+    }   
+        
     /** Returns true if this type represents an array. */
     public boolean isArray() {
         return insertedType.isArray();
@@ -116,7 +124,7 @@ public class InsertedType extends NameNode implements Type {
 
     /** Returns the array type this type represents or is a subtype of, if any, else null. */
     public Type getArrayType() {
-    	return insertedType.getArrayType();
+        return insertedType.getArrayType();
     }
     
     /** Returns true if this type represents a table. */
@@ -145,7 +153,7 @@ public class InsertedType extends NameNode implements Type {
      *  if this type has no associated arguments.
      */
     public ArgumentList getArguments(Context context) {
-    	return insertedType.getArguments(context);
+        return insertedType.getArguments(context);
     }
 
     public Definition getDefinition() {
@@ -157,7 +165,7 @@ public class InsertedType extends NameNode implements Type {
     }
 
     public int levelsBelow(Type type, Context context) {
-    	return Math.min(insertedType.levelsBelow(type, context), supertype.levelsBelow(type, context) + 1);
+        return Math.min(insertedType.levelsBelow(type, context), supertype.levelsBelow(type, context) + 1);
     }
 
     public boolean inheritsCollection() {
@@ -191,7 +199,7 @@ class InsertedDefinition extends NamedDefinition {
      *  that have non-null supertypes.
      */
     public Type getSuper() {
-    	return type.getSuperType();
+        return type.getSuperType();
     }
 
 
