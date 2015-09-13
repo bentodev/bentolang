@@ -90,8 +90,8 @@ public class DefParameter extends NamedDefinition {
             
         } else if (obj instanceof ResolvedInstance) {
             // already resolved, no need for rigamarole
-        	return ((ResolvedInstance) obj).getDefinition();
-        	
+            return ((ResolvedInstance) obj).getDefinition();
+            
         } else if (obj instanceof Instantiation) {
             Instantiation arg = (Instantiation) obj;
             Definition argOwner = arg.getOwner();
@@ -115,7 +115,7 @@ public class DefParameter extends NamedDefinition {
                 } else if (argOwner != null && argOwner.isCollection() && ((CollectionDefinition) argOwner).isHonestCollection()) { 
                     def = new ElementDefinition(argOwner, arg);
                 } else {
-            	    def = arg.getDefinition(context);
+                    def = arg.getDefinition(context);
                 }
             } finally {
                 while (numUnpushes-- > 0) {
@@ -137,14 +137,17 @@ public class DefParameter extends NamedDefinition {
             def = paramInstance;
 
         } else {
-        	if (obj instanceof Value) {
+            if (obj instanceof Value) {
                 obj = ((Value) obj).getValue();
-        	}
-            if (obj instanceof NamedDefinition) {
+            }
+            
+            if (obj instanceof AliasedDefinition) {
+                def = (Definition) obj;
+            } else if (obj instanceof NamedDefinition) {
                 NamedDefinition embeddedDef = (NamedDefinition) obj;
                 def = new AliasedDefinition(embeddedDef, embeddedDef.getNameNode());
             } else if (obj instanceof BentoObjectWrapper) {
-                def = ((BentoObjectWrapper) obj).getDefinition();	
+                def = ((BentoObjectWrapper) obj).getDefinition();
             } else {
                 def = new ExternalDefinition(getName(), getParent(), getOwner(), getType(), getAccess(), getDurability(), obj, null);
             }
