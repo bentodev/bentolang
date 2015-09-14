@@ -1477,20 +1477,20 @@ if (node.getName().equals("is_available")) {
             int numPushes = 0;
             try {
                 while (def.isReference() && !(def instanceof CollectionDefinition)) {
-//                    if (def.isIdentity()) {
-//                        Holder holder = context.peek().getDefHolder(def.getName(), def.getFullNameInContext(context), null, false);
-//                        if (holder != null && holder.def != null) {
-//                            Definition hdef = holder.def;
-//                            if (holder.data != null) {
-//                                while (hdef != null && !(hdef instanceof CollectionDefinition)) {
-//                                    hdef = hdef.getSuperDefinition(context);
-//                                }
-//                                if (hdef != null && hdef instanceof CollectionDefinition) {
-//                                    def = ((CollectionDefinition) hdef).createCollectionInstance(context, args, indexes, holder.data).getDefinition();
-//                                }
-//                            }
-//                        }
-//                    }
+                    if (def.isIdentity()) {
+                        Holder holder = context.peek().getDefHolder(def.getName(), def.getFullNameInContext(context), null, false);
+                        if (holder != null && holder.def != null) {
+                            Definition hdef = holder.def;
+                            if (holder.data != null) {
+                                while (hdef != null && !(hdef instanceof CollectionDefinition)) {
+                                    hdef = hdef.getSuperDefinition(context);
+                                }
+                                if (hdef != null && hdef instanceof CollectionDefinition) {
+                                    def = ((CollectionDefinition) hdef).createCollectionInstance(context, args, indexes, holder.data).getDefinition();
+                                }
+                            }
+                        }
+                    }
                     params = def.getParamsForArgs(args, context);
                     context.push(def, params, args, false);
                     numPushes++;
@@ -1500,9 +1500,9 @@ if (node.getName().equals("is_available")) {
                     // this is to get indexed aliases to work right.  A bit hacky.
                     if (def instanceof ElementReference) {
                         Definition elementDef = ((ElementReference) def).getElementDefinition(context);
-                        childDef = (elementDef != null ? elementDef : (Definition) refInstance.getDefinition(context));  // lookup(context, false);
+                        childDef = (elementDef != null ? elementDef : (Definition) refInstance.getDefinition(context));
                     } else if (refInstance != null) {
-                        childDef = (Definition) refInstance.getDefinition(context);  // lookup(context, false);
+                        childDef = (Definition) refInstance.getDefinition(context);
                     }
                     if (childDef != null) {
                         // if the ref is complex, track back through prefix supers and aliases
