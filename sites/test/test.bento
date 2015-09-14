@@ -38,7 +38,8 @@ site test [=
                               cache_test, cached_aliased_parameter_test, cached_array_test,
                               cached_child_of_alias_test, cached_external_object_test, 
                               cached_identity_test, cached_object_test, char_utilities_test,
-                              children_of_global_test, children_of_static_test,
+                              children_of_global_test, children_of_overridden_super_test,
+                              children_of_static_test,
                               collection_parse_test, collection_operators_test, collection_utilities_test,
                               compass_layout_test, complex_array_test, conditional_inheritance_test,
                               count_test, corresponding_super_test, dynamic_argument_list_test, 
@@ -489,7 +490,7 @@ ss1 [=
         
     =]
 
-    children_of_overridden_super_test [=
+    test_case children_of_overridden_super_test [=
         int category = instantiations
         name = "Children of Overridden Super Test"
         key = "base_child_subclass"

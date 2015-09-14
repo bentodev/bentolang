@@ -26,25 +26,18 @@ public class AliasedDefinition extends ExternalDefinition {
 
     public AliasedDefinition(NamedDefinition def, NameNode alias) {
         super(def.getName(), def.getParent(), def.getOwner(), null, Definition.SITE_ACCESS, Definition.IN_CONTEXT, def, null);
-
-        if (def instanceof AliasedDefinition) {
- System.out.println("Aliased Aliased name " + alias.getName());    
-
-            this.def = ((AliasedDefinition) def).def;
-        } else {
-            this.def = def;
-        }
+        this.def = def;
         setName(alias);
         Site site = def.getSite();
         Definition definitionDef = site.getDefinition("definition");
         if (definitionDef != null) {
-               Type definitionType = definitionDef.getType();
-               Type st = def.getSuper();
-               if (st == null) {
-                   setSuper(definitionType);
-               } else {
-                   setSuper(TypeList.addTypes(st, definitionType));
-               }
+           Type definitionType = definitionDef.getType();
+           Type st = def.getSuper();
+           if (st == null) {
+               setSuper(definitionType);
+           } else {
+               setSuper(TypeList.addTypes(st, definitionType));
+           }
         }
     }
 
