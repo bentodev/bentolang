@@ -3604,6 +3604,9 @@ public class Context {
     }
 
     public synchronized void repush() {
+if (unpushedEntries == null) {
+ System.out.println("Null!!! ctx 3608");    
+}
         Entry newUnpushedEntries = unpushedEntries.getPrevious();
         Entry entry = unpushedEntries;
         // by pre-setting the link to topEntry, we avoid the logic in _push that clones

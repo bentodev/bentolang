@@ -1346,7 +1346,7 @@ if (node.getName().equals("is_available")) {
             AbstractNode contents = getContents();
             if (contents instanceof Construction) {
                 Construction construction = ((Construction) contents).getUltimateConstruction(context);
-                if (construction instanceof Instantiation) {
+                if (construction instanceof Instantiation && !((Instantiation) construction).isParameterKind()) {
                     Instantiation instance = (Instantiation) construction;
                     NameNode name = instance.getReferenceName();
                     if (!node.equals(name) && (resolver == null || !resolver.getNameNode().equals(name))) {
