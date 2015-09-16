@@ -3824,15 +3824,25 @@ srut [=
 
 
     string[] abc = [ "A", "B", "C" ]
+    string[] defg = [ "D", "E", "F", "G" ]
     string[] empty_array = []
     string[] test_array(x) = x
+    array_parent [=
+        keep: string[] child_array(z) = z
+        
+        eval(child_array(: defg :));
+    =]
+    
+    array_parent array_parent_sub [/]
+
+    array_parent cached_array_parent(array_parent ap) = ap
 
     test_case cached_array_test [=
         int category = caching
         name = "Cached Array Test"
         key = "cached_array"
     
-        expected = "ABC"
+        expected = "ABCDEF"
     
         eval(test_array(: empty_array :));
         for x in test_array [=
@@ -3848,7 +3858,28 @@ srut [=
         for x in test_array [=
             x;
         =]
+        
+        eval(array_parent);
+        array_parent.child_array[0];
+        
+        eval(array_parent_sub);
+        array_parent_sub.child_array[1];
+        
+        eval(cached_array_parent(: array_parent_sub :));
+        cached_array_parent.child_array[2];
     =]
+
+cat [=
+        eval(array_parent);
+        array_parent.child_array[0];
+        
+        eval(array_parent_sub);
+        array_parent_sub.child_array[1];
+        
+        eval(cached_array_parent(: array_parent_sub :));
+        cached_array_parent.child_array[2];
+=]
+
 
     
     test_case keep_test [=
