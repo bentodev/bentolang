@@ -256,26 +256,45 @@ public class ElementDefinition extends AnonymousDefinition {
         return data;
     }
 
-    /** Returns the type of this element definition, which is base type of the collection
-     *  which contains it.
+    /** Returns the type of this element definition, which is the narrower of two types: the
+     *  dynamically-determined type of the element itself, or the base type of the collection,
+     *  whichever is narrower.
      */
     public Type getType() {
+        
+        Type contentType = DefaultType.TYPE;
         AbstractNode contents = getContents();
+        
         if (contents instanceof PrimitiveValue) {
-            return ((PrimitiveValue) contents).getType();
+            contentType = ((PrimitiveValue) contents).getType();
         } else if (contents instanceof ResolvedInstance) {
-            return ((ResolvedInstance) contents).getType(null);
-        } else {
-            Definition def = getOwner();
-            if (def != null) {
-                if (def.isCollection()) {
-                    return ((CollectionDefinition) def).getElementType();  // TODO: calculate correct type
-                } else {
-                    return def.getType();
-                }
-            } else  {
-                return DefaultType.TYPE;
+            contentType = ((ResolvedInstance) contents).getType(null);
+        }
+        
+        Type collectionType = DefaultType.TYPE;
+        Definition def = getOwner();
+        if (def != null) {
+            if (def instanceof CollectionDefinition) {
+                collectionType = ((CollectionDefinition) def).getElementType();  // TODO: calculate correct type
+            } else {
+                collectionType = def.getType();
             }
+        }
+        
+        if (contentType == DefaultType.TYPE) {
+            return collectionType;
+        } else if (collectionType == DefaultType.TYPE) {
+            return contentType;
+        } else if (contentType.isPrimitive()) {
+            return collectionType;
+        } else if (collectionType.isPrimitive()) {
+            return contentType;
+        } else if (contentType.isTypeOf(collectionType.getName())) {
+            return contentType;
+        } else if (collectionType.isTypeOf(contentType.getName())) {
+            return collectionType;
+        } else {
+            return PrimitiveType.VOID;
         }
     }
 

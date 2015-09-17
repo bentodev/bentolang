@@ -2229,7 +2229,7 @@ at [=
         name = "Array Element Type Test"
         key = "array_element_type"
 
-        expected = "ABCDEFGHIJ"
+        expected = "ABCDEFGHIJK"
 
         fum(xx) [=
             x = xx
@@ -2263,15 +2263,26 @@ at [=
 
         fum("I") fum_i [/]
         fum("J") fum_j [/]
+        fum("K") fum_k [/]
 
         fum[] fum_array_1 = [ fum_a, fum_b, fum_c, fum_d, fum_e, fum_f, fum_g, fum_fum("H") ]
-        fum[] fum_array_2 = [ fum_i, fum_j ]
+        fum[] fum_array_2 = [ fum_i, fum_j, fum_k ]
+        dynamic show_fum(fum f),(z) [=
+            with (f) [=
+                f;
+            =] else [=
+                "x";
+            =]
+        =]
+
         for fum f in fum_array_1 [=
             f;
         =]
 
         fum_array_2[0];
         fum_array_2[1].x;
+        
+        show_fum(fum_array_2[2]);
     =]
 
 
@@ -2280,30 +2291,47 @@ at [=
         name = "Array Element Child Array Test"
         key = "array_element_child_array"
 
-        expected = "ABCDEF"
+        expected = "ABCDEFG"
         
-        /-- child array --/
+        fum [/]
+
         fo [=
-            fum[] = []
+            fum[] fofum = []
         =]
 
 		fo fo1 [=
-			fum[] = [ "A", "B" ]
+			fum[] fofum = [ "A", "B" ]
 		=]
 		
 		fo fo2 [=
-			fum[] = [ "C", "D" ]
+			fum[] fofum = [ "C", "D" ]
 		=]
 
 		fo fo3 [=
-			fum[] = [ "E", "F" ]
+			fum[] fofum = [ "E", "F" ]
 		=]
+
+        fo fo4 [=
+            fum[] fofum = [ "G" ]
+        =]
 
 		fo[] fos = [ fo2, fo3 ] 
 		
-        sho_fo(fo f) [=
-            for int iii from 0 to 2 [=
-                f.fum[iii];
+        sho_fo(fo f),(x) [=
+            with (f) [=
+                for int iii from 0 to 2 [=
+                    f.fofum[iii];
+                =]
+            =] else [=
+                "xxx";
+            =] 
+        =]
+
+        sho_fum(fum fm),(x) [=
+            with (fm) [=
+                fm;
+            =] else [=
+                "z";
             =] 
         =]
 
@@ -2311,28 +2339,29 @@ at [=
 
 		for fo ff in fos [=
 		    for int ii from 0 to 2 [=
-		    	ff.fum[ii];
+		    	ff.fofum[ii];
 		    =]
         =]
+        
+        sho_fum(fo4.fofum[0]);
 	=]		
 
 aecat [=
-        /-- child array --/
+        fum [/]
         fo [=
-            fum[] = []
+            fum[] fofum = []
         =]
-
-        fo fo1 [=
-            fum[] = [ "A", "B" ]
+        fo fo4 [=
+            fum[] fofum = [ "G" ]
         =]
-        
-        sho_fo(fo f) [=
-            for int iii from 0 to 2 [=
-                f.fum[iii];
+        sho_fum(fum fm),(x) [=
+            with (fm) [=
+                fm;
+            =] else [=
+                "z";
             =] 
         =]
-
-        sho_fo(fo1);
+        sho_fum(fo4.fofum[0]);
 =]
 
 	
