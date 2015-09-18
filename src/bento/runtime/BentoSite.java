@@ -306,11 +306,11 @@ public class BentoSite extends BentoDomain {
 
     /** Remove or switch characters that are illegal in a Bento name. */
     private String cleanForBento(String name) {
-    StringBuffer sb = new StringBuffer(name);
+        StringBuffer sb = new StringBuffer(name);
         for (int i = 0; i < sb.length(); i++) {
             char c = sb.charAt(i);
             if (c <= ' ' || c == '-') {
-            sb.setCharAt(i, '_');
+                sb.setCharAt(i, '_');
             }
         }
         return sb.toString();
@@ -333,9 +333,9 @@ public class BentoSite extends BentoDomain {
             boolean handleAsObj = (pageName.charAt(0) == '$' || handleAsObject(pageName));
 
             if (pageName.equalsIgnoreCase("$debug")) {
-            BentoDebugger debugger = context.getDebugger();
+                BentoDebugger debugger = context.getDebugger();
             if (debugger == null) {
-            debugger = createDebugger();
+                debugger = createDebugger();
             }
             
             } else if (pageName.equalsIgnoreCase("$stat")) {
@@ -348,7 +348,7 @@ public class BentoSite extends BentoDomain {
                 printSource(out);
 
             } else if (hasGeneralResponse || handleAsObj || pageName.indexOf(".$") > -1) {
-            respondWithPage = false;
+                respondWithPage = false;
                 Instantiation instance = null;
                 String objName = null;
                 if (handleAsObj) {
@@ -438,12 +438,13 @@ public class BentoSite extends BentoDomain {
 
                 } catch (Redirection r) {
                     String location = r.getLocation();
-                    if (location.equals(Redirection.STANDARD_ERROR)) {
-                    if (respondWithPage) {
-                    r.setLocation(Redirection.STANDARD_ERROR_PAGE);
-                    } else {
-                    r.setLocation(Redirection.STANDARD_ERROR_DIV);
-                    }
+                    if (location == null || location.length() < 1 || location.equals(Redirection.STANDARD_ERROR)) {
+                        if (respondWithPage) {
+                            location = Redirection.STANDARD_ERROR_PAGE;
+                        } else {
+                            location = Redirection.STANDARD_ERROR_DIV;
+                        }
+                        r.setLocation(location);
                     }
                     recordRequest(location, redirectTracker);
                     throw r;
@@ -456,10 +457,10 @@ public class BentoSite extends BentoDomain {
     }
 
     private BentoDebugger createDebugger() {
-return new SimpleDebugger();
-}
+        return new SimpleDebugger();
+    }
 
-public boolean respond(Instantiation page, Context context, PrintWriter out) throws Redirection {
+    public boolean respond(Instantiation page, Context context, PrintWriter out) throws Redirection {
         
         String pageName = page.getName();
         recordRequest(pageName, pageTracker);
@@ -501,8 +502,9 @@ public boolean respond(Instantiation page, Context context, PrintWriter out) thr
 
         } catch (Redirection r) {
             String location = r.getLocation();
-            if (location.equals(Redirection.STANDARD_ERROR)) {
-                r.setLocation(Redirection.STANDARD_ERROR_PAGE);
+            if (location == null || location.length() < 1 || location.equals(Redirection.STANDARD_ERROR)) {
+                location = Redirection.STANDARD_ERROR_PAGE;
+                r.setLocation(location);
             }
             recordRequest(location, redirectTracker);
             throw r;
@@ -582,7 +584,7 @@ public boolean respond(Instantiation page, Context context, PrintWriter out) thr
                 while (it.hasNext()) {
                     Object element = it.next();
                     if (element instanceof Value) {
-                    element = ((Value) element).getValue();
+                        element = ((Value) element).getValue();
                     }
                     if (isCollection(element)) {
                         sb.append(getStringForCollection(element));
@@ -619,10 +621,10 @@ public boolean respond(Instantiation page, Context context, PrintWriter out) thr
                     sb.append(": ");
                     Object element = map.get(key);
                     if (element == null) {
-                    sb.append("null");
+                        sb.append("null");
                     } else {
                         if (element instanceof Value) {
-                        element = ((Value) element).getValue();
+                            element = ((Value) element).getValue();
                         }
                         if (isCollection(element)) {
                             sb.append(getStringForCollection(element));
