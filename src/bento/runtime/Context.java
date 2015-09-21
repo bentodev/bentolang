@@ -1202,16 +1202,24 @@ public class Context {
                             Object keyObj = null;
                             if (keepDef != null && keepDef.hasChildDefinition(kh.byName.getName())) {
                                 // temporarily restore the stack in case the definition has to access
-                                // parameters that have been unpushed
-                                for (int j = 0; j < numUnpushes; j++) {
+                                // parameters that have been unpushed; however, keep track with numUnpushes
+                                // so as to not throw off the finally clause should there be an
+                                // exception or redirection;
+                                int rememberUnpushes = numUnpushes;
+                                for (int j = 0; j < rememberUnpushes; j++) {
                                     repush();
+                                    numUnpushes--;
                                 }
                                 ParameterList params = keepDef.getParamsForArgs(args, this);
-                                push(keepDef, params, args, false);
-                                keyObj = keepDef.getChildData(kh.byName, null, this, args);
-                                pop();
-                                for (int j = 0; j < numUnpushes; j++) {
+                                try {
+                                    push(keepDef, params, args, false);
+                                    keyObj = keepDef.getChildData(kh.byName, null, this, args);
+                                } finally {
+                                    pop();
+                                }
+                                for (int j = 0; j < rememberUnpushes; j++) {
                                     unpush();
+                                    numUnpushes++;
                                 }
                             } else {
                                 keyObj = getData(null, kh.byName.getName(), args, null);

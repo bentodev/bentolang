@@ -224,9 +224,19 @@ public class NamedDefinition extends AnonymousDefinition {
     }
 
    
-    /** Returns true if this parameter represents a collection. */
+    /** Returns true if this definition represents a collection. */
     public boolean isCollection() {
         return getType().isCollection();
+    }
+
+    /** Returns true if this definition represents an array. */
+    public boolean isArray() {
+        return getType().isArray();
+    }
+
+    /** Returns true if this definition represents a table. */
+    public boolean isTable() {
+        return getType().isTable();
     }
 
     /** Returns true if the passed definition either equals this definition or is included
@@ -931,15 +941,79 @@ public class NamedDefinition extends AnonymousDefinition {
     }
 
     public CollectionDefinition getCollectionDefinition(Context context, ArgumentList args) throws Redirection {
-    	Definition superDef = getSuperDefinition(context);
-    	if (superDef == null) {
-    		return null;
-    	} else {
+        Definition superDef = getSuperDefinition(context);
+        if (superDef == null) {
+            return null;
+        } else {
             return superDef.getCollectionDefinition(context, args);
-    	}
+        }
     }
 
 
+    /** Calls the generic version of createCollectionInstance. */
+    public CollectionInstance createCollectionInstance(Context context, ArgumentList args, List<Index> indexes) throws Redirection {
+        return CollectionBuilder.createCollectionInstanceForDef(this, context, args, indexes, null);
+    }
+
+    /** Calls createCollectionInstance for the passed object. */
+    public CollectionInstance createCollectionInstance(Context context, ArgumentList args, List<Index> indexes, Object collectionData) throws Redirection {
+        return CollectionBuilder.createCollectionInstanceForDef(this, context, args, indexes, collectionData);
+    }
+
+    /** Returns an instance of this collection in the specified context with the specified
+     *  arguments.
+     */
+    public CollectionInstance getCollectionInstance(Context context, ArgumentList args, List<Index> indexes) throws Redirection {
+        CollectionInstance collection = null;
+        String name = getName();
+        String fullName = getFullNameInContext(context);
+        Definition defInCache = null;
+        Definition nominalDefInCache = null;
+
+        if (getDurability() != Definition.DYNAMIC && (args == null || !args.isDynamic())) {
+            //cachevlog("  = = =]  collection: retrieving " + name + " from cache [= = = ");
+
+            Object collectionObject = null;
+            Holder holder = context.getDefHolder(name, fullName, args, indexes, false);
+            if (holder != null && holder.resolvedInstance != null && holder.resolvedInstance instanceof CollectionInstance) {
+                collectionObject = holder.resolvedInstance;
+            } else {
+                collectionObject = context.getData(this, name, args, null);
+            }
+            if (collectionObject instanceof CollectionInstance) {
+                collection = (CollectionInstance) collectionObject;
+
+            // externally-created collections might not be wrapped in a CollectionInstance yet
+            } else if (collectionObject != null) {
+                collection = createCollectionInstance(context, args, indexes, collectionObject);
+                //context.putData(this, args, null, name, modifier, collection);
+            }
+
+            holder = context.getCachedHolderForDef(this, args, indexes);
+            if (holder != null) {
+                defInCache = holder.def;
+                nominalDefInCache = holder.nominalDef;
+            }
+            
+            //cachevlog("  = = =]  " + name + " collection data: " + (collection == null ? "null" : collection.toString()));
+        }
+
+        if (collection == null || !(equals(defInCache) || equals(nominalDefInCache))) {
+            collection = createCollectionInstance(context, args, indexes);
+            //cachevlog("  = = =]  collection: storing data for " + name + " in cache [= = = ");
+            ResolvedInstance ri = null;
+            if (collection instanceof ResolvedInstance) {
+                ri = (ResolvedInstance) collection;
+            }
+            
+            context.putData(this, args, this, args, null, name, collection, ri);
+            //cachevlog("  = = =]  " + name + " collection data: " + (collection == null ? "null" : collection.toString()));
+            
+        }
+        return collection;
+        
+    }
+    
     protected Definition getExplicitDefinition(NameNode node, ArgumentList args, Context context) throws Redirection {
         Definition def = getExplicitChildDefinition(node);
         if (def != null) {
@@ -1476,133 +1550,138 @@ if (node.getName().equals("is_available")) {
         if (indexes != null && indexes.size() > 0) {
             int numPushes = 0;
             try {
+                Definition elementRef = null;
+                
                 // first look to see if the collection already exists in the cache
                 Holder holder = context.peek().getDefHolder(def.getName(), def.getFullNameInContext(context), null, false);
-                if (holder != null && holder.def != null) {
-                    Definition hdef = holder.def;
-                    if (CollectionDefinition.isCollectionObject(holder.data)) {
-                        while (hdef != null && !(hdef instanceof CollectionDefinition)) {
-                            hdef = hdef.getSuperDefinition(context);
-                        }
-                        if (hdef != null && hdef instanceof CollectionDefinition) {
-                            CollectionInstance collection = ((CollectionDefinition) hdef).createCollectionInstance(context, args, indexes, holder.data);
-                            if (collection != null) {
-                                def = collection.getDefinition();
-                            }
+                if (holder != null && holder.def != null && holder.def instanceof NamedDefinition) {
+                    NamedDefinition hdef = (NamedDefinition) holder.def;
+                    if (CollectionDefinition.isCollectionObject(holder.data) && hdef != null && hdef.isCollection()) {
+                        CollectionInstance collection = hdef.createCollectionInstance(context, parentArgs, indexes, holder.data);
+                        if (collection != null) {
+                            elementRef = new ElementReference(collection, indexes);
+                        } else {
+                            def = collection.getDefinition();
                         }
                     }
                 }
                 
-                while (def.isReference() && !(def instanceof CollectionDefinition)) {
-                    params = def.getParamsForArgs(args, context);
-                    context.push(def, params, args, false);
-                    numPushes++;
-                    Instantiation refInstance = (Instantiation) def.getContents();
-                    Definition childDef = null;
-                    
-                    // this is to get indexed aliases to work right.  A bit hacky.
-                    if (def instanceof ElementReference) {
-                        Definition elementDef = ((ElementReference) def).getElementDefinition(context);
-                        childDef = (elementDef != null ? elementDef : (Definition) refInstance.getDefinition(context));
-                    } else if (refInstance != null) {
-                        childDef = (Definition) refInstance.getDefinition(context);
-                    }
-                    if (childDef != null) {
-                        // if the ref is complex, track back through prefix supers and aliases
-                        BentoNode ref = refInstance.getReference();
-                        if (ref instanceof ComplexName) {
-                            NameNode refName = (NameNode) ref;
-                            ArgumentList refArgs = args;
-                            n = ref.getNumChildren();
-                            while (n > 1) {
-                                NameNode prefix = (NameNode) refName.getChild(0);
-                                refName = new ComplexName(refName, 1, n);
-                                n--;
+                if (elementRef == null) {
+                    while (def.isReference() && !def.isCollection()) {
+                        params = def.getParamsForArgs(args, context);
+                        context.push(def, params, args, false);
+                        numPushes++;
+                        Instantiation refInstance = (Instantiation) def.getContents();
+                        Definition childDef = null;
+                        
+                        // this is to get indexed aliases to work right.  A bit hacky.
+                        if (def instanceof ElementReference) {
+                            Definition elementDef = ((ElementReference) def).getElementDefinition(context);
+                            childDef = (elementDef != null ? elementDef : (Definition) refInstance.getDefinition(context));
+                        } else if (refInstance != null) {
+                            childDef = (Definition) refInstance.getDefinition(context);
+                        }
+                        if (childDef != null) {
+                            // if the ref is complex, track back through prefix supers and aliases
+                            BentoNode ref = refInstance.getReference();
+                            if (ref instanceof ComplexName) {
+                                NameNode refName = (NameNode) ref;
+                                ArgumentList refArgs = args;
+                                n = ref.getNumChildren();
+                                while (n > 1) {
+                                    NameNode prefix = (NameNode) refName.getChild(0);
+                                    refName = new ComplexName(refName, 1, n);
+                                    n--;
+                                    
+                                    ArgumentList prefixArgs = prefix.getArguments();
+                                    Instantiation prefixInstance = new Instantiation(prefix, def);
+                                    Definition prefixDef = (Definition) prefixInstance.getDefinition(context);  // lookup(context, false);
+                                    numPushes += context.pushSupersAndAliases(def, refArgs, prefixDef);
+                                    def = prefixDef;
+                                    refArgs = prefixArgs;
+                                }
+                                numPushes += context.pushSupersAndAliases(def, refArgs, childDef);
                                 
-                                ArgumentList prefixArgs = prefix.getArguments();
-                                Instantiation prefixInstance = new Instantiation(prefix, def);
-                                Definition prefixDef = (Definition) prefixInstance.getDefinition(context);  // lookup(context, false);
-                                numPushes += context.pushSupersAndAliases(def, refArgs, prefixDef);
-                                def = prefixDef;
-                                refArgs = prefixArgs;
                             }
-                            numPushes += context.pushSupersAndAliases(def, refArgs, childDef);
-                            
+                            def = childDef;
+                        } else {
+                            def = null;
+                            break;
                         }
-                        def = childDef;
+                        args = refInstance.getArguments();
+                    }
+                
+                    CollectionDefinition collectionDef = null;
+                    if (def != null) {
+                        collectionDef = def.getCollectionDefinition(context, parentArgs);
+        
                     } else {
-                        def = null;
-                        break;
-                    }
-                    args = refInstance.getArguments();
-                }
-            
-                CollectionDefinition collectionDef = null;
-                if (def != null && def instanceof CollectionDefinition) {
-                    collectionDef = (CollectionDefinition) def;
-    
-                } else {
-                    while (numPushes-- > 0) {
-                        context.pop();
-                    }
-    
-                    // find array definition
-                    for (NamedDefinition nd = getSuperDefinition(); nd != null; nd = nd.getSuperDefinition()) {
-                        if (nd instanceof ComplexDefinition) {
-                            def = ((ComplexDefinition) nd).getExplicitDefinition(node, args, context);
-                            if (def != null && def instanceof CollectionDefinition) {
-                                collectionDef = (CollectionDefinition) def;
-                                break;
-                            }
+                        while (numPushes-- > 0) {
+                            context.pop();
                         }
-                    }
-                    if (collectionDef == null) {
-                        Definition owner = getOwner();
-                        Iterator<Context.Entry> it = context.iterator();
-                        while (it.hasNext()) {
-                            Context.Entry entry = (Context.Entry) it.next();
-                            Definition defcon = entry.def;
-                            // avoid infinite recursion
-                            if (!defcon.equals(this)) {
-                                def = defcon.getChildDefinition(node, args, null, parentArgs, context, this);
+        
+                        // find array definition
+                        for (NamedDefinition nd = getSuperDefinition(); nd != null; nd = nd.getSuperDefinition()) {
+                            if (nd instanceof ComplexDefinition) {
+                                def = ((ComplexDefinition) nd).getExplicitDefinition(node, args, context);
                                 if (def != null && def instanceof CollectionDefinition) {
                                     collectionDef = (CollectionDefinition) def;
                                     break;
                                 }
                             }
                         }
-                        if (collectionDef == null) {   // not in the class hierarchy, try the container hierarchy
-                            it = context.iterator();
+                        if (collectionDef == null) {
+                            Definition owner = getOwner();
+                            Iterator<Context.Entry> it = context.iterator();
                             while (it.hasNext()) {
                                 Context.Entry entry = (Context.Entry) it.next();
                                 Definition defcon = entry.def;
                                 // avoid infinite recursion
                                 if (!defcon.equals(this)) {
-                                    for (owner = defcon.getOwner(); owner != null; owner = owner.getOwner()) {
-                                        def = owner.getChildDefinition(node, args, null, parentArgs, context, this);
-                                        if (def != null && def instanceof CollectionDefinition) {
-                                            collectionDef = (CollectionDefinition) def;
-                                            break;
-                                        }
-                                    }
-                                    if (collectionDef != null) {
+                                    def = defcon.getChildDefinition(node, args, null, parentArgs, context, this);
+                                    if (def != null && def instanceof CollectionDefinition) {
+                                        collectionDef = (CollectionDefinition) def;
                                         break;
                                     }
                                 }
                             }
+                            if (collectionDef == null) {   // not in the class hierarchy, try the container hierarchy
+                                it = context.iterator();
+                                while (it.hasNext()) {
+                                    Context.Entry entry = (Context.Entry) it.next();
+                                    Definition defcon = entry.def;
+                                    // avoid infinite recursion
+                                    if (!defcon.equals(this)) {
+                                        for (owner = defcon.getOwner(); owner != null; owner = owner.getOwner()) {
+                                            def = owner.getChildDefinition(node, args, null, parentArgs, context, this);
+                                            if (def != null && def instanceof CollectionDefinition) {
+                                                collectionDef = (CollectionDefinition) def;
+                                                break;
+                                            }
+                                        }
+                                        if (collectionDef != null) {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (collectionDef == null) {
+                            log(node.getName() + " not found.");
+                            return null;
                         }
                     }
-                    if (collectionDef == null) {
-                        log(node.getName() + " not found.");
-                        return null;
+         
+                    while (numPushes-- > 0) {
+                        context.pop();
                     }
+                    elementRef = collectionDef.getElementReference(context, args, indexes);
                 }
-     
-                while (numPushes-- > 0) {
-                    context.pop();
+                
+                if (elementRef != null) {
+                    def = elementRef;
+                    indexes = null;
                 }
-                def = collectionDef.getElementReference(context, args, indexes);
-                indexes = null;
                 
             } finally {
                 while (numPushes-- > 0) {

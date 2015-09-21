@@ -278,62 +278,6 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
         return majorIsTable;
     }
 
-    /** Adds the specified element to this definition. */
-//    abstract public void add(Object element);
-
-    /** Returns an instance of this collection in the specified context with the specified
-     *  arguments.
-     */
-    public CollectionInstance getCollectionInstance(Context context, ArgumentList args, List<Index> indexes) throws Redirection {
-        CollectionInstance collection = null;
-        String name = getName();
-        String fullName = getFullNameInContext(context);
-        Definition defInCache = null;
-        Definition nominalDefInCache = null;
-
-        if (getDurability() != Definition.DYNAMIC && (args == null || !args.isDynamic())) {
-            //cachevlog("  = = =]  collection: retrieving " + name + " from cache [= = = ");
-
-            Object collectionObject = null;
-            Holder holder = context.getDefHolder(name, fullName, args, indexes, false);
-            if (holder != null && holder.resolvedInstance != null && holder.resolvedInstance instanceof CollectionInstance) {
-                collectionObject = holder.resolvedInstance;
-            } else {
-                collectionObject = context.getData(this, name, args, null);
-            }
-            if (collectionObject instanceof CollectionInstance) {
-                collection = (CollectionInstance) collectionObject;
-
-            // externally-created collections might not be wrapped in a CollectionInstance yet
-            } else if (collectionObject != null) {
-                collection = createCollectionInstance(context, args, indexes, collectionObject);
-                //context.putData(this, args, null, name, modifier, collection);
-            }
-
-            holder = context.getCachedHolderForDef(this, args, indexes);
-            if (holder != null) {
-                defInCache = holder.def;
-                nominalDefInCache = holder.nominalDef;
-            }
-            
-            //cachevlog("  = = =]  " + name + " collection data: " + (collection == null ? "null" : collection.toString()));
-        }
-
-        if (collection == null || !(equals(defInCache) || equals(nominalDefInCache))) {
-            collection = createCollectionInstance(context, args, indexes);
-            //cachevlog("  = = =]  collection: storing data for " + name + " in cache [= = = ");
-            ResolvedInstance ri = null;
-            if (collection instanceof ResolvedInstance) {
-                ri = (ResolvedInstance) collection;
-            }
-            
-            context.putData(this, args, this, args, null, name, collection, ri);
-            //cachevlog("  = = =]  " + name + " collection data: " + (collection == null ? "null" : collection.toString()));
-            
-        }
-        return collection;
-        
-    }
 
     /** Creates a resolved instance of this collection in the specified context with the specified
      *  arguments.

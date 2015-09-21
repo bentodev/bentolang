@@ -378,7 +378,7 @@ public class ForStatement extends AbstractConstruction implements ConstructionCo
                         def = instance.getUltimateDefinition(context);
 
                         if (def != null && def != lastDef) {
-                        	lastDef = def;
+                            lastDef = def;
                             if (!def.isExternal()) {
                                 NameNode nameNode = instance.getReferenceName();
                                 if (nameNode != null && nameNode.isComplex()) {
@@ -392,6 +392,10 @@ public class ForStatement extends AbstractConstruction implements ConstructionCo
                                 context.push(def, params, args, true);
                                 numPushes++;
                                 instance = def.getAliasInstanceInContext(context);
+                                if (instance == null) {
+                                    instance = lastInstance;
+                                    break;
+                                }
                             }
                         } else if (def == null) {
                             log("Cannot find definition for instance " + instance.getName() + " in for statement.");
