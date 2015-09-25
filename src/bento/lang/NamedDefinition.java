@@ -1068,7 +1068,7 @@ public class NamedDefinition extends AnonymousDefinition {
             throw new Redirection(Redirection.STANDARD_ERROR, "getChild requires a non-empty context; passed context is empty.");
         }
         NamedDefinition instantiatedDef = (NamedDefinition) context.peek().def;
-if (node.getName().equals("is_available")) {
+if (node.getName().equals("serialize")) {
   System.out.println("NamedDef 998");
 }
     
@@ -1452,7 +1452,7 @@ if (node.getName().equals("is_available")) {
                             }
                         }
                     }
-                } else  {
+                } else if (!this.equals(resolver)) {
                     Type type = construction.getType(context, this);
                     if (type != null && type != DefaultType.TYPE && !type.isPrimitive()) {
                         Definition runtimeDef = type.getDefinition();

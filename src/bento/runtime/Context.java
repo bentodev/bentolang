@@ -909,7 +909,9 @@ public class Context {
             Type st = definition.getSuper(this);
             
             if (!constructed && superDef != null && definition.getName() != Name.SUB) {
-                
+if ("piece_serializer".equals(definition.getName())) {
+ System.out.println("ctx 913");
+}
                 // check to see if this is an alias, and the alias definition extends or equals the
                 // superdefinition, in which case we shouldn't bother constructing the superdef here,
                 // it will get constructed when the alias is constructed
