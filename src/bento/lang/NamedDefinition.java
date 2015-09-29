@@ -941,6 +941,14 @@ public class NamedDefinition extends AnonymousDefinition {
     }
 
     public CollectionDefinition getCollectionDefinition(Context context, ArgumentList args) throws Redirection {
+        if (isAlias()) {
+            Instantiation aliasInstance = getAliasInstance();
+            Definition aliasDef = aliasInstance.getDefinition(context, this);
+            if (aliasDef != null) {
+                return aliasDef.getCollectionDefinition(context, aliasInstance.getArguments());
+            }            
+        }
+        
         Definition superDef = getSuperDefinition(context);
         if (superDef == null) {
             return null;
@@ -1068,7 +1076,7 @@ public class NamedDefinition extends AnonymousDefinition {
             throw new Redirection(Redirection.STANDARD_ERROR, "getChild requires a non-empty context; passed context is empty.");
         }
         NamedDefinition instantiatedDef = (NamedDefinition) context.peek().def;
-if (node.getName().equals("serialize")) {
+if (node.getName().equals("cell_pos")) {
   System.out.println("NamedDef 998");
 }
     
@@ -1561,7 +1569,7 @@ if (node.getName().equals("serialize")) {
                         if (collection != null) {
                             elementRef = new ElementReference(collection, indexes);
                         } else {
-                            def = collection.getDefinition();
+                            def = hdef;
                         }
                     }
                 }

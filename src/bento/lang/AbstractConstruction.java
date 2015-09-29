@@ -361,10 +361,10 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
             return staticData;
 
         } else {
-if (getReferenceName() != null && "piece_serializer".equals(getReferenceName().getName())) {
+if (getReferenceName() != null && "cell_pos".equals(getReferenceName().getName())) {
  System.out.println("AbsConst 369");
 }
-        	Definition defInCache = null;
+            Definition defInCache = null;
             Definition nominalDefInCache = null;
             String name = getDefinitionName();
             Holder holder = null;

@@ -909,7 +909,7 @@ public class Context {
             Type st = definition.getSuper(this);
             
             if (!constructed && superDef != null && definition.getName() != Name.SUB) {
-if ("piece_serializer".equals(definition.getName())) {
+if ("is_hit".equals(definition.getName())) {
  System.out.println("ctx 913");
 }
                 // check to see if this is an alias, and the alias definition extends or equals the
@@ -1279,7 +1279,7 @@ if ("piece_serializer".equals(definition.getName())) {
     private void removeDynamicKeeps(List<String>[] allAddedKeeps) {
         Iterator<Entry> entryIt = iterator();
         int i = 0;
-        while (entryIt.hasNext()) {
+        while (entryIt.hasNext() && i < allAddedKeeps.length) {
             Entry entry = entryIt.next();
             try {
                 List<String> addedKeeps = allAddedKeeps[i];
@@ -1986,11 +1986,17 @@ if ("piece_serializer".equals(definition.getName())) {
                                 if (instance.isSuper() && argArgs == null) {
                                     argArgs = topEntry.args;
                                 }
-                                if (argArgs != null || indexes != null) {
-                                    instance = new Instantiation(instance, argArgs, indexes);
-                                    indexes = null;
+                                if (argArgs != null) {
+                                    if (indexes == null || instance.getIndexes() == null) {
+                                        instance = new Instantiation(instance, argArgs, indexes);
+                                        indexes = null;
+                                    } else {
+                                        instance = new Instantiation(instance, argArgs, instance.getIndexes());
+                                    }
                                 }
-                                
+if ("cell_pos".equals(instance.getReferenceName().getName())){
+  System.out.println("ctx 1994");
+}
                                 data = instance.getData(this);
                             }
                             
