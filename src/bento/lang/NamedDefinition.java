@@ -944,7 +944,7 @@ public class NamedDefinition extends AnonymousDefinition {
         if (isAlias()) {
             Instantiation aliasInstance = getAliasInstance();
             Definition aliasDef = aliasInstance.getDefinition(context, this);
-            if (aliasDef != null) {
+            if (aliasDef != null && aliasDef.isCollection()) {
                 return aliasDef.getCollectionDefinition(context, aliasInstance.getArguments());
             }            
         }
@@ -1448,7 +1448,7 @@ if (node.getName().equals("cell_pos")) {
                             }
                         }
         
-                        if (contentDef != null && contentDef.getNameNode() != null && (!contentDef.isIdentity() || !contentDef.getNameNode().equals(name))) { // && !contentDef.equals(resolver)) {
+                        if (contentDef != null && contentDef.getNameNode() != null && (!contentDef.isIdentity() || !contentDef.getNameNode().equals(name)) && !contentDef.getName().equals(Name.THIS)) { // && !contentDef.equals(resolver)) {
                             context.push(contentDef, contentParams, contentArgs, false);
                             try {
                                 Object child = context.getDescendant(contentDef, contentArgs, new ComplexName(node), generate, parentObj);
@@ -1462,10 +1462,12 @@ if (node.getName().equals("cell_pos")) {
                     }
                 } else if (!this.equals(resolver)) {
                     Type type = construction.getType(context, this);
-                    if (type != null && type != DefaultType.TYPE && !type.isPrimitive()) {
+                    if (type != null && type != DefaultType.TYPE && !type.isPrimitive() && !type.equals(getType())) {
                         Definition runtimeDef = type.getDefinition();
-                        if (runtimeDef != null && runtimeDef.canHaveChildDefinitions()) {
-                            Object child = runtimeDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
+                        if (runtimeDef != null && runtimeDef.getName() != Name.THIS && runtimeDef.canHaveChildDefinitions()) {
+                            // pass false for trySuper because the super of the parent should be tried first.  What would be better
+                            // would be to pass false for trySuper here only if the super is also a super of the parent. 
+                            Object child = runtimeDef.getChild(node, args, indexes, parentArgs, context, generate, false, parentObj, resolver);
                             if ((generate && child != UNDEFINED) || (!generate && child != null)) {
                                 return child;
                             }

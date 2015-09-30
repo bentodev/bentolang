@@ -44,9 +44,6 @@ public class Holder {
         this.def = def;
         this.args = args;
         this.data = data;
-if (data instanceof BentoObjectWrapper) {
- System.out.println("Holder 48");    
-}
         this.resolvedInstance = resolvedInstance;
     }
 

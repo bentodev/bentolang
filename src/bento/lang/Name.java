@@ -113,4 +113,8 @@ public interface Name {
     public final static String UNDER = "under";
 
     public String getName();
+    
+    /** Returns the number of parts in this name. */
+    public int numParts();
+    
 }

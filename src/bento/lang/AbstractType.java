@@ -243,6 +243,11 @@ abstract public class AbstractType extends NameNode implements Type {
         if (this.equals(type)) {
             return 0;
         }
+        if (numParts() != type.numParts()){
+            
+        }
+        
+        
         if (getDims().size() > 0 || type.getDims().size() > 0) {
             Type thisType = getBaseType();
             Type otherType = type.getBaseType();

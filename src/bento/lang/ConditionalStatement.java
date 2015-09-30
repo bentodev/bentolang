@@ -179,7 +179,7 @@ public class ConditionalStatement extends AbstractConstruction implements Constr
 
     public Type getType(Context context, Definition resolver) {
         try {
-        	if (valueOf(condition, context).getBoolean()) {
+            if (valueOf(condition, context).getBoolean()) {
                 if (body != null) {
                     return body.getType(context, resolver);
                 }

@@ -21,7 +21,7 @@ import java.util.Iterator;
  * @version $Revision: 1.9 $
  */
 
-public interface CollectionInstance extends Name {
+public interface CollectionInstance {
 
     /** Returns the object containing the collection.  The collection is shallowly
      *  instantiated; i.e., the container (table or array) is instantiated but the
@@ -31,6 +31,8 @@ public interface CollectionInstance extends Name {
     public Object getCollectionObject() throws Redirection;
 
     public int getSize();
+    
+    public String getName();
 
     public Iterator<Definition> iterator();
     

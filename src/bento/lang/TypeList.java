@@ -435,6 +435,10 @@ public class TypeList extends ListNode<Type> implements Type {
         return typeClass;
     }
 
+    public int numParts() {
+        return -1;
+    }
+
     public int levelsBelow(Type type, Context context) {
         if (this.equals(type)) {
             return 0;
@@ -747,7 +751,7 @@ class MultiDefinition extends NamedDefinition {
         sb.append(']');
         return sb.toString();
     }
-
+    
     /** Returns true if any of the definitions return true.
      */
     public boolean hasNext(Context context) {

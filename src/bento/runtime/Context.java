@@ -894,6 +894,9 @@ public class Context {
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
 
+if (definition.getName().contains("piece")) {
+ System.out.println("ctx 898: " + definition.getName());    
+}
             // get the arguments and parameters, if any, to push on the
             // context stack with the definition
             params = definition.getParamsForArgs(args, this);
@@ -909,9 +912,7 @@ public class Context {
             Type st = definition.getSuper(this);
             
             if (!constructed && superDef != null && definition.getName() != Name.SUB) {
-if ("is_hit".equals(definition.getName())) {
- System.out.println("ctx 913");
-}
+
                 // check to see if this is an alias, and the alias definition extends or equals the
                 // superdefinition, in which case we shouldn't bother constructing the superdef here,
                 // it will get constructed when the alias is constructed
@@ -1994,9 +1995,6 @@ if ("is_hit".equals(definition.getName())) {
                                         instance = new Instantiation(instance, argArgs, instance.getIndexes());
                                     }
                                 }
-if ("cell_pos".equals(instance.getReferenceName().getName())){
-  System.out.println("ctx 1994");
-}
                                 data = instance.getData(this);
                             }
                             

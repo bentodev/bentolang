@@ -384,6 +384,11 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
         return ANONYMOUS;
     }
 
+    /** An anonymous name has zero parts. */
+    public int numParts() {
+        return 0;
+    }
+
     public boolean isAnonymous() {
         return true;
     }
