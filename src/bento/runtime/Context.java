@@ -128,7 +128,10 @@ public class Context {
         // which are handled below
         if (definition instanceof ElementReference) {
             try {
-                definition = ((ElementReference) definition).getElementDefinition(this);
+                Definition elementDef = ((ElementReference) definition).getElementDefinition(this);
+                if (elementDef != null) {
+                	definition = elementDef;
+                }
             } catch (Redirection r) {
                 throw new IllegalStateException("Redirection on attempt to get element definition: " + r);
             }
