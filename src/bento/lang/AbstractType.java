@@ -243,11 +243,7 @@ abstract public class AbstractType extends NameNode implements Type {
         if (this.equals(type)) {
             return 0;
         }
-        if (numParts() != type.numParts()){
-            
-        }
-        
-        
+       
         if (getDims().size() > 0 || type.getDims().size() > 0) {
             Type thisType = getBaseType();
             Type otherType = type.getBaseType();
@@ -436,7 +432,12 @@ abstract public class AbstractType extends NameNode implements Type {
 
         } else if (obj instanceof Type) {
             Type type = (Type) obj;
-            if (super.equals(type)) {
+            int theseParts = numParts();
+            int thoseParts = type.numParts();
+            
+            if ((theseParts == thoseParts && super.equals(type))
+                 || (theseParts != thoseParts && getDefinition().equals(type.getDefinition()))) {
+
                 List<Dim> theseDims = getDims();
                 List<Dim> thoseDims = type.getDims();
                 if (theseDims == null || theseDims.size() == 0) {

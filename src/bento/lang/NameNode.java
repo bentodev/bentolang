@@ -2,7 +2,7 @@
  *
  * $Id: NameNode.java,v 1.21 2014/05/19 13:15:20 sthippo Exp $
  *
- * Copyright (c) 2002-2014 by bentodev.org
+ * Copyright (c) 2002-2015 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -25,12 +25,17 @@ public class NameNode extends AbstractNode implements Name {
     public static NameNode ANY = new NameNode("*");
 
     private String name;
+    
+    /** if the name has parts (i.e. contains a dot), parse the name just once
+     *  and cache the parts. 
+     */
+    private String[] parts = null;
 
     /** For optimization, the base class has a place for caching the name; subclasses can put a value here to
      *  avoid recalculating the name on each call.
      */ 
     protected String cachedName = null;
-    protected boolean nameCacheable = false;
+    protected boolean nameCacheable = true;
 
     public NameNode() {
         super();
@@ -51,10 +56,6 @@ public class NameNode extends AbstractNode implements Name {
     public void setName(String name) {
         this.name = name;
         cachedName = stripDelims(name);
-    }
-    
-    public void appendName(String name) {
-        this.name = this.name + name;
     }
     
     /** Returns <code>true</code> */
@@ -176,7 +177,7 @@ public class NameNode extends AbstractNode implements Name {
     }
 
     public String toString(String prefix) {
-        return getName();
+        return name;
     }
 
     public boolean equals(Object obj) {
