@@ -111,7 +111,7 @@ public class Initializer extends BentoVisitor {
                 }
 
             } else if (node instanceof Type) {
-                if (Name.MY.equals(node.getName())) {
+                if (Name.THIS.equals(node.getName())) {
                     BentoNode sibling = node.getNextSibling();
                     
                     ((NameNode) node).setName(sibling.getName());    

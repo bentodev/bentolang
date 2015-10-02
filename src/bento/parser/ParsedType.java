@@ -2,7 +2,7 @@
  *
  * $Id: ParsedType.java,v 1.6 2005/10/08 11:48:08 sthippo Exp $
  *
- * Copyright (c) 2002-2005 by bentodev.org
+ * Copyright (c) 2002-2015 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -18,7 +18,7 @@ import bento.lang.*;
  * @author Michael St. Hippolyte
  * @version $Revision: 1.6 $
  */
-public class ParsedType extends ComplexType implements Initializable {
+public class ParsedType extends ComplexType {
     public ParsedType(int id) {
         super();
     }
@@ -28,23 +28,4 @@ public class ParsedType extends ComplexType implements Initializable {
         return visitor.visit(this, data);
     }
 
-    public void init() {
-        if (children != null && children.length > 0) {
-            String name = ((Name) children[0]).getName();
-            for (int i = 1; i < children.length; i++) {
-                if (children[i] instanceof Any) {
-                    children[i] = new ArgumentList(new SingleItemList(children[i]));
-                    continue;
-
-                } else if (!(children[i] instanceof Name)) {
-                    break;
-                }
-                name = name + '.' + ((Name) children[i]).getName();
-            }
-            setName(name);
-
-        } else {
-            setName(DefaultType.TYPE.getName());
-        }
-    }
 }

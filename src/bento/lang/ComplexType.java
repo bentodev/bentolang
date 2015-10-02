@@ -10,6 +10,7 @@
 
 package bento.lang;
 
+import bento.parser.Initializable;
 import bento.runtime.Context;
 
 import java.util.*;
@@ -21,7 +22,7 @@ import java.util.*;
 * @version $Revision: 1.47 $
 */
 
-public class ComplexType extends AbstractType {
+public class ComplexType extends AbstractType implements Initializable {
 
    private List<Dim> dims = null;
    private ArgumentList args = null;
@@ -63,6 +64,25 @@ public class ComplexType extends AbstractType {
        }
    }
 
+   public void init() {
+       if (children != null && children.length > 0) {
+           String name = ((Name) children[0]).getName();
+           for (int i = 1; i < children.length; i++) {
+               if (children[i] instanceof Any) {
+                   children[i] = new ArgumentList(new SingleItemList(children[i]));
+                   continue;
+
+               } else if (!(children[i] instanceof Name)) {
+                   break;
+               }
+               name = name + '.' + ((Name) children[i]).getName();
+           }
+           setName(name);
+
+       } else {
+           setName(DefaultType.TYPE.getName());
+       }
+   }
 
    /** Find the definition associated with this type.
     */
@@ -89,7 +109,9 @@ public class ComplexType extends AbstractType {
 
        String checkName = this.getName();
        vlog("Resolving type " + checkName + " in " + owner.getFullName() + "...");
-
+if (checkName.equals("ef") || checkName.equals("this")) {
+ System.out.println("ComplexTyps 93" + getName());
+}
        Definition def = null;
        while ((def == null || (def.equals(owner) && !allowCircular)) && container != null) {
            def = container.getExplicitChildDefinition(this);
@@ -171,35 +193,7 @@ public class ComplexType extends AbstractType {
 //       }
    }
 
-   public String getName() {
-       
-       String name = null;
-       BentoNode node = null;
-       int numChildren = getNumChildren();
-       if (numChildren > 0) {
-           for (int i = 0; i < numChildren; i++) {
-               node = getChild(i);
-               // In a type name, Any (i.e. *) is an argument list stand in, not 
-               // part of a compound name 
-               if (node instanceof Any) {
-                   break;
-               } else if (node instanceof Name) {
-                   String n = ((Name) node).getName();
-                   if (name == null) {
-                       name = n;
-                   } else {
-                       name = name + '.' + n;
-                   }
-               } else {
-                   break;
-               }
-           }
-       } else {
-           name = super.getName();
-       }
-       return name;
-   }
-
+   
    public List<Dim> getDims() {
        if (dims == null) {
            int len = getNumChildren();
@@ -292,6 +286,7 @@ public class ComplexType extends AbstractType {
            } else {
                ComplexType baseType = new ComplexType();
                baseType.copyChildren(this, 0, 1);
+               baseType.init();
                baseType.setOwner(getOwner());
                baseType.resolve();
                return baseType.getBaseType();

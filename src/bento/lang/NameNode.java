@@ -11,6 +11,7 @@
 package bento.lang;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * NameNode is the base class of Nodes which represent names (including type
@@ -23,7 +24,7 @@ import java.util.List;
 public class NameNode extends AbstractNode implements Name {
 
     public static NameNode ANY = new NameNode("*");
-
+    
     private String name;
     
     /** if the name has parts (i.e. contains a dot), parse the name just once
@@ -52,6 +53,7 @@ public class NameNode extends AbstractNode implements Name {
     public void setName(String name) {
         this.name = name;
         cachedName = stripDelims(name);
+        parts = cachedName.split("\\.");
     }
     
     /** Returns <code>true</code> */
@@ -85,7 +87,7 @@ public class NameNode extends AbstractNode implements Name {
 
     /** Returns the number of parts in this name.  The base class always returns 1. */
     public int numParts() {
-        return 1;
+        return parts.length;
     }
     
     /** Returns the first part of the name.  The base class simply returns the name. */
