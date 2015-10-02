@@ -504,11 +504,11 @@ public class SiteLoader {
                 }
             } else if (node instanceof Type) {
                 Type type = (Type) node;
-                if (type.getDefinition() == null && !type.isPrimitive()) {
+                if (type.getDefinition() == null && !type.isPrimitive() && !type.isSpecial()) {
                     type.resolve();
-                }
-                if (type.getDefinition() == null && !type.isPrimitive() && !type.isExternal()) {
-                    throw new LinkException("Unable to resolve type " + type.getName());
+                    if (type.getDefinition() == null && !type.isExternal()) {
+                        throw new LinkException("Unable to resolve type " + type.getName());
+                    }
                 }
 
             } else if (node instanceof NamedDefinition) {

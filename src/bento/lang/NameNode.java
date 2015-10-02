@@ -34,8 +34,7 @@ public class NameNode extends AbstractNode implements Name {
     /** For optimization, the base class has a place for caching the name; subclasses can put a value here to
      *  avoid recalculating the name on each call.
      */ 
-    protected String cachedName = null;
-    protected boolean nameCacheable = true;
+    private String cachedName = null;
 
     public NameNode() {
         super();
@@ -43,14 +42,11 @@ public class NameNode extends AbstractNode implements Name {
 
     public NameNode(String name) {
         super();
-        this.name = name;
+        setName(name);
     }
 
     public String getName() {
-        if (cachedName != null) {
-            return cachedName;
-        }
-        return stripDelims(name);
+        return cachedName;
     }
 
     public void setName(String name) {

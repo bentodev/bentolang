@@ -1606,11 +1606,10 @@ void CorrespondingSuperType() #Type:
 void CorrespondingSuperName() #Name:
 {}
 {
-    (      "my"
+    (      "my"   { jjtThis.setName(Name.MY); }
     |
-      "this"
+      "this" { jjtThis.setName(Name.THIS); }
     )
-    { jjtThis.setName(Name.MY); }
 }
 
 void TypeWithArguments() #Type:

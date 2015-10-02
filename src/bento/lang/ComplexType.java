@@ -172,11 +172,7 @@ public class ComplexType extends AbstractType {
    }
 
    public String getName() {
-       if (cachedName != null) {
-           return cachedName;
-       }
-       boolean isCacheable = true; 
-
+       
        String name = null;
        BentoNode node = null;
        int numChildren = getNumChildren();
@@ -194,25 +190,12 @@ public class ComplexType extends AbstractType {
                    } else {
                        name = name + '.' + n;
                    }
-                   if (node instanceof NameNode) {
-                       if (!((NameNode) node).nameCacheable) {
-                           isCacheable = false;
-                       }
-                   } else {
-                       isCacheable = false;
-                   }
-//               } else if (node instanceof Dim) {
-//                   name = name + node.toString();
                } else {
                    break;
                }
            }
        } else {
            name = super.getName();
-       }
-       if (isCacheable) {
-           cachedName = name;
-           nameCacheable = true;
        }
        return name;
    }

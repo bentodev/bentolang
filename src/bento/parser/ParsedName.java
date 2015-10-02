@@ -2,7 +2,7 @@
  *
  * $Id: ParsedName.java,v 1.4 2007/09/21 21:42:50 sthippo Exp $
  *
- * Copyright (c) 2002-2007 by bentodev.org
+ * Copyright (c) 2002-2015 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -22,7 +22,6 @@ public class ParsedName extends NameNode {
 
     public ParsedName(int id) {
         super();
-        nameCacheable = true;
     }
 
     /** Accept the visitor. **/

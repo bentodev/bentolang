@@ -97,11 +97,6 @@ public class ComplexName extends NameNode implements Name {
 
     
     public String getName() {
-        if (cachedName != null) {
-            return cachedName;
-        }
-        boolean isCacheable = true; 
-        
         String name = null;
         Iterator<BentoNode> it = getChildren();
         BentoNode node = null;
@@ -114,20 +109,9 @@ public class ComplexName extends NameNode implements Name {
                 } else {
                     name = name + '.' + n;
                 }
-                if (node instanceof NameNode) {
-                    if (!((NameNode) node).nameCacheable) {
-                        isCacheable = false;
-                    }
-                } else {
-                    isCacheable = false;
-                }
             } else if (node instanceof Dim) {
                 name = name + "[]";
             }
-        }
-        if (isCacheable) {
-            cachedName = name;
-            nameCacheable = true;
         }
         return name;
     }

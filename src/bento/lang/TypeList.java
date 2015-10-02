@@ -113,6 +113,18 @@ public class TypeList extends ListNode<Type> implements Type {
         return true;
     }
 
+    /** Returns true only if every type in the list is special. */
+    public boolean isSpecial() {
+        Iterator<Type> it = iterator();
+        while (it.hasNext()) {
+            Type t = it.next();
+            if (!t.isSpecial()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /** Returns true if the passed type is the same as or is a supertype of any of the
      *  member types in the specified context.
      */

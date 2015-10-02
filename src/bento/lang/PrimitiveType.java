@@ -47,7 +47,6 @@ public class PrimitiveType extends AbstractType {
     public PrimitiveType(Class<?> type) {
         super();
         setType(type);
-        nameCacheable = true;
         // doesn't handle multidimensional types yet
         Dim dim = Dim.createForClass(type);
         if (dim != null) {
@@ -62,7 +61,6 @@ public class PrimitiveType extends AbstractType {
         super();
         setType(type);
         setDims(dims);
-        nameCacheable = true;
     }
     
     /** Returns <code>true</code> */
@@ -71,28 +69,19 @@ public class PrimitiveType extends AbstractType {
     }
 
     protected void setType(Class<?> type) {
-//        if (!type.isPrimitive() && !type.equals(String.class)) {
-//            throw new IllegalArgumentException("Unable to set type; " + type.getName() + " is not a primitive type");
-//        }
         this.type = type;
+        if (type.equals(String.class)) {
+            setName("string");
+
+        } else {
+            // this happens to work because Bento primitive types (other than
+            // string) have the same name as the corresponding Java primitive types
+            setName(type.getName());
+        }
     }
     
     protected void setDims(List<Dim> dims) {
         this.dims = dims;
-    }
-
-    public String getName() {
-        if (cachedName == null) {
-            if (type.equals(String.class)) {
-                cachedName = "string";
-    
-            } else {
-                // this happens to work because Bento primitive types (other than
-                // string) have the same name as the corresponding Java primitive types
-                cachedName = type.getName();
-            }
-        }
-        return cachedName;
     }
 
     public List<Dim> getDims() {

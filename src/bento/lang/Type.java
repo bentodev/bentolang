@@ -36,6 +36,10 @@ public interface Type extends Name {
     /** Returns true if this is a primitive type.
      */
     public boolean isPrimitive();
+    
+    /** Returns true if this is a special type, e.g. <code>this</code>.
+     */
+    public boolean isSpecial();
 
     /** Returns true if the passed type is the same as or is a supertype of
      *  this type in the specified context.
