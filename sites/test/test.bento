@@ -4175,7 +4175,7 @@ kt [=
     =]
 
 
-    test_case dynamic_keep_test [=
+  /--  test_case --/ dynamic_keep_test [=
         int category = caching
         name = "Dynamic Keep Test"
         key = "dynamic_keep"
@@ -4195,7 +4195,7 @@ kt [=
         keep_B [=
             keep by bkey in test_cache: w = "B"
 
-            eval(w);
+            w;
         =]
 
         keep_C [=
@@ -4217,12 +4217,12 @@ kt [=
            d("D");
         =]
 
-        keep_A; 
+     /--   keep_A; --/ 
         keep_B;
         keep_C;
         eval(keep_D);
                 
-        test_cache{"a"};
+     /--   test_cache{"a"}; --/
         test_cache{"b"};
         test_cache{"c"};
         test_cache{"d"};
@@ -4231,17 +4231,17 @@ kt [=
 dkt [=
     test_cache{} = {}
 
-    keep_D [=
-           keep by dkey in test_cache: d(x) = x
-           
-           dkey(k) = k
-           
-           dkey("d");
-           d("D");
-    =]
-    eval(keep_D);         
+        bkey = "b"
+        keep_B [=
+            keep by bkey in test_cache: w = "B"
+
+            eval(w);
+            w;
+        =]
+        
+    keep_B;         
     "-";
-    test_cache{"d"};
+    test_cache{"b"};
 =]
 
     test_case nested_keep_test [=

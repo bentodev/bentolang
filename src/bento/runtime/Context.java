@@ -1183,12 +1183,19 @@ if (definition.getName().contains("piece")) {
         return data;
     }
 
+    private boolean addingDynamicKeeps = false;
+    
     @SuppressWarnings("unchecked")
     private List<String>[] addDynamicKeeps(String name, ArgumentList args) throws Redirection {
+        if (addingDynamicKeeps) {
+            return null;
+        }
+        
         List<String> allAddedKeeps[] = (List<String>[]) new List[size];
         int numUnpushes = 0;
         int i = 0;
         try {
+            addingDynamicKeeps = true;
             while (topEntry != null) {
                 List<String> addedKeeps = null;
                 if (topEntry.dynamicKeeps != null) {
@@ -1276,6 +1283,7 @@ if (definition.getName().contains("piece")) {
                 repush();
                 numUnpushes--;
             }
+            addingDynamicKeeps = false;
         }
         return allAddedKeeps;
     }
@@ -1328,7 +1336,9 @@ if (definition.getName().contains("piece")) {
             // use indexes as part of the key otherwise a cached element may be confused with a cached array 
             String key = addIndexesToKey(name, indexes);
             data = topEntry.get(key, fullName, args, local);
-            removeDynamicKeeps(keeps);
+            if (keeps != null) {
+                removeDynamicKeeps(keeps);
+            }
         }
 
         if (data == null) {
@@ -1507,7 +1517,9 @@ if (definition.getName().contains("piece")) {
         String key = addIndexesToKey(name, indexes);
         List<String>[] keeps = addDynamicKeeps(key, args);
         Holder holder = topEntry.getDefHolder(key, makeGlobalKey(fullName), args, local);
-        removeDynamicKeeps(keeps);
+        if (keeps != null) {
+            removeDynamicKeeps(keeps);
+        }
         
         if (holder == null) {
             holder = getContextHolder(name);
@@ -1551,14 +1563,9 @@ if (definition.getName().contains("piece")) {
             String key = addIndexesToKey(name, indexes);
             topEntry.put(key, nominalDef, nominalArgs, def, args, this, data, resolvedInstance, maxCacheLevels);
             
-//            // if an identity is being instantitated, cache this definition and data for the identity
-//            if (def != null && instantiatedDef != null && instantiatedDef.isIdentity()) {
-//                // but don't overwrite the argument definition with the parameter definition
-//                if (!(def instanceof DefParameter)) {
-//                    topEntry.put(instantiatedDef.getName(), null, def, args, this, data, maxCacheLevels);
-//                }
-//            }
-            removeDynamicKeeps(keeps);
+            if (keeps != null) {
+                removeDynamicKeeps(keeps);
+            }
         }
     }
 

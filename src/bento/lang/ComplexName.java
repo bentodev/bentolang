@@ -2,7 +2,7 @@
  *
  * $Id: ComplexName.java,v 1.14 2014/05/19 13:15:20 sthippo Exp $
  *
- * Copyright (c) 2002-2013 by bentodev.org
+ * Copyright (c) 2002-2015 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -11,6 +11,7 @@
 package bento.lang;
 
 import bento.parser.BentoParser;
+import bento.parser.Initializable;
 
 import java.util.*;
 import java.io.StringReader;
@@ -22,7 +23,7 @@ import java.io.StringReader;
  * @version $Revision: 1.14 $
  */
 
-public class ComplexName extends NameNode implements Name {
+public class ComplexName extends NameNode implements Name, Initializable {
 
     public ComplexName() {
         super();
@@ -33,8 +34,10 @@ public class ComplexName extends NameNode implements Name {
         int len = end - start;
         children = new AbstractNode[len];
         for (int i = 0; i < len; i++) {
-            children[i] = node.children[start + i];
+            children[i] = (AbstractNode) node.children[start + i].clone();
+            children[i].parent = this;
         }
+        super.setName(computeName());
     }
 
     /** Combines two names into a new single name */
@@ -47,56 +50,64 @@ public class ComplexName extends NameNode implements Name {
 
         if (prefix instanceof ComplexName) {
             for (int i = 0; i < plen; i++) {
-                children[i] = prefix.children[i];
+                children[i] = (AbstractNode) prefix.children[i].clone();
             }
         } else {
-            children[0] = prefix;
+            children[0] = (AbstractNode) prefix.clone();
         }
 
         if (suffix instanceof ComplexName) {
             for (int i = 0; i < slen; i++) {
-                children[plen + i] = suffix.children[i];
+                children[plen + i] = (AbstractNode) suffix.children[i].clone();
             }
         } else {
-            children[plen] = suffix;
+            children[plen] = (AbstractNode) suffix.clone();
         }
+        
+        super.setName(computeName());
     }
 
     public ComplexName(NameNode node) {
         super();
         if (node instanceof ComplexName) {
-            children = node.children;
+            copyChildren(node);
         } else {
-            setChild(0, node);
+            setChild(0, (AbstractNode) node.clone());
         }
+        super.setName(node.getName());
     }
 
 
     public ComplexName(String name) {
         super(name);
-        parseName();
+        parseName(name);
+    }
+
+    public void init() {
+        super.setName(computeName());
     }
 
     public void setName(String name) {
         super.setName(name);
-        parseName();
+        parseName(name);
     }
 
-    private void parseName() {
+    private void parseName(String name) {
         try {
-            BentoParser parser = new BentoParser(new StringReader(super.getName()));
+            BentoParser parser = new BentoParser(new StringReader(name));
             ComplexName generatedName = parser.parseComplexName();
-            children = (AbstractNode[]) generatedName.children.clone();
+            copyChildren(generatedName);
         } catch (Exception e) {
             System.out.println("Exception parsing name in ComplexName: " + e);
             children = new AbstractNode[1];
-            String name = '(' + super.getName() + ')';
+            name = '(' + name + ')';
             children[0] = new NameNode(name);
+            children[0].parent = this;
         }
     }
 
     
-    public String getName() {
+    private String computeName() {
         String name = null;
         Iterator<BentoNode> it = getChildren();
         BentoNode node = null;
@@ -116,34 +127,14 @@ public class ComplexName extends NameNode implements Name {
         return name;
     }
 
-    
-    public String getName(int start, int end) {
-        int len = end - start;
-        String name = null;
-        Iterator<BentoNode> it = getChildren();
-        BentoNode node = null;
-        for (int i = 0; i < start + len; i++) {
-            if (!it.hasNext()) {
-                break;
-            }
-            node = it.next();
-            if (i >= start) {
-                if (node instanceof Name) {
-                    String n = ((Name) node).getName();
-                    if (name == null) {
-                        name = n;
-                    } else {
-                        name = name + '.' + n;
-                    }
-                } else if (node instanceof Dim) {
-                    name = name + "[]";
-                }
-            }
+    public String getName() {
+        String nm = super.getName();
+        if (nm == null) {
+            System.out.println("getName returns null name!!!!");
         }
-        return name;
+        return nm;
     }
-
-    
+   
     /** Returns <code>false</code> */
     public boolean isPrimitive() {
         return false;

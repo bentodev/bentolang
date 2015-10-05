@@ -191,12 +191,17 @@ abstract public class AbstractNode extends BentoCompilerVisitDestination impleme
         }
     }
 
+    void copyChildren(BentoNode node) {
+        copyChildren(node, 0, node.getNumChildren());
+    }
+    
     void copyChildren(BentoNode node, int start, int len) {
         int newLen = Math.min(node.getNumChildren(), start + len) - start;
         if (newLen < 0) newLen = 0;
         AbstractNode c[] = new AbstractNode[newLen];
         for (int i = start; i < start + newLen; i++) {
-            c[i - start] = (AbstractNode) node.getChild(i);
+            c[i - start] = (AbstractNode) ((AbstractNode) node.getChild(i)).clone();
+            c[i - start].parent = this;
         }
         children = c;
     }

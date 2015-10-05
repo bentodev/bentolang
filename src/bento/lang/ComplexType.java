@@ -109,9 +109,6 @@ public class ComplexType extends AbstractType implements Initializable {
 
        String checkName = this.getName();
        vlog("Resolving type " + checkName + " in " + owner.getFullName() + "...");
-if (checkName.equals("ef") || checkName.equals("this")) {
- System.out.println("ComplexTyps 93" + getName());
-}
        Definition def = null;
        while ((def == null || (def.equals(owner) && !allowCircular)) && container != null) {
            def = container.getExplicitChildDefinition(this);

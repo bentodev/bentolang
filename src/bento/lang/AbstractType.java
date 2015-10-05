@@ -436,7 +436,7 @@ abstract public class AbstractType extends NameNode implements Type {
             int thoseParts = type.numParts();
             
             if ((theseParts == thoseParts && super.equals(type))
-                 || (theseParts != thoseParts && getDefinition().equals(type.getDefinition()))) {
+                 || (theseParts != thoseParts && (definition != null && definition.equals(type.getDefinition())))) {
 
                 List<Dim> theseDims = getDims();
                 List<Dim> thoseDims = type.getDims();

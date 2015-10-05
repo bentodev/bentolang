@@ -193,9 +193,9 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
 
     /** ValueSource interface method; returns this Value. **/
     public Value getValue(Context context) throws Redirection {
-    	return this;
+        return this;
     }
-    	         
+                 
     public Object getValue() {
         return value;
     }
@@ -205,14 +205,14 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
     }
 
     public String getString() {
-    	Object value = getValue();
-    	if (value instanceof Byte) {
-    		int ival = ((Byte) value).intValue() & 0xFF;
-    		return Integer.toHexString(ival);
-    		
-    	} else {
+        Object value = getValue();
+        if (value instanceof Byte) {
+            int ival = ((Byte) value).intValue() & 0xFF;
+            return Integer.toHexString(ival);
+            
+        } else {
             return getStringFor(value);
-    	}
+        }
     }
 
     public boolean getBoolean() {
@@ -388,7 +388,7 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
     }
 
     public String toString() {
-    	return getString();
+        return getString();
     }
     
     public String toString(String indent) {
@@ -411,38 +411,38 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
             StringReference stref = (StringReference) value;
             return stref.getString();
         } else if (value instanceof Object[] || value instanceof Collection<?> || value instanceof BentoArray) {
-        	
-        	if (value instanceof BentoArray) {
-        		value = ((BentoArray) value).getArrayObject();
-        		if (value == null) {
-        		    return "";
-        		}
-        	}
-        	if (value instanceof Object[]) {
-	            Object[] objects = (Object[]) value;
-	            if (objects.length == 0) {
-	                return "[]";
-	            } else {
-	                String str = "[" + getStringFor(objects[0]);
-	                for (int i = 1; i < objects.length; i++) {
-	                    str = str + "," + getStringFor(objects[i]);
-	                }
-	                str = str + "]";
-	                return str;
-	            }
-        	} else if (value instanceof Collection<?>) {
-        		String str = "[";
-        		Iterator<?> it = ((Collection<?>) value).iterator();
-        		while (it.hasNext()) {
-        			Object obj = it.next();
-        			str = str + getStringFor(obj);
-        			if (it.hasNext()) {
-        				str = str + ",";
-        			}
-        		}
-        		str = str + "]";
-        		return str;
-        	}
+            
+            if (value instanceof BentoArray) {
+                value = ((BentoArray) value).getArrayObject();
+                if (value == null) {
+                    return "";
+                }
+            }
+            if (value instanceof Object[]) {
+                Object[] objects = (Object[]) value;
+                if (objects.length == 0) {
+                    return "[]";
+                } else {
+                    String str = "[" + getStringFor(objects[0]);
+                    for (int i = 1; i < objects.length; i++) {
+                        str = str + "," + getStringFor(objects[i]);
+                    }
+                    str = str + "]";
+                    return str;
+                }
+            } else if (value instanceof Collection<?>) {
+                String str = "[";
+                Iterator<?> it = ((Collection<?>) value).iterator();
+                while (it.hasNext()) {
+                    Object obj = it.next();
+                    str = str + getStringFor(obj);
+                    if (it.hasNext()) {
+                        str = str + ",";
+                    }
+                }
+                str = str + "]";
+                return str;
+            }
         } else if (value instanceof Name) {
             String name = ((Name) value).getName();
             return (name == null ?  "" : name);
@@ -571,28 +571,28 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
         }
     }
 
-	public String getString(Context context) throws Redirection {
-		return getStringFor(value);
-	}
+    public String getString(Context context) throws Redirection {
+        return getStringFor(value);
+    }
 
-	public byte getByte(Context context) throws Redirection {
-		return (byte) getIntFor(value);
-	}
+    public byte getByte(Context context) throws Redirection {
+        return (byte) getIntFor(value);
+    }
 
-	public char getChar(Context context) throws Redirection {
-		return getCharFor(value);
-	}
+    public char getChar(Context context) throws Redirection {
+        return getCharFor(value);
+    }
 
-	public int getInt(Context context) throws Redirection {
-		return getIntFor(value);
-	}
+    public int getInt(Context context) throws Redirection {
+        return getIntFor(value);
+    }
 
-	public long getLong(Context context) throws Redirection {
-		return getLongFor(value);
-	}
+    public long getLong(Context context) throws Redirection {
+        return getLongFor(value);
+    }
 
-	public double getDouble(Context context) throws Redirection {
+    public double getDouble(Context context) throws Redirection {
         return getDoubleFor(value);
-	}
+    }
 
 }

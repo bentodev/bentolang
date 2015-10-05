@@ -168,4 +168,18 @@ public class ArgumentList extends ListNode<Construction> {
         return new ArgumentList(this);
     }
 
+    public String toString(String prefix) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("(");
+        Iterator<Construction> it = iterator();
+        while (it.hasNext()) {
+            sb.append(it.next().toString());
+            if (it.hasNext()) {
+                sb.append(", ");
+            }
+        }
+        sb.append(")");
+        return sb.toString();
+    }
+
 }

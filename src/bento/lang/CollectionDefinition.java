@@ -92,6 +92,7 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
 
     /** Retrieves from cache or instantiates this definition as an array.
      */
+    @SuppressWarnings("unchecked")
     public List<Object> get_array(Context context) throws Redirection {
         Object data = context.getData(this, getName(), null, null);
         if (data != null && data instanceof List<?>) {
@@ -102,6 +103,7 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
     
     /** Retrieves from cache or instantiates this definition as a table.
      */
+    @SuppressWarnings("unchecked")
     public Map<String, Object> get_table(Context context) throws Redirection {
         Object data = context.getData(this, getName(), null, null);
         if (data != null && data instanceof Map<?,?>) {
@@ -112,6 +114,7 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
 
     /** Instantiates this definition as an array.  
      */
+    @SuppressWarnings("unchecked")
     public List<Object> instantiate_array(Context context) throws Redirection {
         Object arrayObj = getArray(context, null, null).getArrayObject();
         if (arrayObj instanceof List) {

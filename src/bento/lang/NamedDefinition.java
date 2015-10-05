@@ -1433,22 +1433,18 @@ if (node.getName().equals("cell_pos")) {
                     NameNode name = instance.getReferenceName();
                     if (!node.equals(name) && (resolver == null || !resolver.getNameNode().equals(name))) {
                         Definition contentDef = instance.getDefinition(context, this);
-                        
-                        ArgumentList contentArgs = null;
-                        ParameterList contentParams = null;
-        
                         if (contentDef == null || contentDef == this) {
                             Type contentType = instance.getType(context, this);
                             if (contentType != null) {
                                 contentDef = contentType.getDefinition();
-                                if (contentDef != null) {
-                                    contentArgs = instance.getArguments(); // contentType.getArguments(context);
-                                    contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
-                                }
                             }
                         }
-        
                         if (contentDef != null && contentDef.getNameNode() != null && (!contentDef.isIdentity() || !contentDef.getNameNode().equals(name)) && !contentDef.getName().equals(Name.THIS)) { // && !contentDef.equals(resolver)) {
+                            ArgumentList contentArgs = instance.getArguments(); // contentType.getArguments(context);
+if (contentArgs != null && contentArgs.size() > 0) {
+ System.out.println("contentArgs: " + contentArgs.toString(" "));    
+}
+                            ParameterList contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
                             context.push(contentDef, contentParams, contentArgs, false);
                             try {
                                 Object child = context.getDescendant(contentDef, contentArgs, new ComplexName(node), generate, parentObj);
