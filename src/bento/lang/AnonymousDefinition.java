@@ -102,7 +102,7 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
     
     /** Returns the fully qualified name of this definition. */
     public String full_name() {
-    	return getFullName();
+        return getFullName();
     }
     
     /** Returns the simple name of this definition. */
@@ -225,13 +225,13 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
     }
 
     protected void addDescendantsOfType(String typeName, List<Definition> defs, boolean recurseSupers, boolean recurseChildren, Map<String, Definition> visited) {
-    	if (visited.get(getFullName()) != null) {
-    		return;
-    	}
-    	visited.put(getFullName(), this);
-    	
-    	boolean isCollection = isCollectionType(typeName);
-    	
+        if (visited.get(getFullName()) != null) {
+            return;
+        }
+        visited.put(getFullName(), this);
+        
+        boolean isCollection = isCollectionType(typeName);
+        
         BentoNode node = getContents();
         if (node instanceof Definition) {
             Definition def = (Definition) node;
@@ -293,10 +293,10 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
         // if the recurseSupers flag is true, and the supertype hasn't already been handled,
         // call it
         if (recurseSupers) {
-        	Definition superDef = this.getSuperDefinition();
-        	if (superDef != null && visited.get(superDef.getFullName()) == null) {
-        		((AnonymousDefinition) superDef).addDescendantsOfType(typeName, defs, recurseSupers, recurseChildren, visited);
-        	}
+            Definition superDef = this.getSuperDefinition();
+            if (superDef != null && visited.get(superDef.getFullName()) == null) {
+                ((AnonymousDefinition) superDef).addDescendantsOfType(typeName, defs, recurseSupers, recurseChildren, visited);
+            }
         }
     }
     
@@ -429,11 +429,11 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
                 }
                 String ownerName = owner.getFullName();
                 while (ownerName == null || ownerName.length() == 0) {
-                	owner = owner.getOwner();
-                	if (owner == null) {
-                		break;
-                	}
-                	ownerName = owner.getFullName();
+                    owner = owner.getOwner();
+                    if (owner == null) {
+                        break;
+                    }
+                    ownerName = owner.getFullName();
                 }
                 if (ownerName != null && ownerName.length() > 0) {
                     char c = name.charAt(0);
@@ -472,9 +472,9 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
      */
     public boolean equals(Object obj) {
         if (obj instanceof Definition) {
-        	return equals((Definition) obj, null);
+            return equals((Definition) obj, null);
         } else {
-        	return false;
+            return false;
         }
     }
     
@@ -487,9 +487,9 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
      *         specified context.
      */
     public boolean equals(Definition def, Context context) {
-    	if (def == this) {
-    		return true;
-    	}
+        if (def == this) {
+            return true;
+        }
         if (isAnonymous()) {
             return false;
         } else {
@@ -533,21 +533,21 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
      *  be meaningless.
      */
     public boolean hasSub(Context context) {
-    	return false;
+        return false;
     }
     
     /** A <code>next</code> statement in an anonymous definition would
      *  be meaningless.
      */
     public boolean hasNext(Context context) {
-    	return false;
+        return false;
     }
 
     /** Anonymous definitions have no superdefinitions with <code>next</code>
      *  statements; returns null.
      */
     public LinkedList<Definition> getNextList(Context context) {
-    	return null;
+        return null;
     }
     
     /** Anonymous definitions have no supertype; returns null. */
@@ -870,13 +870,13 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
         }
         
         if (childDef != null) {
-        	if (childDef instanceof DefParameter) {
-        		return context.getParameter(childName, false, Object.class);
-        	}
+            if (childDef instanceof DefParameter) {
+                return context.getParameter(childName, false, Object.class);
+            }
 
             if (args == null) {
                 Context.Entry entry = context.peek();
-            	args = entry.args;
+                args = entry.args;
             }
             //context.unpush();
             //int numUnpushes = 1;
@@ -884,7 +884,7 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
             
             try {
                 if (childDef instanceof ElementReference) {
-                	childDef = ((ElementReference) childDef).getElementDefinition(context);
+                    childDef = ((ElementReference) childDef).getElementDefinition(context);
                     if (childDef == null) {
                         throw new Redirection(Redirection.STANDARD_ERROR, "No definition for element " + childName.toString());
                     }
@@ -938,7 +938,7 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
                 //}
             }
             if (data == null) {
-            	data = NullValue.NULL_VALUE;
+                data = NullValue.NULL_VALUE;
             }
         }
         return data;
@@ -1295,19 +1295,19 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
         return sb.toString();
     }
 
-	public String getStringConstant(String name, String valueIfNotFound) {
-    	Definition d = getChildDefinition(new NameNode(name), null);
-    	if ( d != null ) {
-    		AbstractNode contents = d.getContents();
-        	if (( contents != null ) && ( contents instanceof ParsedStringLiteral )) {
-        		return (String)((ParsedStringLiteral)contents).getValue();
-        	}
-    	}
-    	return valueIfNotFound;
-	}
-	
+    public String getStringConstant(String name, String valueIfNotFound) {
+        Definition d = getChildDefinition(new NameNode(name), null);
+        if ( d != null ) {
+            AbstractNode contents = d.getContents();
+            if (( contents != null ) && ( contents instanceof ParsedStringLiteral )) {
+                return (String)((ParsedStringLiteral)contents).getValue();
+            }
+        }
+        return valueIfNotFound;
+    }
+    
     /** Returns an object wrapping this definition with arguments and indexes. */ 
-	public DefinitionInstance getDefInstance(ArgumentList args, List<Index> indexes) {
-	    return new DefinitionInstance(this, args, indexes);
-	}
+    public DefinitionInstance getDefInstance(ArgumentList args, List<Index> indexes) {
+        return new DefinitionInstance(this, args, indexes);
+    }
 }
