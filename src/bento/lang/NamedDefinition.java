@@ -1076,8 +1076,8 @@ public class NamedDefinition extends AnonymousDefinition {
             throw new Redirection(Redirection.STANDARD_ERROR, "getChild requires a non-empty context; passed context is empty.");
         }
         NamedDefinition instantiatedDef = (NamedDefinition) context.peek().def;
-if (node.getName().equals("cell_pos")) {
-  System.out.println("NamedDef 998");
+if (node.getName().equals("all_positions")) {
+  System.out.println("NamedDef 1080: " + node.getName());
 }
     
         if (node.getName() == Name.OWNER) {
@@ -1463,7 +1463,7 @@ if (contentArgs != null && contentArgs.size() > 0) {
                         if (runtimeDef != null && runtimeDef.getName() != Name.THIS && runtimeDef.canHaveChildDefinitions()) {
                             // pass false for trySuper because the super of the parent should be tried first.  What would be better
                             // would be to pass false for trySuper here only if the super is also a super of the parent. 
-                            Object child = runtimeDef.getChild(node, args, indexes, parentArgs, context, generate, false, parentObj, resolver);
+                            Object child = runtimeDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
                             if ((generate && child != UNDEFINED) || (!generate && child != null)) {
                                 return child;
                             }

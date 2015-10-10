@@ -311,7 +311,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
      *  to a parameter or the child of a parameter.
      */
     @SuppressWarnings("unchecked")
-	synchronized public void resolve(Object forParamDef) {
+    synchronized public void resolve(Object forParamDef) {
         kind = UNRESOLVED;
         if (reference instanceof Definition && !(reference instanceof DefParameter)) {
             kind = STATICALLY_RESOLVED;
@@ -579,7 +579,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                     try {
                         Definition elementDef = ((ElementReference) def).getElementDefinition(context);
                         if (elementDef != null) {
-                        	def = elementDef;
+                            def = elementDef;
                         }
                     } catch (Redirection r) {
                         ;
@@ -807,27 +807,31 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                        int kind = childOfKind(instance.getKind());
                        NameNode childName = new ComplexName(name, 1, name.numParts());
                        name = new ComplexName(instance.getReferenceName(), childName);
-                       instance = new Instantiation(name, getOwner());
+                       Definition instanceOwner = instance.getOwner();
+                       if (instanceOwner == null) {
+                           instanceOwner = getOwner();
+                       }
+                       instance = new Instantiation(name, instanceOwner);
                        instance.setKind(kind);
                    }
                    if (instance != null && instance != this && context.size() > 1) {
-                	   int numUnpushes = 0;
+                       int numUnpushes = 0;
                        int limit = context.size() - 1;
                        try {
                            while (!context.paramIsPresent(name) && numUnpushes < limit) {
-                        	   context.unpush();
-                        	   numUnpushes++;
+                               context.unpush();
+                               numUnpushes++;
                            }
                            if (numUnpushes >= limit) {
-                        	   return instance;
+                               return instance;
                            }
                            context.unpush();
                            numUnpushes++;
                            return instance.getUltimateInstance(context);
                        } finally {
-                    	   while (numUnpushes-- > 0) {
+                           while (numUnpushes-- > 0) {
                                context.repush();
-                    	   }
+                           }
                        }
                    }
                }
@@ -1726,8 +1730,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
     }
         
     public Object generateData(Context context, Definition definition) throws Redirection {
-    	
-    	if (context == null) {
+        
+        if (context == null) {
             throw new Redirection(Redirection.STANDARD_ERROR, "Instantiation requires a context; none provided.");
         }
 
