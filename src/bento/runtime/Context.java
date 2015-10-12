@@ -897,7 +897,7 @@ public class Context {
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
 
-if (definition.getName().contains("piece")) {
+if (definition.getName().contains("piece_serializer")) {
  System.out.println("ctx 898: " + definition.getName());    
 }
             // get the arguments and parameters, if any, to push on the
@@ -1556,6 +1556,10 @@ if (definition.getName().contains("piece")) {
      */
     synchronized public void putData(Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, List<Index> indexes, String name, Object data, ResolvedInstance resolvedInstance) throws Redirection {
         if (topEntry != null && name != null && name.length() > 0) {
+if (name.equals("all_positions") || name.contains("classic_name")) {
+  System.out.println("put " + name + " at ctx 1560");
+}
+            
             int maxCacheLevels = getMaxCacheLevels(nominalDef);
             List<String>[] keeps = addDynamicKeeps(name, args);
 
@@ -3465,16 +3469,25 @@ if (definition.getName().contains("piece")) {
                         }
                     }
                 }
-                String keepCacheKey = scopedef.getName() + ".keep";
-                String globalKeepCacheKey = makeGlobalKey(scopedef.getFullNameInContext(this)) + ".keep";
-                while (prev != null) {
-                    Object keepCache = prev.get(keepCacheKey, globalKeepCacheKey, null, true);
-                    if (keepCache != null) {
-                        topEntry.addKeepCache((Map<String, Object>) keepCache);
-                        break;
+                // Don't cache the keep map if the def owning the keeps is dynamic or the current instantiation
+                // of the owning def is dynamic.
+                //
+                // Not sure if entry.args is right -- maybe should be the args for the entry where
+                // scopedef shows up (assuming scopedef is right -- maybe should be entry.def) 
+//                if (scopedef.getDurability() != Definition.DYNAMIC && (entry.args == null || !entry.args.isDynamic())) {
+                    String keepCacheKey = scopedef.getName() + ".keep";
+                    String globalKeepCacheKey = makeGlobalKey(scopedef.getFullNameInContext(this)) + ".keep";
+                    while (prev != null) {
+                        Object keepCache = prev.get(keepCacheKey, globalKeepCacheKey, null, true);
+                        if (keepCache != null) {
+                            topEntry.addKeepCache((Map<String, Object>) keepCache);
+                            break;
+                        }
+                        prev = prev.link;
                     }
-                    prev = prev.link;
-                }
+//                } else if (scopedef.getName().equals("set_player")) {
+//                    System.out.println("not caching keep map, " + scopedef.getName() + " is dynamic");
+//                }
 
                 List<InsertStatement> inserts = scopedef.getInserts();
                 if (inserts != null) {
@@ -3606,7 +3619,7 @@ if (definition.getName().contains("piece")) {
         if (size > 0) {
             if (topEntry == popLimit) {
                 vlog("popping context beyond popLimit");
-//                throw new IndexOutOfBoundsException("Illegal pop attempt; can only pop entries pushed after this copy was made.");
+                throw new IndexOutOfBoundsException("Illegal pop attempt; can only pop entries pushed after this copy was made.");
             }
             Entry entry = topEntry;
             setTop(entry.getPrevious());
@@ -3619,7 +3632,7 @@ if (definition.getName().contains("piece")) {
 
     public synchronized Entry unpush() {
         if (size <= 1) {
-            throw new IndexOutOfBoundsException("attempt to unpush root entry in context");
+            throw new IndexOutOfBoundsException("Attempt to unpush root entry in context");
         }
         Entry entry = _pop();
         entry.setPrevious(unpushedEntries);
@@ -4981,7 +4994,8 @@ if (unpushedEntries == null) {
             if (link != null && access != Definition.LOCAL_ACCESS) {
                 String ownerName = this.def.getName();
                 if (ownerName != null && nominalDef != null && !nominalDef.isFormalParam()) { 
-                    Definition defOwner = nominalDef.getOwner();
+                    // should this be def or nominalDef?
+                    Definition defOwner = def.getOwner();
                     for (Entry nextEntry = link; nextEntry != null; nextEntry = nextEntry.link) {
                         if (nextEntry.def.equalsOrExtends(defOwner)) {
                             // get the subbest subclass

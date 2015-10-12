@@ -1441,9 +1441,6 @@ if (node.getName().equals("all_positions")) {
                         }
                         if (contentDef != null && contentDef.getNameNode() != null && (!contentDef.isIdentity() || !contentDef.getNameNode().equals(name)) && !contentDef.getName().equals(Name.THIS)) { // && !contentDef.equals(resolver)) {
                             ArgumentList contentArgs = instance.getArguments(); // contentType.getArguments(context);
-if (contentArgs != null && contentArgs.size() > 0) {
- System.out.println("contentArgs: " + contentArgs.toString(" "));    
-}
                             ParameterList contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
                             context.push(contentDef, contentParams, contentArgs, false);
                             try {
@@ -1461,11 +1458,16 @@ if (contentArgs != null && contentArgs.size() > 0) {
                     if (type != null && type != DefaultType.TYPE && !type.isPrimitive() && !type.equals(getType())) {
                         Definition runtimeDef = type.getDefinition();
                         if (runtimeDef != null && runtimeDef.getName() != Name.THIS && runtimeDef.canHaveChildDefinitions()) {
-                            // pass false for trySuper because the super of the parent should be tried first.  What would be better
-                            // would be to pass false for trySuper here only if the super is also a super of the parent. 
-                            Object child = runtimeDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
-                            if ((generate && child != UNDEFINED) || (!generate && child != null)) {
-                                return child;
+                            ArgumentList typeArgs = type.getArguments(context);
+                            ParameterList typeParams = runtimeDef.getParamsForArgs(typeArgs, context, false);
+                            try {
+                                context.push(runtimeDef, typeParams, typeArgs, false);
+                                Object child = runtimeDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
+                                if ((generate && child != UNDEFINED) || (!generate && child != null)) {
+                                    return child;
+                                }
+                            } finally {
+                                context.pop();
                             }
                         }
                     }
@@ -2142,13 +2144,18 @@ if (contentArgs != null && contentArgs.size() > 0) {
      *  else constructs the definition with the passed arguments. 
      */
     public Object get(Context context, ArgumentList args) throws Redirection {
+        Object data = null;
         if (getDurability() != DYNAMIC && (args == null || !args.isDynamic())) {
-            Object data = context.getData(this, getName(), args, null);
+            data = context.getData(this, getName(), args, null);
             if (data != null) {
                 return data;
             }
         }
-        return instantiate(context, args);
+        data = instantiate(context, args);
+        if (data != null && getDurability() != DYNAMIC && (args == null || !args.isDynamic())) {
+            context.putData(this, args, null, getName(), data);
+        }
+        return data;
     }
     
     /** Gets the cached value for this definition in the current context,
@@ -2156,13 +2163,7 @@ if (contentArgs != null && contentArgs.size() > 0) {
      *  else constructs the definition with no arguments. 
      */
     public Object get(Context context) throws Redirection {
-        if (getDurability() != DYNAMIC) {
-            Object data = context.getData(this, getName(), null, null);
-            if (data != null) {
-                return data;
-            }
-        }
-        return instantiate(context);
+        return get(context, null);
     }
     
 }
