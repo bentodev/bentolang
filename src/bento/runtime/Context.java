@@ -3474,7 +3474,7 @@ if (name.equals("all_positions") || name.contains("classic_name")) {
                 //
                 // Not sure if entry.args is right -- maybe should be the args for the entry where
                 // scopedef shows up (assuming scopedef is right -- maybe should be entry.def) 
-//                if (scopedef.getDurability() != Definition.DYNAMIC && (entry.args == null || !entry.args.isDynamic())) {
+                if (scopedef.getDurability() != Definition.DYNAMIC && (entry.args == null || !entry.args.isDynamic())) {
                     String keepCacheKey = scopedef.getName() + ".keep";
                     String globalKeepCacheKey = makeGlobalKey(scopedef.getFullNameInContext(this)) + ".keep";
                     while (prev != null) {
@@ -3485,9 +3485,9 @@ if (name.equals("all_positions") || name.contains("classic_name")) {
                         }
                         prev = prev.link;
                     }
-//                } else if (scopedef.getName().equals("set_player")) {
-//                    System.out.println("not caching keep map, " + scopedef.getName() + " is dynamic");
-//                }
+                } else if (scopedef.getName().equals("set_player")) {
+                    System.out.println("not caching keep map, " + scopedef.getName() + " is dynamic");
+                }
 
                 List<InsertStatement> inserts = scopedef.getInserts();
                 if (inserts != null) {
@@ -4995,7 +4995,7 @@ if (unpushedEntries == null) {
                 String ownerName = this.def.getName();
                 if (ownerName != null && nominalDef != null && !nominalDef.isFormalParam()) { 
                     // should this be def or nominalDef?
-                    Definition defOwner = def.getOwner();
+                    Definition defOwner = nominalDef.getOwner();
                     for (Entry nextEntry = link; nextEntry != null; nextEntry = nextEntry.link) {
                         if (nextEntry.def.equalsOrExtends(defOwner)) {
                             // get the subbest subclass
@@ -5393,7 +5393,9 @@ if (unpushedEntries == null) {
                     
                     Map<String, Object> containerCache = containerEntry.getCache();
                     synchronized (containerCache) {
-                        keepCache = (Map<String, Object>) containerCache.get(key);
+                        if (def.getDurability() != Definition.DYNAMIC && (args == null || !args.isDynamic())) {
+                            keepCache = (Map<String, Object>) containerCache.get(key);
+                        }
                         if (keepCache == null) {
                             keepCache = newHashMap(Object.class);
                             containerCache.put(key, keepCache);

@@ -6689,7 +6689,7 @@ ft [=
 
         dynamic show_out [=
             for line in lines(command_exec.err) [=
-                [| <span color="red"> |]
+                [| <span style="color:red"> |]
                 line;
                 [| </span><br/> |]
             =]
