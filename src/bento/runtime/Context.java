@@ -5393,9 +5393,9 @@ if (unpushedEntries == null) {
                     
                     Map<String, Object> containerCache = containerEntry.getCache();
                     synchronized (containerCache) {
-                        if (def.getDurability() != Definition.DYNAMIC && (args == null || !args.isDynamic())) {
+                        //if (def.getDurability() != Definition.DYNAMIC && (args == null || !args.isDynamic())) {
                             keepCache = (Map<String, Object>) containerCache.get(key);
-                        }
+                        //}
                         if (keepCache == null) {
                             keepCache = newHashMap(Object.class);
                             containerCache.put(key, keepCache);

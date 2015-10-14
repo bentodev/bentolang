@@ -5944,7 +5944,9 @@ memt [=
 
         /** the counter base type **/
         dynamic int counter [=
-            keep n
+            int{} counter_cache [?]
+        
+            keep n in counter_cache
         
             /** A function which increments the memoized value of n. **/
             dynamic int incr = n + 1
@@ -5960,37 +5962,21 @@ memt [=
 
         /** the session-level counter object **/
         dynamic counter session_counter [=
-            /** A directive making session_values the cache for n **/
-            keep n in session_values
-
-            /** The implementation of counter: sets n to incr, which returns the cached
-             *  (previous) value of n plus one.
-             */
-            n(:incr:);
+            /** make session_values the cache for n **/
+            int{} counter_cache = session_values
         =]
 
         /** the global counter object **/
         dynamic counter global_counter [=
+            /** make static_values the cache for n **/
+            int{} counter_cache = global_values
 
-            /** A directive making static_values the cache for n **/
-            keep n in global_values
-
-            /** The implementation of counter: sets n to incr, which returns the cached
-             *  (previous) value of n plus one.
-             */
-            n(:incr:);
         =]
 
         /** the local counter object **/
         dynamic counter local_counter [=
-
-            /** A directive making local_values the cache for n **/
-            keep n in local_values
-
-            /** The implementation of counter: sets n to incr, which returns the cached
-             *  (previous) value of n plus one.
-             */
-            n(:incr:);
+            /** make local_values the cache for n **/
+            int{} counter_cache = local_values
         =]
         
         [| <h4>Local Counter</h4><b> |]
