@@ -897,7 +897,7 @@ public class Context {
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
 
-if (definition.getName().contains("piece_serializer")) {
+if (definition.getName().contains("counter")) {
  System.out.println("ctx 898: " + definition.getName());    
 }
             // get the arguments and parameters, if any, to push on the
@@ -1556,10 +1556,6 @@ if (definition.getName().contains("piece_serializer")) {
      */
     synchronized public void putData(Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, List<Index> indexes, String name, Object data, ResolvedInstance resolvedInstance) throws Redirection {
         if (topEntry != null && name != null && name.length() > 0) {
-if (name.equals("all_positions") || name.contains("classic_name")) {
-  System.out.println("put " + name + " at ctx 1560");
-}
-            
             int maxCacheLevels = getMaxCacheLevels(nominalDef);
             List<String>[] keeps = addDynamicKeeps(name, args);
 
@@ -4708,7 +4704,6 @@ if (unpushedEntries == null) {
             if (globalCache != null && globalKey != null && globalCache.get(globalKey) != null) {
                 c = globalCache;
             }
-            
             if (c == null && siteCache == null && siteCacheMap == null && (keepMap == null || keepMap.get(key) == null)) {
                 if (this.def == null) {
                     return null;

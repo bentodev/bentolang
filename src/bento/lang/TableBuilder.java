@@ -76,23 +76,24 @@ public class TableBuilder extends CollectionBuilder {
 }
 
 class TableInstance implements Map<String, Object> {
-    private ValueGenerator valueGen;
-    private Context initContext = null;
+    //private ValueGenerator valueGen;
+    //private Context initContext = null;
     private Map<String, Object> map = null;
 
     public TableInstance(Map<String, Object> map) {
         this.map = map;
     }
 
+    @SuppressWarnings("unchecked")
     public TableInstance(ValueGenerator valueGen, Context context) throws Redirection {
-        this.valueGen = valueGen;
-        initContext = (Context) context.clone();
+        //this.valueGen = valueGen;
+        //initContext = (Context) context.clone();
         Object obj = null;
         boolean pushed = false;
         ArgumentList args = null;
         List<Index> indexes = null;
         try {
-            if (valueGen instanceof Instantiation) {
+          /***  if (valueGen instanceof Instantiation) {
                 Instantiation instance = (Instantiation) valueGen;
                 Instantiation ultimateInstance = instance.getUltimateInstance(context);
                 indexes = (instance == ultimateInstance ? null : instance.getIndexes());
@@ -104,7 +105,9 @@ class TableInstance implements Map<String, Object> {
                     context.push(def, params, args, false);
                     pushed = true;
                 }
-            } else if (valueGen instanceof IndexedMethodConstruction) {
+            } else ***/  
+            
+            if (valueGen instanceof IndexedMethodConstruction) {
                 obj = ((IndexedMethodConstruction) valueGen).getCollectionObject(context);
                 
             } else {
@@ -134,7 +137,7 @@ class TableInstance implements Map<String, Object> {
                 }
             } else if (obj instanceof CollectionDefinition) {
                 CollectionInstance collectionInstance = ((CollectionDefinition) obj).getCollectionInstance(context, args, indexes);
-                obj = ((CollectionInstance) obj).getCollectionObject();
+                obj = collectionInstance.getCollectionObject();
                 if (obj instanceof Map<?,?>) {
                     map = (Map<String, Object>) obj;
                 } else {
