@@ -3316,8 +3316,14 @@ if (definition.getName().contains("counter")) {
                 numPushes++;
                 while (partDef.isAliasInContext(this) && !partDef.isIdentity()) {
                     partInstance = partDef.getAliasInstanceInContext(this);
+                    if (partInstance == null) {
+                        break;
+                    }
                     if (partInstance.isParameterKind()) {
                         Entry partEntry = getParameterEntry(partInstance.getReferenceName(), partInstance.isContainerParameter(this));
+                        if (partEntry == null) {
+                            break;
+                        }
                         partDef = partEntry.def;
                         if (partDef == null) {
                             break;
