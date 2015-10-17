@@ -456,10 +456,10 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
             } catch (Redirection r) {
                 ;
             }
-            return str; 
+            return (str == null ? "" : str);
         }
         // didn't fall into any of the above categories
-        String str = (value == null ? "" : value.toString());
+        String str = value.toString();
         return (str == null ? "" : str);
     }
 
