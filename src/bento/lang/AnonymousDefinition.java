@@ -587,10 +587,13 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
         return null;
     }
 
-    public Definition getSubdefInContext(Context context) {
-        Definition contextDef = context.peek().def;
-        if (contextDef.equalsOrExtends(this)) {
-            return contextDef;
+    /** Returns the first entry in the context stack whose definition equals or extends 
+     *  this definition.  
+     */
+    public Context.Entry getEntryInContext(Context context) {
+        Context.Entry entry = context.peek();
+        if (entry.def.equalsOrExtends(this)) {
+            return entry;
         } else {
             int limit = context.size() - 1;
             int numUnpushes = 0;
@@ -598,9 +601,9 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
                 while (numUnpushes < limit) {
                     numUnpushes++;
                     context.unpush();
-                    contextDef = context.peek().def;
-                    if (contextDef.equalsOrExtends(this)) {
-                        return contextDef;
+                    entry = context.peek();
+                    if (entry.def.equalsOrExtends(this)) {
+                        return entry;
                     }
                 }
             } finally {
@@ -609,7 +612,17 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
                 }
             }
         }
-        return this;
+        return null;
+    }
+
+    
+    public Definition getSubdefInContext(Context context) {
+        Context.Entry entry = getEntryInContext(context);
+        if (entry != null) {
+            return entry.def;
+        } else {
+            return this;
+        }
     }
 
     public Definition getOwnerInContext(Context context) {

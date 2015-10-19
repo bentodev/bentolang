@@ -169,7 +169,16 @@ public interface Definition extends Name {
      */
     public NamedDefinition getUnderDefinition(Context context);
 
+    /** Returns the first definition in the context stack that equals or extends this
+     *  definition. When a child of this definition is instantiated, its true owner is
+     *  presumed to be the one returned by this method.  
+     */
     public Definition getSubdefInContext(Context context);
+    
+    /** Returns the first entry in the context stack whose definition equals or extends 
+     *  this definition.  
+     */
+    public Context.Entry getEntryInContext(Context context);
 
     /** Returns true if <code>name</code> is the name of an ancestor of this
      *  definition.

@@ -2976,7 +2976,7 @@ cu [=
         name = "Object Child Test"
         key = "object_child"
 
-        expected = "ABCDEF"
+        expected = "ABCDEFG"
    
         obj [=
             a [| x |]
@@ -2985,6 +2985,7 @@ cu [=
             d [| x |]
             e [| x |]
             f [| x |]
+            g(z) = z
 
             this;
         =]
@@ -3008,6 +3009,9 @@ cu [=
             =]
         =]
 
+        dynamic obj sub_4 [=
+            eval(g(: "G" :));
+        =]
 
         obj cobj(obj o) = o
         
@@ -3023,9 +3027,23 @@ cu [=
         eval(cobj(: sub_3 :));
         cobj.f;
         
+        eval(cobj(: sub_4 :));
+        cobj.g;
     
     =]
 
+oct [=
+  obj [=
+    g(z) = z
+    this;
+  =]
+  dynamic obj sub_4 [=
+    eval(g(: "G" :));
+  =]
+  obj cobj(obj o) = o
+  eval(cobj(: sub_4 :));
+  cobj.g;
+=]
 
     test_case serialization_test [=
         int category = utilities
@@ -6443,12 +6461,9 @@ ft [=
  =]
 
 
+    int ajc(int x) = x
     dynamic int ajax_counter [=
-        keep in container:
-        int ajc(int x) = x
-    
         ajc(: 1 + ajc :);
-        log("ajc = " + ajc);
     =]
 
     ajtp [=

@@ -428,9 +428,17 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                         }
                     }
                 }
+                ArgumentList args = getArguments();
+                List<Index> indexes = getIndexes();
                 if (data == null) {
                     if (Name.THIS.equals(name)) {
-                        return new BentoObjectWrapper(getOwner(), getArguments(), getIndexes(), context);
+                        Definition owner = getOwner();
+                        Context.Entry entry = owner.getEntryInContext(context);
+                        if (entry == null || (args != null && args.size() > 0) || (indexes != null && indexes.size() > 0)) {
+                            return new BentoObjectWrapper(owner, args, indexes, context);
+                        } else {
+                            return new BentoObjectWrapper(entry.def, entry.args, null, context);
+                        }
                     } else if (def != null && Name.THIS.equals(def.getName()) && def instanceof AliasedDefinition) {
                         NameNode nameNode = getReferenceName();
                         if (nameNode != null) {
@@ -442,7 +450,6 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                         }
                     }
                     
-                    List<Index> indexes = getIndexes();
                     data = generateData(context, def, debugger);
                     if ((cacheability & CACHE_STORABLE) == CACHE_STORABLE) {
                         if (data instanceof Definition) {
@@ -450,7 +457,6 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                         } else if (def == null) {
                             def = getDefinition(context);
                         }
-                        ArgumentList args = getArguments();
                         
                         // if this is an identity, then the definition of the passed instantiation
                         // should already be cached; use it instead so children etc. resolve to it

@@ -381,6 +381,7 @@ public class Context {
             table = containerTable;
 
         } else if (instance == null) {
+            
             table = topEntry.getKeepCache();
 
         } else {
@@ -897,7 +898,7 @@ public class Context {
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
 
-if (definition.getName().contains("counter")) {
+if (definition.getName().contains("gpn") || definition.getName().contains("init")) {
  System.out.println("ctx 898: " + definition.getName());    
 }
             // get the arguments and parameters, if any, to push on the
@@ -3487,7 +3488,7 @@ if (definition.getName().contains("counter")) {
                         }
                         prev = prev.link;
                     }
-                } else if (scopedef.getName().equals("set_player")) {
+                } else if (scopedef.getName().equals("set_player") || scopedef.getName().equals("ajax_counter")) {
                     System.out.println("not caching keep map, " + scopedef.getName() + " is dynamic");
                 }
 
