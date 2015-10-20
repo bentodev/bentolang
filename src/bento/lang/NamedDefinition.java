@@ -1076,7 +1076,7 @@ public class NamedDefinition extends AnonymousDefinition {
             throw new Redirection(Redirection.STANDARD_ERROR, "getChild requires a non-empty context; passed context is empty.");
         }
         NamedDefinition instantiatedDef = (NamedDefinition) context.peek().def;
-if (node.getName().equals("all_positions")) {
+if (node.getName().equals("g")) {
   System.out.println("NamedDef 1080: " + node.getName());
 }
     
@@ -1397,36 +1397,37 @@ if (node.getName().equals("all_positions")) {
         // if not, then try supertypes or alias.
         if (def == null) {
             // try alias
-            if (isAlias()) {
-                // look up the definition in the aliased definition
-
-                //avoid recursion
-                String aliasName = getAlias().getFirstPart().getName();
-                if (!aliasName.equals(node.getName()) && !aliasName.equals(Name.THIS)  && !aliasName.equals(Name.OWNER)) {
-                    
-                    Instantiation aliasInstance = getAliasInstance();
-                    Definition aliasDef = aliasInstance.getDefinition(context, this);
-
-                    // if it's null, it's a problem, but not our problem.  We won't abort the
-                    // current operation just because we found an undefined construction.  That
-                    // will happen when/if the program tries to instantiate it.
-                    
-                    if (aliasDef != null) {
-                        ArgumentList aliasArgs = aliasInstance.getArguments();
-                        ParameterList aliasParams = aliasDef.getParamsForArgs(aliasArgs, context, false);
-                        context.push(instantiatedDef, aliasParams, aliasArgs, false);
-                        Object child = aliasDef.getChild(node, args, null, parentArgs, context, generate, trySuper, parentObj, resolver);
-                        context.pop();
-                        if ((generate && child != UNDEFINED) || (!generate && child != null)) {
-                            return child;
-                        }
-                    }
-                }
-            }
+// Not needed -- we check alias above            
+//            if (isAlias()) {
+//                // look up the definition in the aliased definition
+//
+//                //avoid recursion
+//                String aliasName = getAlias().getFirstPart().getName();
+//                if (!aliasName.equals(node.getName()) && !aliasName.equals(Name.THIS)  && !aliasName.equals(Name.OWNER)) {
+//                    
+//                    Instantiation aliasInstance = getAliasInstance();
+//                    Definition aliasDef = aliasInstance.getDefinition(context, this);
+//
+//                    // if it's null, it's a problem, but not our problem.  We won't abort the
+//                    // current operation just because we found an undefined construction.  That
+//                    // will happen when/if the program tries to instantiate it.
+//                    
+//                    if (aliasDef != null) {
+//                        ArgumentList aliasArgs = aliasInstance.getArguments();
+//                        ParameterList aliasParams = aliasDef.getParamsForArgs(aliasArgs, context, false);
+//                        context.push(instantiatedDef, aliasParams, aliasArgs, false);
+//                        Object child = aliasDef.getChild(node, args, null, parentArgs, context, generate, trySuper, parentObj, resolver);
+//                        context.pop();
+//                        if ((generate && child != UNDEFINED) || (!generate && child != null)) {
+//                            return child;
+//                        }
+//                    }
+//                }
+//            }
 
             // not an alias; see if it is a construction that defines the child
             AbstractNode contents = getContents();
-            if (contents instanceof Construction) {
+            if (!isAlias() && contents instanceof Construction) {
                 Construction construction = ((Construction) contents).getUltimateConstruction(context);
                 if (construction instanceof Instantiation && !((Instantiation) construction).isParameterKind()) {
                     Instantiation instance = (Instantiation) construction;
@@ -1441,15 +1442,33 @@ if (node.getName().equals("all_positions")) {
                         }
                         if (contentDef != null && contentDef.getNameNode() != null && (!contentDef.isIdentity() || !contentDef.getNameNode().equals(name)) && !contentDef.getName().equals(Name.THIS)) { // && !contentDef.equals(resolver)) {
                             ArgumentList contentArgs = instance.getArguments(); // contentType.getArguments(context);
-                            ParameterList contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
-                            context.push(contentDef, contentParams, contentArgs, false);
-                            try {
-                                Object child = context.getDescendant(contentDef, contentArgs, new ComplexName(node), generate, parentObj);
-                                if ((generate && child != UNDEFINED) || (!generate && child != null)) {
-                                    return child;
+
+                            // make sure the value we are resolving is not one of the arguments
+                            boolean nameEqualsArg = false;
+                            if (contentArgs != null && contentArgs.size() > 0) {
+                                Iterator<Construction> it = contentArgs.iterator();
+                                 while (it.hasNext()) {
+                                     Construction contentArg = it.next();
+                                     if (contentArg instanceof Instantiation) {
+                                         if (name.equals(((Instantiation) contentArg).getDefinitionName())) {
+                                             nameEqualsArg = true;
+                                             vlog(name + " is also a content arg; skipping lookup");
+                                             break;
+                                        }
+                                    }
                                 }
-                            } finally {
-                                context.pop();
+                            }
+                            if (!nameEqualsArg) {
+                                ParameterList contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
+                                context.push(contentDef, contentParams, contentArgs, false);
+                                try {
+                                    Object child = context.getDescendant(contentDef, contentArgs, new ComplexName(node), generate, parentObj);
+                                    if ((generate && child != UNDEFINED) || (!generate && child != null)) {
+                                        return child;
+                                    }
+                                } finally {
+                                    context.pop();
+                                }
                             }
                         }
                     }
