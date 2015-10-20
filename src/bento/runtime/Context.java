@@ -2694,9 +2694,9 @@ if (definition.getName().contains("gpn") || definition.getName().contains("init"
                         }
                         // this should work, but doesn't seem to for
                         // cached aliased parameters and nested cached identities
-                        //if (generate && holder.data != null) {
-                        //    return holder.data;
-                        //}
+                        if (generate && holder.data != null && !holder.data.equals(NullValue.NULL_VALUE)) {
+                            return holder.data;
+                        }
                     }
                 }
             //}
