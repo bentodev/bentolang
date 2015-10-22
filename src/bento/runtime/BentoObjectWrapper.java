@@ -60,6 +60,10 @@ public class BentoObjectWrapper {
     	return type;
     }
     
+    public Context getResolutionContext() {
+        return context;
+    }
+    
     public Construction getConstruction() {
         return construction;
     }
@@ -111,6 +115,10 @@ public class BentoObjectWrapper {
     
     public String toString() {
         return "(" + construction.toString() + ")";
+    }
+
+    public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, boolean generate, boolean trySuper, Object parentObject, Definition resolver) throws Redirection {
+        return def.getChild(node, args, indexes, parentArgs, context, generate, trySuper, null, resolver);
     }
 }
 

@@ -1191,6 +1191,16 @@ if (node.getName().equals("g")) {
             }
         }
 
+        // look to see if this is the child of an instantiated object
+        if (parentObj != null && parentObj instanceof BentoObjectWrapper) {
+            BentoObjectWrapper obj = (BentoObjectWrapper) parentObj;
+            Context resolutionContext = obj.getResolutionContext();
+            Definition parentDef = obj.getDefinition();
+            if (resolutionContext != null && parentDef != null) {
+                return resolutionContext.getDescendant(parentDef, args, node, generate, null);
+            }
+        }
+        
         // next check to see if this is an external definition
         Definition def = getExternalDefinition(node, context);
         if (def != null && !generate) {
