@@ -2601,6 +2601,7 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
         Definition childDef = null;
         NameNode childName = name.getFirstPart();
         ArgumentList childArgs = childName.getArguments();
+        boolean dynamicChild = (childArgs != null && childArgs.isDynamic());
         List<Index> childIndexes = childName.getIndexes();
         int numPushes = 0;
         ComplexName restOfName = null;
@@ -2693,9 +2694,12 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
                                 childArgs = holder.nominalArgs;
                             }
                         }
+                        if (childDef != null && childDef.getDurability() == Definition.DYNAMIC) {
+                            dynamicChild = true;    
+                        }
                         // this should work, but doesn't seem to for
                         // cached aliased parameters and nested cached identities
-                        if (generate && holder.data != null && !holder.data.equals(NullValue.NULL_VALUE)) {
+                        if (generate && !dynamicChild && holder.data != null && !holder.data.equals(NullValue.NULL_VALUE)) {
                             return holder.data;
                         }
                     }

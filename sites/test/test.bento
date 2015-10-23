@@ -4327,6 +4327,23 @@ dkt [=
         ijk_container.k;
     =]
 
+nkt [=
+    abcd_container(cparam, dparam) [=
+        keep: a(x) = x
+        b(x) = x
+        c = cparam
+        d(x) = x
+    
+        a("A");
+        b("B");
+        c;
+        d(: dparam :);
+    =]
+    eval(abcd_container("C", "D"));    
+    eval(abcd_container.a(: "F" :));
+    eval(abcd_container(: "G", "H" :));
+    abcd_container.a; 
+=]
 
     test_case cached_identity_test [=
         int category = caching
