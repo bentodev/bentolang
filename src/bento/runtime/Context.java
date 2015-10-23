@@ -2627,7 +2627,8 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
             ParameterList params = def.getParamsForArgs(args, this);
             
             if (!def.isExternal() && (!def.isCollection() || parentObj == null)) {
-                push(def, params, args, true);
+                boolean newFrame = !topEntry.def.equalsOrExtends(def);
+                push(def, params, args, newFrame);
                 numPushes++;
 
                 Definition superDef = def.getSuperDefinition(this);
