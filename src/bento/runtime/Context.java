@@ -2699,7 +2699,7 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
                         }
                         // this should work, but doesn't seem to for
                         // cached aliased parameters and nested cached identities
-                        if (generate && !dynamicChild && holder.data != null && !holder.data.equals(NullValue.NULL_VALUE)) {
+                        if (generate && numNameParts == 1 && !dynamicChild && holder.data != null && !holder.data.equals(NullValue.NULL_VALUE)) {
                             return holder.data;
                         }
                     }

@@ -4925,16 +4925,16 @@ capt [=
             bo;
         =]
         
-        accessor_obj(container_obj cc) [=
-            keep b_o
-        
+        accessor_obj(container_obj bb, container_obj cc) [=
+            container_obj c_o = bb
             base_obj b_o = cc.bo
             
+            c_o;
             b_o;
         =]
 
-        accessor_obj(container_obj(c_obj));
-        accessor_obj.b_o.c;
+        eval(accessor_obj(container_obj(b_obj), container_obj(c_obj)));
+        accessor_obj.c_o.bo.b;
     =]         
  
          
