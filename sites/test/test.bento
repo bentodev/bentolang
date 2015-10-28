@@ -3011,6 +3011,7 @@ cu [=
 
         dynamic obj sub_4 [=
             eval(g(: "G" :));
+            this;
         =]
 
         obj cobj(obj o) = o
