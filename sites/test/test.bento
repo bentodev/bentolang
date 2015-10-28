@@ -4880,8 +4880,8 @@ ccat [=
         =]
         
         accessor_obj(container_obj bb, container_obj cc) [=
-            container_obj c_o = bb
-            base_obj b_o = cc.bo
+            keep: container_obj c_o = bb
+            keep: base_obj b_o = cc.bo
             
             c_o;
             b_o;
