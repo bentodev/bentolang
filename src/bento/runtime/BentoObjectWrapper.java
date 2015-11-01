@@ -82,12 +82,20 @@ public class BentoObjectWrapper {
     }
 
     public Object getChildData(String name) {
-    	return getChildData(name, null, null);
+        return getChildData(name, null, null);
     }
 
     public Object getChildData(String name, Type type, ArgumentList args) {
         try {
             return def.getChildData(new NameNode(name), type, context, args);
+        } catch (Redirection r) {
+            return null;
+        }
+    }
+
+    public Object getChildData(NameNode name) {
+        try {
+            return def.getChildData(name, null, context, name.getArguments());
         } catch (Redirection r) {
             return null;
         }

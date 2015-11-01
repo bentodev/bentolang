@@ -265,8 +265,8 @@ public interface Definition extends Name {
      */
     public KeepStatement getKeep(String key);
 
-    /** Instantiates a child definition with the specified name and given the specified instance
-     *  of this definition and the specified context
+    /** Instantiates a child definition with the specified name and type
+     *  in the specified context
      */
     public Object getChildData(NameNode childName, Type type, Context context, ArgumentList args) throws Redirection;
 
