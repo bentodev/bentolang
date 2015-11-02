@@ -2697,14 +2697,20 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
                         if (childDef != null && childDef.getDurability() == Definition.DYNAMIC) {
                             dynamicChild = true;    
                         }
-                        // this should work, but doesn't seem to for
-                        // cached aliased parameters and nested cached identities
-                        if (generate && !dynamicChild && holder.data != null && !holder.data.equals(NullValue.NULL_VALUE)) {
-                            if (numNameParts == 1) {
-                                return holder.data;
-                            } else if (holder.data instanceof BentoObjectWrapper) {
-                                BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
-                                return obj.getChildData(restOfName);
+
+                        if (generate && !dynamicChild) {
+                            if (holder.data != null && !holder.data.equals(NullValue.NULL_VALUE)) {
+                                if (numNameParts == 1) {
+                                    return holder.data;
+                                } else if (holder.data instanceof BentoObjectWrapper) {
+                                    BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
+                                    return obj.getChildData(restOfName);
+                                }
+//                            } else if (holder.resolvedInstance != null) {
+//                                ResolvedInstance ri = holder.resolvedInstance;
+//                                if (numNameParts == 1) {
+//                                    return ri.getData(this, childDef);
+//                                }
                             }
                         }
                     }
