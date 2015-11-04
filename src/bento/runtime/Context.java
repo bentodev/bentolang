@@ -2706,11 +2706,14 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
                                     BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
                                     return obj.getChildData(restOfName);
                                 }
-//                            } else if (holder.resolvedInstance != null) {
-//                                ResolvedInstance ri = holder.resolvedInstance;
-//                                if (numNameParts == 1) {
-//                                    return ri.getData(this, childDef);
-//                                }
+                            } else if (holder.resolvedInstance != null) {
+                                ResolvedInstance ri = holder.resolvedInstance;
+                                if (numNameParts == 1) {
+                                    Object data = ri.getData(this, childDef);
+                                    if (data != null && !data.equals(NullValue.NULL_VALUE)) {
+                                        return data;
+                                    }
+                                }
                             }
                         }
                     }
