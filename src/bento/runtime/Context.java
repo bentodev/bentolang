@@ -2667,6 +2667,10 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
                         if (holder != null && holder.nominalDef != null && holder.nominalDef.getDurability() != Definition.DYNAMIC && !((BentoNode) holder.nominalDef).isDynamic()) {
                             def = holder.nominalDef;
                             args = holder.nominalArgs;
+                            if (generate && holder.data != null && holder.data instanceof BentoObjectWrapper) {
+                                BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
+                                return obj.getChildData(childName);
+                            }
                         }
                     }
                     params = def.getParamsForArgs(args, this);
