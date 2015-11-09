@@ -79,7 +79,7 @@ public class ParsedCollectionDefinition extends CollectionDefinition implements 
                             dims.add(newDim);
                         }
                     }
-                    log("Collection " + name.getName() + " dimensions not specified in definition; will be inferred from supertype");
+                    vlog("Collection " + name.getName() + " dimensions not specified in definition; will be inferred from supertype");
                 } else {
                     dims = typeDims;
                 }

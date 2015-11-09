@@ -68,6 +68,14 @@ public class BentoObjectWrapper {
         return construction;
     }
     
+    public ArgumentList getArguments() {
+        if (construction instanceof Instantiation) {
+            return ((Instantiation) construction).getArguments();
+        } else {
+            return null;
+        }
+    }
+    
     public Object getData() throws Redirection {
         return construction.getData(context);
     }

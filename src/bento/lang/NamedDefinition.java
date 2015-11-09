@@ -1076,10 +1076,7 @@ public class NamedDefinition extends AnonymousDefinition {
             throw new Redirection(Redirection.STANDARD_ERROR, "getChild requires a non-empty context; passed context is empty.");
         }
         NamedDefinition instantiatedDef = (NamedDefinition) context.peek().def;
-if (node.getName().equals("g")) {
-  System.out.println("NamedDef 1080: " + node.getName());
-}
-    
+
         if (node.getName() == Name.OWNER) {
             Definition owner = getOwnerInContext(context);
             if (owner == null) {
@@ -1197,7 +1194,7 @@ if (node.getName().equals("g")) {
             Context resolutionContext = obj.getResolutionContext();
             Definition parentDef = obj.getDefinition();
             if (resolutionContext != null && parentDef != null) {
-                return resolutionContext.getDescendant(parentDef, args, node, generate, null);
+                return resolutionContext.getDescendant(parentDef, parentArgs, node, generate, null);
             }
         }
         

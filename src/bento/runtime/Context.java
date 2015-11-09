@@ -2597,7 +2597,7 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
                 return ((ElementDefinition) elementDef).getChild(name, args, null, null, this, generate, true, parentObj, null); 
             }
         }
-        
+
         Definition childDef = null;
         NameNode childName = name.getFirstPart();
         ArgumentList childArgs = childName.getArguments();
@@ -2608,6 +2608,12 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
         int numNameParts = name.numParts();
         if (numNameParts > 1) {
             restOfName = new ComplexName(name, 1, numNameParts);
+        }
+        
+        // if parentObj is a BentoObjectWrapper and we are generating data, delegate to the object
+        if (generate && !dynamicChild && numNameParts == 1 && parentObj != null && parentObj instanceof BentoObjectWrapper) {
+            BentoObjectWrapper obj = (BentoObjectWrapper) parentObj;
+            //return obj.getChildData(name);
         }
         
         try {
@@ -2667,7 +2673,7 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
                         if (holder != null && holder.nominalDef != null && holder.nominalDef.getDurability() != Definition.DYNAMIC && !((BentoNode) holder.nominalDef).isDynamic()) {
                             def = holder.nominalDef;
                             args = holder.nominalArgs;
-                            if (generate && holder.data != null && holder.data instanceof BentoObjectWrapper) {
+                            if (generate && holder.data != null && holder.data instanceof BentoObjectWrapper && numNameParts == 1) {
                                 BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
                                 return obj.getChildData(childName);
                             }
@@ -2728,6 +2734,13 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
                 return def.getChild(name, name.getArguments(), name.getIndexes(), args, this, generate, true, parentObj, null);
             }
 
+            // if parentObj is a BentoObjectWrapper and we are generating data, delegate to the object
+            if (generate && childDef.getDurability() != Definition.DYNAMIC && !dynamicChild && numNameParts == 1 && parentObj != null && parentObj instanceof BentoObjectWrapper) {
+                BentoObjectWrapper obj = (BentoObjectWrapper) parentObj;
+                return obj.getChildData(name);
+            }
+            
+            
             DefinitionInstance childDefInstance = null;
             if (childDef != null) {
                 if (generate && childName != null) {
