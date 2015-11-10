@@ -151,6 +151,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
     protected boolean is_static = false;
     protected boolean trailingDelimiter = false;
     protected boolean concurrent = false;
+    protected boolean anonymous = false;
 
     // used to avoid repetitive definition lookup
     protected static class CacheabilityInfo {
@@ -216,6 +217,14 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
     
     protected void setConcurrent(boolean flag) {
         concurrent = flag;
+    }
+    
+    public boolean isAnonymous() {
+        return anonymous;
+    }
+    
+    protected void setAnonymous(boolean flag) {
+        anonymous = flag;
     }
     
     public boolean isConstruction() {

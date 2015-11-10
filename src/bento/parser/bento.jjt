@@ -2422,7 +2422,7 @@ void AnonymousConstruction() #Construction:
     |
       Literal() ";"
     )
-}
+    { jjtThis.setAnonymous(); }}
 
 void NamedConstruction() #Construction:
 {}

@@ -1724,8 +1724,11 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
     public Object getData(Context context, Definition def) throws Redirection {
         Object data = null;
         
-        data = super.getData(context, def);
-        
+        if (isAnonymous() && reference instanceof Definition) {
+            data = context.construct((Definition) reference, getArguments());    
+        } else {
+            data = super.getData(context, def);
+        }
         return data;
     }
         

@@ -2,7 +2,7 @@
  *
  * $Id: ParsedConstruction.java,v 1.4 2014/10/27 13:17:57 sthippo Exp $
  *
- * Copyright (c) 2002-2005 by bentodev.org
+ * Copyright (c) 2002-2015 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -35,5 +35,9 @@ public class ParsedConstruction extends Instantiation implements Initializable {
     
     public void setConcurrent() {
         setConcurrent(true);
+    }
+
+    public void setAnonymous() {
+        setAnonymous(true);
     }
 }
