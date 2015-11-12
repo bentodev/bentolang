@@ -1187,7 +1187,7 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
     private boolean addingDynamicKeeps = false;
     
     @SuppressWarnings("unchecked")
-    private List<String>[] addDynamicKeeps(String name, ArgumentList args) throws Redirection {
+    synchronized private List<String>[] addDynamicKeeps(String name, ArgumentList args) throws Redirection {
         if (addingDynamicKeeps) {
             return null;
         }
@@ -1289,7 +1289,7 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
         return allAddedKeeps;
     }
     
-    private void removeDynamicKeeps(List<String>[] allAddedKeeps) {
+    synchronized private void removeDynamicKeeps(List<String>[] allAddedKeeps) {
         Iterator<Entry> entryIt = iterator();
         int i = 0;
         while (entryIt.hasNext() && i < allAddedKeeps.length) {
@@ -3601,6 +3601,7 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
             System.err.println("**** context exceeding 50 ****");
         }
         size++;
+//System.out.println("ctx " + Integer.toHexString(hashCode()) + " size ^" + size);            
 
         if (rootEntry == null) {
             if (entry.getPrevious() != null) {
@@ -3663,6 +3664,7 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
             Entry entry = topEntry;
             setTop(entry.getPrevious());
             size--;
+//System.out.println("ctx " + Integer.toHexString(hashCode()) + " size v" + size);            
             return entry;
         } else {
             return null;
@@ -3966,7 +3968,7 @@ if (unpushedEntries == null) {
     }
 
     public int hashCode() {
-        int n = (rootEntry.hashCode() << 16) + stateCount;
+        int n = (rootEntry == null ? 0 : (rootEntry.hashCode() << 16) + stateCount);
         return n;
     }
     

@@ -27,7 +27,8 @@ public class DefinitionFlavor extends ComplexDefinition {
     public ParameterList params;
 
     public DefinitionFlavor(Definition def, Context context, ParameterList params) throws Redirection {
-        super(def, context);
+        // the context shouldn't be needed, pass null
+        super(def, null);
         this.def = def;
         this.params = params;
     }

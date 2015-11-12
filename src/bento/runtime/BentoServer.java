@@ -210,12 +210,12 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
     
     /** Constructor used when Bento is run as a servlet */
     protected BentoServer() {
-    	initedOk = false;   // force initialization in servlet init function
+        initedOk = false;   // force initialization in servlet init function
     }
 
     private static Map<String, String> paramsFromArgs(String[] args) {
-    	Map<String, String> initParams = new HashMap<String, String>();
-    	int numProblems = 0;
+        Map<String, String> initParams = new HashMap<String, String>();
+        int numProblems = 0;
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             String nextArg = (i + 1 < args.length ? args[i + 1] : null);
@@ -297,13 +297,13 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                 initParams.put("recursive", "true");
 
             } else if (arg.equals("-multithreaded") || arg.equals("-m")) {
-            	initParams.put("multithreaded", "true");
+                initParams.put("multithreaded", "true");
 
             } else if (arg.equals("-customcore") || arg.equals("-cc")) {
-            	initParams.put("customcore", "true");
+                initParams.put("customcore", "true");
 
             } else if (arg.equals("-sharecore") || arg.equals("-sc")) {
-            	initParams.put("sharecore", "true");
+                initParams.put("sharecore", "true");
 
             } else if (arg.equals("-log") || arg.equals("-l")) {
                 if (noNextArg) {
@@ -397,14 +397,14 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
     
     protected void initGlobalSettings(Map<String, String> initParams) throws Exception {
 
-    	String param;
-    	
-    	param = initParams.get("verbose");
-    	if ("true".equalsIgnoreCase(param)) {
+        String param;
+        
+        param = initParams.get("verbose");
+        if ("true".equalsIgnoreCase(param)) {
             SiteBuilder.verbosity = SiteBuilder.VERBOSE;
         }
 
-    	siteName = initParams.get("site");
+        siteName = initParams.get("site");
         if (siteName == null) {
             siteName = bento.lang.Name.DEFAULT;
         }
@@ -441,7 +441,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         filesFirst = isTrue(initParams.get("filesfirst"));
         fileHandlerName = initParams.get("filehandler");
         debuggingEnabled = isTrue(initParams.get("debug"));
-	}
+    }
 
     /** Returns true if the passed string is a valid servlet parameter representation
      *  of true.
@@ -452,17 +452,17 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
 
 
     private void startServer() {
-    	try {
-    	    loadSite();
+        try {
+            loadSite();
 
-    	    Class<?> serverClass = Class.forName("bento.runtime.BentoJettyServer");
-    	    standaloneServer = (BentoStandaloneServer) serverClass.newInstance();
-    	    
-    	    standaloneServer.setServer(this);
-    	    standaloneServer.setFilesFirst(filesFirst);
-    	    standaloneServer.setVirtualHost(virtualHost);
+            Class<?> serverClass = Class.forName("bento.runtime.BentoJettyServer");
+            standaloneServer = (BentoStandaloneServer) serverClass.newInstance();
             
-    	    standaloneServer.startServer();
+            standaloneServer.setServer(this);
+            standaloneServer.setFilesFirst(filesFirst);
+            standaloneServer.setVirtualHost(virtualHost);
+            
+            standaloneServer.startServer();
             
         } catch (Exception e) {
             System.err.println("Exception starting BentoServer: " + e);
@@ -484,15 +484,15 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
             e.printStackTrace(System.err);
         }
     }
-    	
-    protected void loadSite() throws Exception {	
+        
+    protected void loadSite() throws Exception {    
         // Load and compile the bento code
         mainSite = load(siteName, bentoPath, recursive);
         if (mainSite == null) {
             System.err.println("Unable to load site " + siteName + "; BentoServer not started.");
-        	return;
+            return;
         } else if (mainSite.getException() != null) {
-        	throw mainSite.getException(); 
+            throw mainSite.getException(); 
         }
         mainSite.siteInit();
         siteName = mainSite.getName();
@@ -532,7 +532,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                 site_config sc = new site_config_wrapper((Construction) all_sites[i], mainSite);
                 String nm = sc.name();
                 if (nm.equals(siteName)) {
-                	continue;
+                    continue;
                 }
                 String bp = null;
                 if (shareCore) {
@@ -620,11 +620,11 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
     }
 
     public BentoSite getMainSite () {
-    	return mainSite;
+        return mainSite;
     }
     
     public Map<String, BentoSite> getSiteMap() {
-    	return sites;
+        return sites;
     }
     
     /** Properties associated with this processor. **/
@@ -688,7 +688,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
     }
 
     public String getBentoPath() {
-    	return bentoPath;
+        return bentoPath;
     }
     
     /** Returns true if this server was successfully started and has not yet been stopped. */
@@ -787,7 +787,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
     }
     
     public void init(ServletConfig config) throws ServletException {
-    	super.init(config);
+        super.init(config);
         servletContext = config.getServletContext();
         contextPath = servletContext.getContextPath();
     }
@@ -886,11 +886,11 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                 ix = ru.indexOf('/');
             }
             if (ix < 0) {
-            	if (sites.containsKey(ru)) {
-            		site = (BentoSite) sites.get(ru);
+                if (sites.containsKey(ru)) {
+                    site = (BentoSite) sites.get(ru);
                 }
             } else if (ix > 0) {
-            	String siteName = ru.substring(0, ix);
+                String siteName = ru.substring(0, ix);
                 if (sites.containsKey(siteName)) {
                     site = (BentoSite) sites.get(siteName);
                 }
@@ -1093,9 +1093,9 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         
         boolean result = false;
         try {
-        	synchronized (context) {
+            synchronized (context) {
                 result = site.respond(name, requestParams, bentoRequest, bentoSession, context, writer);
-        	}
+            }
 
         } finally {
             synchronized (bentoContext) {
