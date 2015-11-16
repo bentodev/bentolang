@@ -968,11 +968,13 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
     }
     
     /**Process the HTTP Put request*/
-    public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        respond(request, response);
     }
 
     /**Process the HTTP Delete request*/
-    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        respond(request, response);
     }
     
     

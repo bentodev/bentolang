@@ -1201,6 +1201,7 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
                 List<String> addedKeeps = null;
                 if (topEntry.dynamicKeeps != null) {
                     Iterator<KeepHolder> it = topEntry.dynamicKeeps.iterator();
+                    Context clonedContext = null;
                     
                     while (it.hasNext()) {
                         KeepHolder kh = it.next();
@@ -1212,7 +1213,10 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
                             }
                             addedKeeps.add(name);
                         
-                            Definition keepDef = keyOwner.getChildDefinition(kh.keepName, this);
+                            if (clonedContext == null) {
+                                clonedContext = clone(false);
+                            }
+                            Definition keepDef = keyOwner.getChildDefinition(kh.keepName, clonedContext);
                             Object keyObj = null;
                             if (keepDef != null && keepDef.hasChildDefinition(kh.byName.getName())) {
                                 // temporarily restore the stack in case the definition has to access
@@ -1221,29 +1225,29 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
                                 // exception or redirection;
                                 int rememberUnpushes = numUnpushes;
                                 for (int j = 0; j < rememberUnpushes; j++) {
-                                    repush();
+                                    clonedContext.repush();
                                     numUnpushes--;
                                 }
-                                ParameterList params = keepDef.getParamsForArgs(args, this);
+                                ParameterList params = keepDef.getParamsForArgs(args, clonedContext);
                                 try {
-                                    push(keepDef, params, args, false);
-                                    keyObj = keepDef.getChildData(kh.byName, null, this, args);
+                                    clonedContext.push(keepDef, params, args, false);
+                                    keyObj = keepDef.getChildData(kh.byName, null, clonedContext, args);
                                 } finally {
-                                    pop();
+                                    clonedContext.pop();
                                 }
                                 for (int j = 0; j < rememberUnpushes; j++) {
-                                    unpush();
+                                    clonedContext.unpush();
                                     numUnpushes++;
                                 }
                             } else {
-                                keyObj = getData(null, kh.byName.getName(), args, null);
+                                keyObj = clonedContext.getData(null, kh.byName.getName(), args, null);
                                 if (keyObj == null) {
-                                    keyObj = keyOwner.getChildData(kh.byName, null, this, args);
+                                    keyObj = keyOwner.getChildData(kh.byName, null, clonedContext, args);
                                 }
                             }
                             if (keyObj == null || keyObj.equals(NullValue.NULL_VALUE)) {
                                 Instantiation keyInstance = new Instantiation(kh.byName, topEntry.def);
-                                keyObj = keyInstance.getData(this);
+                                keyObj = keyInstance.getData(clonedContext);
                                 if (keyObj == null || keyObj.equals(NullValue.NULL_VALUE)) {
                                     throw new Redirection(Redirection.STANDARD_ERROR, "error in keep by directive: key is null");
                                 }
@@ -3672,6 +3676,16 @@ if (definition.getName().contains("gpn") || definition.getName().contains("sub_4
     }
 
     public synchronized Entry unpush() {
+int calcSize = 0;
+Entry e = topEntry;
+while (e != null) {
+    calcSize++;
+    e = e.link;
+}
+if (calcSize != size) {
+  throw new IllegalStateException("context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+}
+        
         if (size <= 1) {
             throw new IndexOutOfBoundsException("Attempt to unpush root entry in context");
         }
