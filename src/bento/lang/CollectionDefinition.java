@@ -392,6 +392,9 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
             }
             return list;
 
+        } else if (collection instanceof InstantiatedMap) {
+            return collection;
+
         } else if (collection instanceof Map<?,?>) {
             Map<String, Object> map = new InstantiatedMap((Map<String, Object>) collection, this, context);
             return map;
