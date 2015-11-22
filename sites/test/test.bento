@@ -4195,7 +4195,7 @@ kt [=
     =]
 
 
-  /--  test_case --/ dynamic_keep_test [=
+    test_case dynamic_keep_test [=
         int category = caching
         name = "Dynamic Keep Test"
         key = "dynamic_keep"
@@ -4215,7 +4215,7 @@ kt [=
         keep_B [=
             keep by bkey in test_cache: w = "B"
 
-            w;
+            eval(w);
         =]
 
         keep_C [=
@@ -4237,12 +4237,12 @@ kt [=
            d("D");
         =]
 
-     /--   keep_A; --/ 
+        keep_A; 
         keep_B;
         keep_C;
         eval(keep_D);
                 
-     /--   test_cache{"a"}; --/
+        test_cache{"a"};
         test_cache{"b"};
         test_cache{"c"};
         test_cache{"d"};
@@ -4256,7 +4256,6 @@ dkt [=
             keep by bkey in test_cache: w = "B"
 
             eval(w);
-            w;
         =]
         
     keep_B;         
@@ -6135,11 +6134,7 @@ memt [=
     =]
 
     dynamic growing_array_example_4(session s) [=
-        /---keep session_char_array by session_id in global_per_session_cache --/
-        keep session_c by session_id in gps_2
-
-        char session_c = 'a';
-
+        eval(session_id(: s :));
         [| <b> |]
         for char letter from 'A' through 'J' [=
             add_to_session_char_array(letter, s);

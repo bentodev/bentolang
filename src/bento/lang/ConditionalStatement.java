@@ -178,16 +178,23 @@ public class ConditionalStatement extends AbstractConstruction implements Constr
     }
 
     public Type getType(Context context, Definition resolver) {
+        if ((body == null || body.getNumChildren() == 0) && (elseBody == null || elseBody.getNumChildren() == 0) && elseIf == null) {
+            return PrimitiveType.VOID;
+        }
         try {
             if (valueOf(condition, context).getBoolean()) {
-                if (body != null) {
+                if (body != null && body.getNumChildren() > 0) {
                     return body.getType(context, resolver);
+                } else {
+                    return PrimitiveType.VOID;
                 }
             } else {
-                if (elseBody != null) {
+                if (elseBody != null && elseBody.getNumChildren() > 0) {
                     return elseBody.getType(context, resolver);
                 } else if (elseIf != null) {
                     return elseIf.getType(context, resolver);
+                } else {
+                    return PrimitiveType.VOID;
                 }
             }
         } catch (Redirection r) {

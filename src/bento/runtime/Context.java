@@ -898,7 +898,7 @@ public class Context {
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
 
-if (definition.getName().contains("_serializer")) {
+if (definition.getName().contains("dkt")) {
  System.out.println("ctx 902: " + definition.getName());    
 }
             // get the arguments and parameters, if any, to push on the
@@ -1201,7 +1201,7 @@ if (definition.getName().contains("_serializer")) {
                 List<String> addedKeeps = null;
                 if (topEntry.dynamicKeeps != null) {
                     Iterator<KeepHolder> it = topEntry.dynamicKeeps.iterator();
-                    Context clonedContext = null;
+                    Context clonedContext = this;
                     
                     while (it.hasNext()) {
                         KeepHolder kh = it.next();
@@ -1313,6 +1313,104 @@ if (definition.getName().contains("_serializer")) {
         }
     }
             
+    synchronized private void updateDynamicKeeps(String name, ArgumentList args) throws Redirection {
+        if (addingDynamicKeeps) {
+            return;
+        }
+        addingDynamicKeeps = true;
+        
+        int numUnpushes = 0;
+        int i = 0;
+        try {
+            while (topEntry != null) {
+                List<String> addedKeeps = null;
+                if (topEntry.dynamicKeeps != null) {
+                    Iterator<KeepHolder> it = topEntry.dynamicKeeps.iterator();
+                    Context clonedContext = this;
+                    
+                    while (it.hasNext()) {
+                        KeepHolder kh = it.next();
+                        NameNode keepName = kh.keepName;
+                        Definition keyOwner = kh.owner;
+                        if (keepName.getName().equals(name)) {
+                        
+                            if (clonedContext == null) {
+                                clonedContext = clone(false);
+                            }
+                            Definition keepDef = keyOwner.getChildDefinition(kh.keepName, clonedContext);
+                            Object keyObj = null;
+                            if (keepDef != null && keepDef.hasChildDefinition(kh.byName.getName())) {
+                                // temporarily restore the stack in case the definition has to access
+                                // parameters that have been unpushed; however, keep track with numUnpushes
+                                // so as to not throw off the finally clause should there be an
+                                // exception or redirection;
+                                int rememberUnpushes = numUnpushes;
+                                for (int j = 0; j < rememberUnpushes; j++) {
+                                    clonedContext.repush();
+                                    numUnpushes--;
+                                }
+                                ParameterList params = keepDef.getParamsForArgs(args, clonedContext);
+                                try {
+                                    clonedContext.push(keepDef, params, args, false);
+                                    keyObj = keepDef.getChildData(kh.byName, null, clonedContext, args);
+                                } finally {
+                                    clonedContext.pop();
+                                }
+                                for (int j = 0; j < rememberUnpushes; j++) {
+                                    clonedContext.unpush();
+                                    numUnpushes++;
+                                }
+                            } else {
+                                keyObj = clonedContext.getData(null, kh.byName.getName(), args, null);
+                                if (keyObj == null) {
+                                    keyObj = keyOwner.getChildData(kh.byName, null, clonedContext, args);
+                                }
+                            }
+                            if (keyObj == null || keyObj.equals(NullValue.NULL_VALUE)) {
+                                Instantiation keyInstance = new Instantiation(kh.byName, topEntry.def);
+                                keyObj = keyInstance.getData(clonedContext);
+                                if (keyObj == null || keyObj.equals(NullValue.NULL_VALUE)) {
+                                    throw new Redirection(Redirection.STANDARD_ERROR, "error in keep by directive: key is null");
+                                }
+                            }
+                            String key = (keyObj instanceof Value ? ((Value) keyObj).getString() : keyObj.toString());
+                            
+                            Entry containerEntry = null;
+                            Map<String, Object> containerTable = null;
+                            String containerKey = null;
+                            if (kh.inContainer) {
+                                // back up to the new frame entry
+                                for (Entry e = topEntry; e.getPrevious() != null; e = e.getPrevious()) {
+                                    if (e.superdef == null) {
+                                        containerEntry = e.getPrevious();
+                                        containerTable = containerEntry.getCache();
+                                        break;
+                                    }
+                                }
+                                if (containerEntry != null) {
+                                    containerKey = (kh.asThis ? key : topEntry.def.getName() + (key == null ? "." : "." + key));
+                                    containerEntry.addKeep(kh.resolvedInstances, containerKey, containerTable, null, null, kh.persist, keepMap, cache);
+                                }
+                            } else {
+                                topEntry.addKeep(kh.resolvedInstances, keyObj, kh.table, containerKey, containerTable, kh.persist, keepMap, cache);
+                            }
+                        }
+                    }
+                }
+                if (topEntry.link == null) {
+                    break;
+                }
+                numUnpushes++;
+                unpush();
+            }
+        } finally {
+            while (numUnpushes > 0) {
+                repush();
+                numUnpushes--;
+            }
+            addingDynamicKeeps = false;
+        }
+    }
     
     /** Returns any cached data for a definition with the specified name
      *  in the current frame of the current context, or null if there is none.
@@ -1337,13 +1435,14 @@ if (definition.getName().contains("_serializer")) {
         Object data = null;
         
         if (topEntry != null) {
-            List<String>[] keeps = addDynamicKeeps(name, args);
+            //List<String>[] keeps = addDynamicKeeps(name, args);
+            updateDynamicKeeps(name, args);
             // use indexes as part of the key otherwise a cached element may be confused with a cached array 
             String key = addIndexesToKey(name, indexes);
             data = topEntry.get(key, fullName, args, local);
-            if (keeps != null) {
-                removeDynamicKeeps(keeps);
-            }
+            //if (keeps != null) {
+            //    removeDynamicKeeps(keeps);
+            //}
         }
 
         if (data == null) {
@@ -1520,11 +1619,12 @@ if (definition.getName().contains("_serializer")) {
        
         // use indexes as part of the key otherwise a cached element may be confused with a cached array 
         String key = addIndexesToKey(name, indexes);
-        List<String>[] keeps = addDynamicKeeps(key, args);
+        //List<String>[] keeps = addDynamicKeeps(key, args);
+        updateDynamicKeeps(key, args);
         Holder holder = topEntry.getDefHolder(key, makeGlobalKey(fullName), args, local);
-        if (keeps != null) {
-            removeDynamicKeeps(keeps);
-        }
+        //if (keeps != null) {
+        //    removeDynamicKeeps(keeps);
+        //}
         
         if (holder == null) {
             holder = getContextHolder(name);
@@ -1562,15 +1662,16 @@ if (definition.getName().contains("_serializer")) {
     synchronized public void putData(Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, List<Index> indexes, String name, Object data, ResolvedInstance resolvedInstance) throws Redirection {
         if (topEntry != null && name != null && name.length() > 0) {
             int maxCacheLevels = getMaxCacheLevels(nominalDef);
-            List<String>[] keeps = addDynamicKeeps(name, args);
+            //List<String>[] keeps = addDynamicKeeps(name, args);
+            updateDynamicKeeps(name, args);
 
             // use indexes as part of the key otherwise a cached element may be confused with a cached array 
             String key = addIndexesToKey(name, indexes);
             topEntry.put(key, nominalDef, nominalArgs, def, args, this, data, resolvedInstance, maxCacheLevels);
             
-            if (keeps != null) {
-                removeDynamicKeeps(keeps);
-            }
+            //if (keeps != null) {
+            //    removeDynamicKeeps(keeps);
+            //}
         }
     }
 
