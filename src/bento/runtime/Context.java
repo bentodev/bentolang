@@ -898,7 +898,7 @@ public class Context {
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
 
-if (definition.getName().contains("dkt")) {
+if (definition.getName().contains("_serializer")) {
  System.out.println("ctx 902: " + definition.getName());    
 }
             // get the arguments and parameters, if any, to push on the
@@ -1323,7 +1323,6 @@ if (definition.getName().contains("dkt")) {
         int i = 0;
         try {
             while (topEntry != null) {
-                List<String> addedKeeps = null;
                 if (topEntry.dynamicKeeps != null) {
                     Iterator<KeepHolder> it = topEntry.dynamicKeeps.iterator();
                     Context clonedContext = this;
@@ -3629,8 +3628,6 @@ if (definition.getName().contains("dkt")) {
                         }
                         prev = prev.link;
                     }
-                } else if (scopedef.getName().equals("set_player") || scopedef.getName().equals("ajax_counter")) {
-                    System.out.println("not caching keep map, " + scopedef.getName() + " is dynamic");
                 }
 
                 List<InsertStatement> inserts = scopedef.getInserts();
@@ -5548,7 +5545,7 @@ if (unpushedEntries == null) {
                     
                     Map<String, Object> containerCache = containerEntry.getCache();
                     synchronized (containerCache) {
-                        //if (def.getDurability() != Definition.DYNAMIC && (args == null || !args.isDynamic())) {
+                        //if (def.getDurability() != Definition.DYNAMIC) { // && (args == null || !args.isDynamic())) {
                             keepCache = (Map<String, Object>) containerCache.get(key);
                         //}
                         if (keepCache == null) {
