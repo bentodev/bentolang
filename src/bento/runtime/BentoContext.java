@@ -2,7 +2,7 @@
  *
  * $Id: BentoContext.java,v 1.19 2014/12/31 14:03:17 sthippo Exp $
  *
- * Copyright (c) 2003-2014 by bentodev.org
+ * Copyright (c) 2003-2015 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -43,7 +43,7 @@ public class BentoContext implements bento_context {
  
     public BentoContext(Site site, Context context) {
         this.site = site;
-    	this.context = context;
+        this.context = context;
         initialized = false;
     }
     
@@ -51,7 +51,7 @@ public class BentoContext implements bento_context {
         site = bentoContext.site;
         context = new Context(bentoContext.context, false);
         while (!context.peek().equals(context.getRootEntry())) {
-          	context.pop();
+            context.pop();
         }
         initialized = true;
     }
@@ -71,7 +71,7 @@ public class BentoContext implements bento_context {
     
     /** Returns the name of the site at the top of this context. **/
     public String site_name() {
-    	return site.getName();
+        return site.getName();
     }
     
     /** Returns the cached value, if any, for a particular name in this context. **/
