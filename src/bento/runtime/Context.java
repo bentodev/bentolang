@@ -4092,8 +4092,13 @@ if (calcSize != context.size) {
                     // entry caches always needs to be synchronized.
 
                     setTop(newEntry(context.topEntry, true));
-                    // copy the links also (newEntry doesn't do it, to avoid unnecessary references)
-                    topEntry.setPrevious(context.topEntry.getPrevious());
+                    Entry nextEntry = context.topEntry.link;
+                    Entry entry = topEntry;
+                    while (nextEntry != null) {
+                       entry.link = newEntry(nextEntry, true);
+                       nextEntry = nextEntry.link;
+                       entry = entry.link;
+                    }
                 }
             }
         

@@ -2348,20 +2348,26 @@ at [=
 
 aecat [=
         fum [/]
+
         fo [=
             fum[] fofum = []
         =]
-        fo fo4 [=
-            fum[] fofum = [ "G" ]
+
+        fo fo2 [=
+            fum[] fofum = [ "C", "D" ]
         =]
-        sho_fum(fum fm),(x) [=
-            with (fm) [=
-                fm;
-            =] else [=
-                "z";
-            =] 
+
+        fo fo3 [=
+            fum[] fofum = [ "E", "F" ]
         =]
-        sho_fum(fo4.fofum[0]);
+
+        fo[] fos = [ fo2, fo3 ] 
+        
+        for fo ff in fos [=
+            for int ii from 0 to 2 [=
+                ff.fofum[ii];
+            =]
+        =]
 =]
 
 	
