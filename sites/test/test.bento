@@ -6094,7 +6094,7 @@ memt [=
     char[] char_array = []
     dynamic growing_array_example_3 [=
 
-        dynamic char_array array [=
+        char_array carray [=
             keep chars
             keep add as chars
             char[] chars = []
@@ -6103,7 +6103,7 @@ memt [=
 
         [| <b> |]
         for char letter from 'A' through 'J' [=
-            array.add(letter);
+            carray.add(letter);
             br;
         =]
         [| </b> |]

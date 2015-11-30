@@ -898,7 +898,7 @@ public class Context {
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
 
-if (definition.getName().contains("_serializer")) {
+if (definition.getName().contains("_serializer") || definition.getName().equals("id")) {
  System.out.println("ctx 902: " + definition.getName());    
 }
             // get the arguments and parameters, if any, to push on the
@@ -928,6 +928,9 @@ if (definition.getName().contains("_serializer")) {
                             aliasInstance = aliasInstance.getUltimateInstance(this);
                         }
                         aliasDef = aliasInstance.getDefinition(this, definition);
+                        //if (aliasDef != null) {
+                        //    return construct(aliasDef, aliasInstance.getArguments());
+                        //}
                     }
                 }
                 AbstractNode contents = definition.getContents();
@@ -1666,6 +1669,9 @@ if (definition.getName().contains("_serializer")) {
 
             // use indexes as part of the key otherwise a cached element may be confused with a cached array 
             String key = addIndexesToKey(name, indexes);
+if (key.equals("id")) {
+ System.out.println("Ctx 1670");
+}
             topEntry.put(key, nominalDef, nominalArgs, def, args, this, data, resolvedInstance, maxCacheLevels);
             
             //if (keeps != null) {
@@ -3703,6 +3709,7 @@ if (definition.getName().contains("_serializer")) {
             System.err.println("**** context exceeding 50 ****");
         }
         size++;
+
 //System.out.println("ctx " + Integer.toHexString(hashCode()) + " size ^" + size);            
 
         if (rootEntry == null) {
@@ -3719,6 +3726,16 @@ if (definition.getName().contains("_serializer")) {
             }
         }
         setTop(entry);
+
+int calcSize = 0;
+Entry e = topEntry;
+while (e != null) {
+    calcSize++;
+    e = e.link;
+}
+if (calcSize != size) {
+  throw new IllegalStateException("context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+}
     }
 
     private void setRootEntry(Entry entry) {
@@ -3766,14 +3783,6 @@ if (definition.getName().contains("_serializer")) {
             Entry entry = topEntry;
             setTop(entry.getPrevious());
             size--;
-//System.out.println("ctx " + Integer.toHexString(hashCode()) + " size v" + size);            
-            return entry;
-        } else {
-            return null;
-        }
-    }
-
-    public synchronized Entry unpush() {
 int calcSize = 0;
 Entry e = topEntry;
 while (e != null) {
@@ -3783,7 +3792,14 @@ while (e != null) {
 if (calcSize != size) {
   throw new IllegalStateException("context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
 }
-        
+//System.out.println("ctx " + Integer.toHexString(hashCode()) + " size v" + size);            
+            return entry;
+        } else {
+            return null;
+        }
+    }
+
+    public synchronized Entry unpush() {
         if (size <= 1) {
             throw new IndexOutOfBoundsException("Attempt to unpush root entry in context");
         }
@@ -4014,6 +4030,16 @@ if (unpushedEntries == null) {
     synchronized public void copy(Context context, boolean clearCache) {
         clear();
 
+int calcSize = 0;
+Entry e = context.topEntry;
+while (e != null) {
+    calcSize++;
+    e = e.link;
+}
+if (calcSize != context.size) {
+  throw new IllegalStateException("context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+}
+
         // copy the root
         rootContext = context.rootContext;
         definingDef = context.definingDef;
@@ -4077,6 +4103,15 @@ if (unpushedEntries == null) {
             setRootEntry(newEntry(context.rootEntry, false));
             setTop(rootEntry);
         }
+calcSize = 0;
+e = topEntry;
+while (e != null) {
+    calcSize++;
+    e = e.link;
+}
+if (calcSize != size) {
+  throw new IllegalStateException("context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+}
     }
 
     public int hashCode() {
@@ -5163,7 +5198,7 @@ if (unpushedEntries == null) {
                         defOwner = defOwner.getOwner();
                     }
 
-                    if (defOwner != null && this.def.equalsOrExtends(defOwner)) {
+                    if (defOwner != null && defOwner.getDurability() != Definition.DYNAMIC && this.def.equalsOrExtends(defOwner)) {
                         Definition defOwnerOwner = defOwner.getOwner();
                         Entry entry = link;
                         while (entry != null) {
@@ -5536,21 +5571,24 @@ if (unpushedEntries == null) {
             if (keepMap == null) {
                 keepMap = newHashMap(Pointer.class);
             }
+ 
+if ("piece_serializer".equals(def.getName())) {
+ System.out.println("Ctx 5541");    
+}
             
             if (keepCache == null) {
                 // cache the keep cache in the owner entry in the context
                 Entry containerEntry = getOwnerContainerEntry(def);
                 if (containerEntry != null) {
                     String key = def.getName() + ".keep";
-                    
                     Map<String, Object> containerCache = containerEntry.getCache();
                     synchronized (containerCache) {
-                        //if (def.getDurability() != Definition.DYNAMIC) { // && (args == null || !args.isDynamic())) {
-                            keepCache = (Map<String, Object>) containerCache.get(key);
-                        //}
+                        keepCache = (Map<String, Object>) containerCache.get(key);
                         if (keepCache == null) {
                             keepCache = newHashMap(Object.class);
-                            containerCache.put(key, keepCache);
+                            if (def.getDurability() != Definition.DYNAMIC) {
+                                containerCache.put(key, keepCache);
+                            }
                             keepCache.put("from", keepMap);
                         } else {
                             vlog(" ---)> retrieving keep cache for " + def.getName() + " from " + containerEntry.def.getName());
@@ -5569,7 +5607,9 @@ if (unpushedEntries == null) {
                     Map<String, Object> containerKeepCache = (Map<String, Object>) containerCache.get(key);
                     if (containerKeepCache == null) {
                         keepCache.put("from", keepMap);
-                        containerCache.put(key, keepCache);
+                        if (def.getDurability() != Definition.DYNAMIC) {
+                            containerCache.put(key, keepCache);
+                        }
                     }                
                 }
             }
