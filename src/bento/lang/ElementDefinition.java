@@ -89,9 +89,12 @@ public class ElementDefinition extends AnonymousDefinition {
         } else if (contents instanceof Instantiation && !(contents instanceof ResolvedInstance)) {
             if (context == null) {
             	context = getResolutionContext();
+            	if (context != null) {
+            	    return new ResolvedInstance((Instantiation) contents, context, true);
+            	}
             }
             if (context != null) {
-                contents = new ResolvedInstance((Instantiation) contents, context);
+                contents = new ResolvedInstance((Instantiation) contents, context, false);
             }
         }
         return contents;

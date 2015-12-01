@@ -1866,7 +1866,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                    }
                }
 
-               Instantiation newInstance = new ResolvedInstance(instance, context);
+               Instantiation newInstance = new ResolvedInstance(instance, context, false);
                constructions = new SingleItemList<Construction>(newInstance);
 
            } finally {

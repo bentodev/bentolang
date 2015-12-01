@@ -2250,7 +2250,7 @@ if (key.equals("id")) {
                 if (resolvedArgs == args) {
                     resolvedArgs = new ArgumentList(args);
                 }
-                ResolvedInstance ri = new ResolvedInstance(argInstance, this);
+                ResolvedInstance ri = new ResolvedInstance(argInstance, this, false);
                 resolvedArgs.set(i, ri);
             }
         }

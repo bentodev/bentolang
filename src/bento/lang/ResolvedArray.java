@@ -141,7 +141,7 @@ class ResolvedArray extends ResolvedCollection {
 
     private static Construction resolveElement(CollectionDefinition collectionDef, Construction element, Context context) throws Redirection {
         if (element instanceof Instantiation) {
-            return resolveInstance((Instantiation) element, context);
+            return resolveInstance((Instantiation) element, context, false);
 
         } else if (element instanceof Expression) {
             return ((Expression) element).resolveExpression(context);

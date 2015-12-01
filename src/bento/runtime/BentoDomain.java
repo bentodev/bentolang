@@ -731,7 +731,7 @@ public class BentoDomain implements bento_domain {
             BentoParser parser = new BentoParser(new StringReader(expression));
             Instantiation instance = parser.parseInstance();
             instance.setOwner(site);
-            return new ResolvedInstance(instance, siteContext);
+            return new ResolvedInstance(instance, siteContext, false);
         } catch (Exception e) {
             System.out.println("Exception getting definition: " + e);
             System.out.println("Expression:\n" + expression);

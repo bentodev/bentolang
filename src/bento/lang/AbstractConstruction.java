@@ -126,7 +126,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
     }
     
     /** Resolve an element of a collection according to whether it is an array, a table, or a simple instance. */
-    static ResolvedInstance resolveInstance(Instantiation instance, Context context) throws Redirection {
+    static ResolvedInstance resolveInstance(Instantiation instance, Context context, boolean shareContext) throws Redirection {
         ResolvedInstance resolvedInstance = null;
         if (instance instanceof ResolvedInstance) {
             resolvedInstance = (ResolvedInstance) instance;
@@ -140,7 +140,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                     resolvedInstance = new ResolvedArray(collectionDef, context, instance.getArguments(), instance.getIndexes());
                 }
             } else {
-                resolvedInstance = new ResolvedInstance(instance, context);
+                resolvedInstance = new ResolvedInstance(instance, context, shareContext);
             }
         }
         return resolvedInstance;
@@ -510,7 +510,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                                         ri = holder.resolvedInstance;
                                     }
                                     if (ri == null) {
-                                        ri = new ResolvedInstance((Instantiation) node, context);
+                                        ri = new ResolvedInstance((Instantiation) node, context, false);
                                     }
                                 }
                             } else {

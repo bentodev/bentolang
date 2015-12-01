@@ -26,7 +26,7 @@ abstract public class ResolvedCollection extends ResolvedInstance implements Col
     private Context elementContext = null;
 
     public ResolvedCollection(Instantiation instance, Context context) {
-        super(instance, context);
+        super(instance, context, false);
     }
 
     public ResolvedCollection(Definition def, Context context, ArgumentList args, List<Index> indexes) throws Redirection {

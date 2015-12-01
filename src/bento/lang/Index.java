@@ -2,7 +2,7 @@
  *
  * $Id: Index.java,v 1.10 2014/05/21 13:21:00 sthippo Exp $
  *
- * Copyright (c) 2002-2014 by bentodev.org
+ * Copyright (c) 2002-2015 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -80,7 +80,7 @@ abstract public class Index extends AbstractNode {
         AbstractNode node = (AbstractNode) resolvedIndex.getChild(0);
         if (node instanceof Instantiation) {
             try {
-                node = AbstractConstruction.resolveInstance((Instantiation) node, context);
+                node = AbstractConstruction.resolveInstance((Instantiation) node, context, false);
             } catch (Redirection r) {
                 ;
             }

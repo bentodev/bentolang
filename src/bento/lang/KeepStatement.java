@@ -183,12 +183,12 @@ public class KeepStatement extends BentoStatement {
             }
         }
         for (int i = 0; i < names.length; i++) {
-            resolvedInstances[i] = new ResolvedInstance(instances[i], context);
+            resolvedInstances[i] = new ResolvedInstance(instances[i], context, false);
         }
         if (addAs && as.getName() != Name.THIS) {
             instances[names.length] = new Instantiation(as);
             instances[names.length].setOwner(owner);
-            resolvedInstances[names.length] = new ResolvedInstance(instances[names.length], context);
+            resolvedInstances[names.length] = new ResolvedInstance(instances[names.length], context, false);
         }
         return resolvedInstances;
     }

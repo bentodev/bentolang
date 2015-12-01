@@ -74,7 +74,7 @@ public class DynamicElementBlock extends DynamicBentoBlock implements Constructi
                 Object element = tel.getElement();
                 if (tel.isDynamic() || element instanceof Instantiation) {
                     Value key = tel.isDynamic() ? tel.getDynamicKey(context) : tel.getKey();
-                    element = element instanceof Instantiation ? new ResolvedInstance((Instantiation) element, context) : element;
+                    element = element instanceof Instantiation ? new ResolvedInstance((Instantiation) element, context, false) : element;
                     tel = new TableElement(getOwner(), key, element);
                 }
                 constructions.add(tel);
@@ -83,7 +83,7 @@ public class DynamicElementBlock extends DynamicBentoBlock implements Constructi
             } else if (node instanceof ResolvedInstance) {
                 constructions.add((Construction) node);
             } else if (node instanceof Instantiation) {
-                constructions.add(new ResolvedInstance((Instantiation) node, context));
+                constructions.add(new ResolvedInstance((Instantiation) node, context, false));
             } else if (node instanceof Expression) {
                 constructions.add(((Expression) node).resolveExpression(context));
             } else if (node instanceof Construction) {

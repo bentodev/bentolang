@@ -42,7 +42,7 @@ public class ResolvedInstance extends Instantiation { //implements Value {
                     resolvedArgs = new ArgumentList(args);
                     sharedContext = context.clone(false);
                 }
-                ResolvedInstance ri = new ResolvedInstance(argInstance, sharedContext);
+                ResolvedInstance ri = new ResolvedInstance(argInstance, sharedContext, true);
                 resolvedArgs.set(i, ri);
             }
         }
@@ -125,11 +125,11 @@ public class ResolvedInstance extends Instantiation { //implements Value {
     }
 
 
-    public ResolvedInstance(Instantiation instance, Context context) {
-        this(instance, context, false);
-    }
+//    public ResolvedInstance(Instantiation instance, Context context) {
+//        this(instance, context, false);
+//    }
 
-    protected ResolvedInstance(Instantiation instance, Context context, boolean shared) {
+    public ResolvedInstance(Instantiation instance, Context context, boolean shared) {
         super();
 
         // make a writeable clone unless shared flag is true

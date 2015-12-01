@@ -122,7 +122,7 @@ abstract public class Expression extends AbstractConstruction implements ValueGe
         for (int i = 0; i < numChildren; i++) {
             BentoNode node = getChild(i);
             if (node instanceof Instantiation && !(node instanceof ResolvedInstance)) {
-                setChild(i, new ResolvedInstance((Instantiation) node, context));
+                setChild(i, new ResolvedInstance((Instantiation) node, context, true));
             } else if (node instanceof Expression) {
                 setChild(i, ((Expression) node).resolveExpression(context));
             }

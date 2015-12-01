@@ -408,7 +408,7 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
         if (element instanceof ResolvedInstance) {
             return element;
         } else if (element instanceof Instantiation) {
-            return new ResolvedInstance((Instantiation) element, context);
+            return new ResolvedInstance((Instantiation) element, context, false);
         } else {
             return element;
         }

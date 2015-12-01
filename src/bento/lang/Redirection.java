@@ -2,7 +2,7 @@
  *
  * $Id: Redirection.java,v 1.13 2014/12/15 14:10:26 sthippo Exp $
  *
- * Copyright (c) 2002-2014 by bentodev.org
+ * Copyright (c) 2002-2015 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -30,7 +30,7 @@ public class Redirection extends Throwable {
     
     public Redirection(Instantiation instance, Context context) {
         super();
-        this.instance = new ResolvedInstance(instance, context);
+        this.instance = new ResolvedInstance(instance, context, false);
         location = null;
         message = null;
         bento.runtime.SiteBuilder.vlog("Creating redirection to instance: " + instance.getName());
