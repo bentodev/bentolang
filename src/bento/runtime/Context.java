@@ -4087,18 +4087,11 @@ if (calcSize != context.size) {
                     setTop(rootEntry);
 
                 } else {
-                    // clone the whole list, from top to root.  The newEntry function does a shallow
-                    // copy of the entry, meaning that caches are shared.  This means that access to 
-                    // entry caches always needs to be synchronized.
-
+                    // clone the top entry only.  This assumes that entries from the root
+                    // up to just below the top will not be modified in the new context,
+                    // because those entries are shared with the original context.
                     setTop(newEntry(context.topEntry, true));
-                    Entry nextEntry = context.topEntry.link;
-                    Entry entry = topEntry;
-                    while (nextEntry != null) {
-                       entry.link = newEntry(nextEntry, true);
-                       nextEntry = nextEntry.link;
-                       entry = entry.link;
-                    }
+                    topEntry.setPrevious(context.topEntry.getPrevious());
                 }
             }
         
