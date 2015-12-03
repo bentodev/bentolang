@@ -3765,6 +3765,10 @@ srut [=
                       null);
     =]
 
+blt [=
+   comp_array[5] = [ "JKL", "M", "N", "O", "PQR" ]
+   border_layout(comp_array);
+=]
 
     test_case compass_layout_test [=
         int category = layouts

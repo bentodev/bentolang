@@ -3151,6 +3151,9 @@ if (key.equals("id")) {
 
         boolean checkForChild = (name.numParts() > 1);
         String checkName  = name.getName();
+if (checkName.equals("panel")) {
+ System.out.println("Ctx 3155");    
+}
         ArgumentList args = entry.args;
         int numArgs = args.size();
         ParameterList params = entry.params;
@@ -3734,7 +3737,7 @@ while (e != null) {
     e = e.link;
 }
 if (calcSize != size) {
-  throw new IllegalStateException("context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+  System.out.println("Ctx 3740 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
 }
     }
 
@@ -3790,7 +3793,7 @@ while (e != null) {
     e = e.link;
 }
 if (calcSize != size) {
-  throw new IllegalStateException("context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+  System.out.println("Ctx 3796 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
 }
 //System.out.println("ctx " + Integer.toHexString(hashCode()) + " size v" + size);            
             return entry;
@@ -4037,7 +4040,7 @@ while (e != null) {
     e = e.link;
 }
 if (calcSize != context.size) {
-  throw new IllegalStateException("context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+ System.out.println("Ctx 4043 context size incorrect (stored size = " + context.size + ", real size = " + calcSize + ")" );
 }
 
         // copy the root
@@ -4108,7 +4111,7 @@ while (e != null) {
     e = e.link;
 }
 if (calcSize != size) {
-  throw new IllegalStateException("context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+    System.out.println("Ctx 4114 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
 }
     }
 
