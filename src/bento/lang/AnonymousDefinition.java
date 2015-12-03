@@ -595,21 +595,11 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
         if (entry.def.equalsOrExtends(this)) {
             return entry;
         } else {
-            int limit = context.size() - 1;
-            int numUnpushes = 0;
-            try {
-                while (numUnpushes < limit) {
-                    numUnpushes++;
-                    context.unpush();
-                    entry = context.peek();
-                    if (entry.def.equalsOrExtends(this)) {
-                        return entry;
-                    }
+            while (entry != null) {
+                if (entry.def.equalsOrExtends(this)) {
+                    return entry;
                 }
-            } finally {
-                while (numUnpushes-- > 0) {
-                    context.repush();
-                }
+                entry = entry.getPrevious();
             }
         }
         return null;
