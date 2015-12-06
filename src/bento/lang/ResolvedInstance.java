@@ -79,7 +79,7 @@ public class ResolvedInstance extends Instantiation { //implements Value {
         }
         ParameterList params = def.getParamsForArgs(args, context);
         if (def instanceof BoundDefinition) {
-        	resolutionContext = ((BoundDefinition) def).getBoundContext();
+            resolutionContext = ((BoundDefinition) def).getBoundContext();
         } else {
             try {
                 context.push(def, params, args, false);
@@ -235,6 +235,9 @@ public class ResolvedInstance extends Instantiation { //implements Value {
     public Object generateData(Context context, Definition def) throws Redirection {
         if (def == null) {
             def = getDefinition();
+            if (def == null) {
+                return null;
+            }
         }
         return instantiate(context, def);
 //        return super.generateData(resolutionContext, def);

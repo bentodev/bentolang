@@ -203,7 +203,7 @@ public class Context {
     private StateFactory stateFactory;
 
     private Entry rootEntry = null;
-    protected Entry topEntry = null;
+    private Entry topEntry = null;
     private Entry popLimit = null;
     private Definition definingDef = null;
     private NamedDefinition instantiatedDef = null;
@@ -220,7 +220,7 @@ public class Context {
 
     private int errorThreshhold = EVERYTHING;
 
-    private Entry unpushedEntries = null;
+    private Stack<Entry> unpushedEntries = null;
 
     // only root entries have nonull values for abandonedEntries
     private Entry abandonedEntries = null;
@@ -245,6 +245,7 @@ public class Context {
         keepMap = newHashMap(Pointer.class);
         siteCaches = newHashMapOfMaps(Object.class);
         globalCache = newHashMap(Object.class);
+        unpushedEntries = new Stack<Entry>();
         
         if (def != null) {
             try {
@@ -272,6 +273,7 @@ public class Context {
         keepMap = newHashMap(Pointer.class);
         siteCaches = newHashMapOfMaps(Object.class);
         globalCache = newHashMap(Object.class);
+        unpushedEntries = new Stack<Entry>();
         push(newEntry(rootEntry, true));
         popLimit = topEntry;
     }
@@ -1669,9 +1671,6 @@ if (definition.getName().contains("_serializer") || definition.getName().equals(
 
             // use indexes as part of the key otherwise a cached element may be confused with a cached array 
             String key = addIndexesToKey(name, indexes);
-if (key.equals("id")) {
- System.out.println("Ctx 1670");
-}
             topEntry.put(key, nominalDef, nominalArgs, def, args, this, data, resolvedInstance, maxCacheLevels);
             
             //if (keeps != null) {
@@ -3133,17 +3132,22 @@ if (key.equals("id")) {
             Object paramObj = null;
             synchronized (this) {
                 int i = 0;
-                while (topEntry != null) {
-                    paramObj = getParameter(name, false, returnClass);
-                    if (paramObj != null || topEntry.getPrevious() == null) {
-                        break;
-                    }
+                try {
                     unpush();
                     i++;
-                }
-                while (i > 0) {
-                    repush();
-                    i--;
+                    while (topEntry != null) {
+                        paramObj = getParameter(name, false, returnClass);
+                        if (paramObj != null || topEntry.getPrevious() == null) {
+                            break;
+                        }
+                        unpush();
+                        i++;
+                    }
+                } finally {
+                    while (i > 0) {
+                        repush();
+                        i--;
+                    }
                 }
             }
             return paramObj;
@@ -3151,9 +3155,6 @@ if (key.equals("id")) {
 
         boolean checkForChild = (name.numParts() > 1);
         String checkName  = name.getName();
-if (checkName.equals("panel")) {
- System.out.println("Ctx 3155");    
-}
         ArgumentList args = entry.args;
         int numArgs = args.size();
         ParameterList params = entry.params;
@@ -3204,8 +3205,8 @@ if (checkName.equals("panel")) {
                         argArgs = topEntry.args;
                     }
                     argParams = argDef.getParamsForArgs(argArgs, this);
-                    
-                    numPushes += pushParts(argInstance);
+
+                    //numPushes += pushParts(argInstance);
                 }
             }
             
@@ -3228,7 +3229,7 @@ if (checkName.equals("panel")) {
                 ArgumentList aliasArgs = alias.getArguments();
                 Instantiation aliasInstance = argDef.getAliasInstanceInContext(this);
                 if (aliasInstance == null) {
-                	break;
+                    break;
                 }
                 numPushes += pushParts(aliasInstance);
                 
@@ -3737,7 +3738,7 @@ while (e != null) {
     e = e.link;
 }
 if (calcSize != size) {
-  System.out.println("Ctx 3740 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+  System.out.println("Ctx 3761 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
 }
     }
 
@@ -3807,8 +3808,7 @@ if (calcSize != size) {
             throw new IndexOutOfBoundsException("Attempt to unpush root entry in context");
         }
         Entry entry = _pop();
-        entry.setPrevious(unpushedEntries);
-        setUnpushed(entry);
+        unpushedEntries.push(entry);
         return entry;
     }
 
@@ -3816,12 +3816,10 @@ if (calcSize != size) {
 if (unpushedEntries == null) {
  System.out.println("Null!!! ctx 3608");    
 }
-        Entry newUnpushedEntries = unpushedEntries.getPrevious();
-        Entry entry = unpushedEntries;
+        Entry entry = unpushedEntries.pop();
         // by pre-setting the link to topEntry, we avoid the logic in _push that clones
         // the entry being pushed
         entry.setPrevious(topEntry);
-        setUnpushed(newUnpushedEntries);
         _push(entry);
     }
 
@@ -3994,7 +3992,7 @@ if (unpushedEntries == null) {
 
     public void clear() {
 
-        setUnpushed(null);
+        unpushedEntries = new Stack<Entry>();
         setTop(null);
 
         definingDef = null;
@@ -4007,16 +4005,6 @@ if (unpushedEntries == null) {
         // careful -- these are dangerous to leave null for long
         rootContext = null;
         rootEntry = null;
-    }
-
-    private void setUnpushed(Entry entry) {
-        if (unpushedEntries != null) {
-            unpushedEntries.decRefCount();
-        }
-        unpushedEntries = entry;
-        if (unpushedEntries != null) {
-            unpushedEntries.incRefCount();
-        }
     }
 
     private void setTop(Entry entry) {
@@ -4060,19 +4048,19 @@ if (calcSize != context.size) {
         // copy the session
         session = context.session;
         
-        // deep copy the unpushed entries, so the context and its copy
-        // can unpush separately
-        Entry toEntry = null;
-        for (Entry fromEntry = context.unpushedEntries; fromEntry != null; fromEntry = fromEntry.link) {
-            if (toEntry == null) {
-                toEntry = newEntry(fromEntry, true);
-                unpushedEntries = toEntry;
-            } else {
-                toEntry.link = newEntry(fromEntry, true);
-                toEntry = toEntry.link;
-            }
-        }
-
+//        // deep copy the unpushed entries, so the context and its copy
+//        // can unpush separately
+//        Entry toEntry = null;
+//        for (Entry fromEntry = context.unpushedEntries; fromEntry != null; fromEntry = fromEntry.link) {
+//            if (toEntry == null) {
+//                toEntry = newEntry(fromEntry, true);
+//                unpushedEntries = toEntry;
+//            } else {
+//                toEntry.link = newEntry(fromEntry, true);
+//                toEntry = toEntry.link;
+//            }
+//        }
+        
         keepMap = context.keepMap;
         
         // just one global cache
@@ -4419,7 +4407,7 @@ if (calcSize != size) {
         // definitely not be abandoned.
 
         synchronized (entry) {
-            if (entry.refCount == 0 && entry != unpushedEntries) {
+            if (entry.refCount == 0 && !unpushedEntries.contains(entry)) {
                 entry.clear();
                 addAbandonedEntry(entry);
             } else {

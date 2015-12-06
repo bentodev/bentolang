@@ -2285,6 +2285,20 @@ at [=
         show_fum(fum_array_2[2]);
     =]
 
+aet [=
+fum(xx) [=
+    x = xx
+
+    x;
+=]
+
+
+fum("G") fum_gg [/]
+fum(fum_gg.x) fum_g [/]
+
+fum_g;
+
+=]
 
     test_case array_element_child_array_test [=
         int category = collections

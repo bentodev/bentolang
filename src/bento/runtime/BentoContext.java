@@ -88,7 +88,7 @@ public class BentoContext implements bento_context {
             init();
         }
         // find the definition if any corresponding to this name
-        Instantiation instance = new Instantiation(new NameNode(name), context.topEntry.def);
+        Instantiation instance = new Instantiation(new NameNode(name), context.peek().def);
         Definition def = instance.getDefinition(context);
         
         context.putData(def, null, null, name, data);
@@ -108,9 +108,9 @@ public class BentoContext implements bento_context {
         Instantiation instance;
         if (args != null) {
             ArgumentList argList = (args instanceof ArgumentList ? (ArgumentList) args : new ArgumentList(args));
-            instance = new Instantiation(nameNode, argList, null, context.topEntry.def);
+            instance = new Instantiation(nameNode, argList, null, context.peek().def);
         } else {
-            instance = new Instantiation(nameNode, context.topEntry.def);
+            instance = new Instantiation(nameNode, context.peek().def);
         }
         return instance.getData(context);
     }
