@@ -4028,7 +4028,7 @@ while (e != null) {
     e = e.link;
 }
 if (calcSize != context.size) {
- System.out.println("Ctx 4043 context size incorrect (stored size = " + context.size + ", real size = " + calcSize + ")" );
+ System.out.println("Ctx 4031 context size incorrect (stored size = " + context.size + ", real size = " + calcSize + ")" );
 }
 
         // copy the root

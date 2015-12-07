@@ -73,14 +73,14 @@ public class ResolvedInstance extends Instantiation { //implements Value {
     
     public ResolvedInstance(Definition def, Context context, ArgumentList args, List<Index> indexes) throws Redirection {
         super(def, args, indexes);
-        if (args != null && args.isDynamic()) {
-            args = instantiateArguments(args, context);
-            setArguments(args);
-        }
-        ParameterList params = def.getParamsForArgs(args, context);
         if (def instanceof BoundDefinition) {
             resolutionContext = ((BoundDefinition) def).getBoundContext();
         } else {
+            if (args != null && args.isDynamic()) {
+                args = instantiateArguments(args, context);
+                setArguments(args);
+            }
+            ParameterList params = def.getParamsForArgs(args, context);
             try {
                 context.push(def, params, args, false);
                 resolutionContext = context.clone(false);
@@ -95,7 +95,6 @@ public class ResolvedInstance extends Instantiation { //implements Value {
             owner = owner.getOwner();
         }
         setOwner(owner);
-        
     }
 
 
