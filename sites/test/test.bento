@@ -2100,6 +2100,18 @@ at [=
         =]
     =]
 
+abt [=
+ dynamic xy(xx, yy) [=
+    x = xx
+    y = yy
+ =]
+ init_vals_2[][] = [ ["E", "F"], ["G", "H"] ]
+ xy[] xy_array_builder_2(val_matrix[][]) = [ xy(val_matrix[0][0], val_matrix[0][1]),  xy(val_matrix[1][0], val_matrix[1][1]) ]
+ for xy bb in xy_array_builder_2(init_vals_2) [=
+    bb.x;
+    bb.y;
+ =]
+=]
 
     test_case array_element_builder_test [=
         int category = collections
