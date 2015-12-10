@@ -153,7 +153,7 @@ public class ResolvedInstance extends Instantiation { //implements Value {
         reference = instance.reference;
         trailingDelimiter = instance.trailingDelimiter;
 
-        Context sharedContext = null;
+        Context sharedContext = resolutionContext;
         args = instance.args;
 //        if (args != null && args.size() > 0) {
 //            int numArgs = args.size();
@@ -208,7 +208,7 @@ public class ResolvedInstance extends Instantiation { //implements Value {
                         }
                         child = ((Expression) child).resolveExpression(sharedContext);
                     } else if (child instanceof ValueGenerator) {
-                        child = (BentoNode) ((ValueGenerator) child).getValue(context);
+                        child = (BentoNode) ((ValueGenerator) child).getValue(resolutionContext);
                     }
                     index = (Index) index.clone();
                     index.setChild(0, (AbstractNode) child);
