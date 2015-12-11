@@ -3263,13 +3263,13 @@ if (definition.getName().contains("_serializer") || definition.getName().equals(
             ArgumentList paramArgs = paramNameNode.getArguments();
             List<Index> paramIndexes = paramNameNode.getIndexes();
             if ((paramArgs != null && paramArgs.size() > 0) || (paramIndexes != null && paramIndexes.size() > 0)) {
+                Context argContext = this;
                 if (mustUnpush) {
-                    repush();
+                    argContext = clone(false);
+                    Entry clonedEntry = newEntry(unpushedEntries.peek(), true);
+                    argContext.push(clonedEntry);
                 }
-                argDef = initDef(argDef, paramArgs, paramIndexes);
-                if (mustUnpush) {
-                    unpush();
-                }
+                argDef = argContext.initDef(argDef, paramArgs, paramIndexes);
             }
             
             // if this is a child of a parameter, resolve it.
@@ -4018,7 +4018,7 @@ if (unpushedEntries == null) {
     }
 
     /** Makes this context a copy of the passed context. */
-    synchronized public void copy(Context context, boolean clearCache) {
+    synchronized private void copy(Context context, boolean clearCache) {
         clear();
 
 int calcSize = 0;
