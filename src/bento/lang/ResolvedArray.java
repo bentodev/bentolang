@@ -22,7 +22,7 @@ class ResolvedArray extends ResolvedCollection {
 
     public ResolvedArray(Definition def, Context context, ArgumentList args, List<Index> indexes) throws Redirection {
         super(def, context, args, indexes);
-        context = getResolutionContext();
+        //context = getResolutionContext();
         this.collectionDef = def.getCollectionDefinition(context, args);
         if (collectionDef.hasStaticData()) {
             array = (BentoArray) collectionDef.getStaticData();
