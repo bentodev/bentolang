@@ -967,6 +967,7 @@ core [=
         /** a test can log a message at any point **/
         dynamic test_log(msg) [=
             eval(logged_messages(: logged_messages + msg :));
+            log("test_log: " + msg);
         =]
 
         sub;    

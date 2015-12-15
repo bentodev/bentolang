@@ -900,7 +900,7 @@ public class Context {
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
 
-if (definition.getName().contains("_serializer") || definition.getName().equals("id")) {
+if (definition.getName().equals("height_for_proto")) {
  System.out.println("ctx 902: " + definition.getName());    
 }
             // get the arguments and parameters, if any, to push on the
@@ -3901,6 +3901,11 @@ if (unpushedEntries == null) {
         return -1;
     }
 
+    public void setLoopIndex(int index) {
+        if (topEntry != null) {
+            topEntry.setLoopIndex(index);
+        }
+    }
 
     public ArgumentList getArguments() {
         if (topEntry != null) {
@@ -5689,6 +5694,10 @@ if ("piece_serializer".equals(def.getName())) {
 
         int getLoopIndex() {
             return loopIx;
+        }
+
+        void setLoopIndex(int ix) {
+            loopIx = ix;
         }
 
         void advanceLoopIndex() {

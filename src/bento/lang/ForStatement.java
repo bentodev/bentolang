@@ -106,6 +106,8 @@ public class ForStatement extends AbstractConstruction implements ConstructionCo
             Iterator<Construction> it = vals.iterator(context);
             ValueSource until = vals.getUntil();
             ValueSource where = vals.getWhere();
+            int loopIx = context.getLoopIndex();
+            context.resetLoopIndex();
             if (it != null) {
                 while (it.hasNext()) {
                     context.nextLoopIndex();
@@ -137,7 +139,7 @@ public class ForStatement extends AbstractConstruction implements ConstructionCo
                     }
                     popParams(context, n);
                 }
-                context.resetLoopIndex();
+                context.setLoopIndex(loopIx);
             }
         } catch (Redirection r) {
             ;
