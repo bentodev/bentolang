@@ -206,7 +206,7 @@ public class ForStatement extends AbstractConstruction implements ConstructionCo
         }
     }
 
-    private int pushParams(Context context, Object argObj) {
+    private int pushParams(Context context, Object argObj) throws Redirection {
         int n = 0;
         
         if (argObj instanceof ArgumentList) {
