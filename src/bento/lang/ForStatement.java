@@ -125,7 +125,7 @@ public class ForStatement extends AbstractConstruction implements ConstructionCo
                         }
                     }
                     if (body instanceof ConstructionGenerator) {
-                        List<Construction> bodyConstructions = ((ConstructionGenerator) body).generateConstructions(context);
+                        List<Construction> bodyConstructions = ((ConstructionGenerator) body).generateConstructions(context.clone(false));
                         constructions.addAll(bodyConstructions);
 
                     } else {
