@@ -3133,8 +3133,8 @@ if (definition.getName().equals("height_for_proto")) {
             synchronized (this) {
                 int i = 0;
                 try {
-                    unpush();
-                    i++;
+                    //unpush();
+                    //i++;
                     while (topEntry != null) {
                         paramObj = getParameter(name, false, returnClass);
                         if (paramObj != null || topEntry.getPrevious() == null) {
