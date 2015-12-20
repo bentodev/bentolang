@@ -3858,9 +3858,6 @@ if (unpushedEntries == null) {
             entry.params = new ParameterList(newArrayList(1, DefParameter.class));
         } else if (entry.params.size() == entry.origParamsSize) {
             entry.params = new ParameterList(newArrayList(entry.params));
-        } else {
-            entry = newEntry(entry, true);
-            push(entry);
         }
         if (entry.args == null || entry.args.size() == 0) {
             entry.args = new ArgumentList(newArrayList(1, Construction.class));
@@ -3875,9 +3872,7 @@ if (unpushedEntries == null) {
     public void popParam() {
         Entry entry = topEntry;
         int n = entry.params.size();
-        if (n > entry.origParamsSize + 1) {
-            pop();
-        } else if (n > 0) {
+        if (n >  0) {
             entry.params.remove(n - 1);
             // this entry may have started with fewer args than params
             entry.args.remove(entry.args.size() - 1);
