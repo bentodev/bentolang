@@ -2258,7 +2258,6 @@ if (definition.getName().equals("height_for_proto")) {
     }
     
     private Object instantiateParameterChild(ComplexName childName, DefParameter param, Object arg, List<Index> indexes) throws Redirection {
-//if ("status".equals(childName.getName()))
         if (arg instanceof Value) {
             Object val = ((Value) arg).getValue();
             if (val instanceof BentoObjectWrapper) {
@@ -3563,7 +3562,7 @@ if (definition.getName().equals("height_for_proto")) {
                         siteCache = newHashMap(Object.class);
                         siteCaches.put(entrySite.getName(), siteCache);
                     }
-                    entry.setSiteCache(siteCache);
+                    //entry.setSiteCache(siteCache);
                 }
             }
         }
@@ -4052,20 +4051,7 @@ if (calcSize != context.size) {
 
         // copy the session
         session = context.session;
-        
-//        // deep copy the unpushed entries, so the context and its copy
-//        // can unpush separately
-//        Entry toEntry = null;
-//        for (Entry fromEntry = context.unpushedEntries; fromEntry != null; fromEntry = fromEntry.link) {
-//            if (toEntry == null) {
-//                toEntry = newEntry(fromEntry, true);
-//                unpushedEntries = toEntry;
-//            } else {
-//                toEntry.link = newEntry(fromEntry, true);
-//                toEntry = toEntry.link;
-//            }
-//        }
-        
+
         keepMap = context.keepMap;
         
         // just one global cache
@@ -4197,38 +4183,6 @@ if (calcSize != size) {
         return data;
     }
     
-/***************
-
-    private static Object getCachedData(Map<String, Object> cache, String key) {
-        Object data = null;
-
-        int ix = key.indexOf('.');
-        if (ix > 0) {
-            String firstKey = key.substring(0, ix);
-            String restOfKey = key.substring(ix + 1);
-            Object obj = cache.get(firstKey);
-            if (obj != null && obj instanceof Holder) {
-                Holder holder = (Holder) obj;
-                if (holder.data != null && holder.data instanceof Map<?,?>) {
-                    data = getCachedData((Map<String, Object>) holder.data, restOfKey); 
-                }
-            }
-            if (data == null) {
-                String keepCacheKey = firstKey + ".keep";
-                Map<String, Object> keepCache = (Map<String, Object>) cache.get(keepCacheKey);
-                if (keepCache != null) {
-                    data = getCachedData(keepCache, restOfKey);
-                }
-                if (data == null) {
-                    data = cache.get(key);
-                }
-            }
-        } else {
-            data = cache.get(key);
-        }
-        return data;
-    }
-*****/    
     static class KeepHolder {
         public NameNode keepName;
         public Definition owner;
@@ -4470,7 +4424,6 @@ if (calcSize != size) {
         // Objects that are persisted through keep directives are cached here
         private Map<String, Object> keepCache = null;
         
-        private Map<String, Object> siteCache = null;
         private Map<String, Map<String, Object>> siteCacheMap = null;
         private List<Name> adoptedSites = null;
 
@@ -4492,7 +4445,6 @@ if (calcSize != size) {
             loopIndexFactory = new StateFactory();
             
             this.cache = cache;
-            this.siteCache = cache;
             this.globalCache = globalCache;
         }
 
@@ -4525,7 +4477,6 @@ if (calcSize != size) {
                 //entry.readOnlyCache = (cache != null ? cache : readOnlyCache);
                 cache = entry.getCache();
                 keepCache = entry.getKeepCache();
-                siteCache = entry.siteCache;
                 siteCacheMap = entry.siteCacheMap;
                 adoptedSites = entry.adoptedSites;
                 dynamicKeeps = entry.dynamicKeeps;
@@ -4550,7 +4501,6 @@ if (calcSize != size) {
             this.cache = cache;
             this.globalCache = globalCache;
             this.keepCache = null;
-            this.siteCache = cache;
             this.siteCacheMap = null;
         }
 
@@ -4591,7 +4541,6 @@ if (calcSize != size) {
             } else {
                 cache = null;
                 keepCache = null;
-                siteCache = null;
 
                 // keepMap and globalCache are shared everywhere
                 keepMap = entry.keepMap;
@@ -4611,7 +4560,6 @@ if (calcSize != size) {
             // allocation on the first copy, trading greater waste for less risk.
             cache = entry.getCache();
             keepCache = entry.keepCache;
-            siteCache = entry.siteCache;
             siteCacheMap = entry.siteCacheMap;
             adoptedSites = entry.adoptedSites;
             keepMap = entry.keepMap;
@@ -4640,18 +4588,7 @@ if (calcSize != size) {
                 keepCache = entry.keepCache;
             }
             
-            if (siteCache != null) {
-                if (entry.siteCache != null && entry.siteCache != siteCache) {
-                    synchronized (siteCache) {
-                        siteCache.putAll(entry.siteCache);
-                    }
-                }
-            } else {
-                siteCache = entry.siteCache;
-            }
-
             if (siteCacheMap != null) {
-                
                 if (entry.siteCacheMap != null && entry.siteCacheMap != siteCacheMap) {
                     synchronized (siteCacheMap) {
                         siteCacheMap.putAll(entry.siteCacheMap);
@@ -4720,7 +4657,6 @@ if (calcSize != size) {
             readOnlyCache = null;
             globalCache = null;
             keepCache = null;
-            siteCache = null;
             siteCacheMap = null;
             adoptedSites = null;
         }
@@ -4890,7 +4826,7 @@ if (calcSize != size) {
             if (globalCache != null && globalKey != null && globalCache.get(globalKey) != null) {
                 c = globalCache;
             }
-            if (c == null && siteCache == null && siteCacheMap == null && (keepMap == null || keepMap.get(key) == null)) {
+            if (c == null && siteCacheMap == null && (keepMap == null || keepMap.get(key) == null)) {
                 if (this.def == null) {
                     return null;
                 }
@@ -4951,18 +4887,14 @@ if (calcSize != size) {
                 }
             }
                 
-            if (data == null && !local && (siteCache != null || siteCacheMap != null)) {
-                if (siteCache != null) {
-                    data = siteCache.get(key);
-                } else {
-                    Iterator<Name> it = adoptedSites.iterator();
-                    while (it.hasNext()) {
-                        NameNode adoptedSiteName = (NameNode) it.next();
-                        Map<String, Object> adoptedSiteCache = (Map<String, Object>) siteCacheMap.get(adoptedSiteName.getName());
-                        data = adoptedSiteCache.get(key);
-                        if (data != null) {
-                            break;
-                        }
+            if (data == null && !local && siteCacheMap != null) {
+                Iterator<Name> it = adoptedSites.iterator();
+                while (it.hasNext()) {
+                    NameNode adoptedSiteName = (NameNode) it.next();
+                    Map<String, Object> adoptedSiteCache = (Map<String, Object>) siteCacheMap.get(adoptedSiteName.getName());
+                    data = adoptedSiteCache.get(key);
+                    if (data != null) {
+                        break;
                     }
                 }
            
@@ -4979,13 +4911,6 @@ if (calcSize != size) {
     
                         // strip off modifier if present
                         key = baseKey(((Pointer) data).getKey());
-                    }
-
-                    String loopModifier = getLoopModifier();
-                    if (loopModifier != null) {
-                        if (data instanceof Pointer && ((Pointer) data).cache == siteCache) {
-                            data = siteCache.get(key + loopModifier);
-                        }
                     }
 
                     if (data != null) {
@@ -5128,7 +5053,6 @@ if (calcSize != size) {
         
         private void put(String key, Holder holder, Context context, int maxLevels) {
             boolean kept = false;
-            Definition def = holder.def;
             Definition nominalDef = holder.nominalDef;
             Map<String, Object> localCache = getCache();
             synchronized (localCache) {
@@ -5146,14 +5070,6 @@ if (calcSize != size) {
                         }
                     }
                 }
-//                if (nominalDef.getOwner() instanceof Site) {
-//                    Map<String, Object> siteCache = getSiteCache(nominalDef);
-//                    if (siteCache != null) {
-//                        synchronized (siteCache) {
-//                            localPut(siteCache, key, holder);
-//                        }
-//                    }
-//                }
             }
             
             int access = (nominalDef != null ? nominalDef.getAccess() : Definition.LOCAL_ACCESS);
@@ -5367,11 +5283,6 @@ if (calcSize != size) {
         boolean hasSiteCacheEntryFor(Definition def) {
             if (def != null) {
                 String key = def.getName();
-                if (siteCache != null) {
-                    if (siteCache.get(key) != null) {
-                        return true;
-                    }
-                }
                 if (siteCacheMap != null) {
                     Definition defOwner = def.getOwner();
                     if (defOwner instanceof Site) {
@@ -5389,9 +5300,6 @@ if (calcSize != size) {
         }
 
         private boolean hasSiteCache(Definition def) {
-            if (siteCache != null) {
-                return true;
-            }
             if (siteCacheMap != null && def != null) {
                 Definition defOwner = def.getOwner();
                 if (defOwner instanceof Site) {
@@ -5422,15 +5330,6 @@ if (calcSize != size) {
                 return "#" + String.valueOf(loopIx);
             } else {
                 return null;
-            }
-        }
-
-        private String addLoopModifier() {
-            int loopIx = getLoopIndex();
-            if (loopIx >= 0) {
-                return '#' + String.valueOf(loopIx);
-            } else {
-                return "";
             }
         }
 
@@ -5614,22 +5513,6 @@ if (calcSize != size) {
             refCount--;
         }
         
-        Map<String, Object> getSiteCache(Definition def) {
-            if (siteCache != null) {
-                return siteCache;
-            } else if (siteCacheMap != null) {
-                Site site = def.getSite();
-                if (site != null) {
-                    return siteCacheMap.get(site.getName());
-                }
-            }
-            return null;
-        }
-        
-        void setSiteCache(Map<String, Object> siteCache) {
-            this.siteCache = siteCache;
-        }
-
         void setSiteCacheMap(Map<String, Map<String, Object>> siteCacheMap, List<Name> adoptedSites) {
             this.siteCacheMap = siteCacheMap;
             this.adoptedSites = adoptedSites;
