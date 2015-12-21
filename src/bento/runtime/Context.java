@@ -5146,31 +5146,16 @@ if (calcSize != size) {
                         }
                     }
                 }
-                if (nominalDef.getOwner() instanceof Site) {
-                    Map<String, Object> siteCache = getSiteCache(nominalDef);
-                    if (siteCache != null) {
-                        synchronized (siteCache) {
-                            localPut(siteCache, key, holder);
-                        }
-                    }
-                }
+//                if (nominalDef.getOwner() instanceof Site) {
+//                    Map<String, Object> siteCache = getSiteCache(nominalDef);
+//                    if (siteCache != null) {
+//                        synchronized (siteCache) {
+//                            localPut(siteCache, key, holder);
+//                        }
+//                    }
+//                }
             }
             
-            //if (contextPut(key, holder, context)) {
-            //    kept = true;
-            //}
-            
-            // if this is an identity, copy the keep cache (if any) from the real
-            // def to the nominal def
-// this seems to catch too wide a net, and doesn't seem to be needed anyway
-//            if (def != null && !key.equals(def.getName())) {
-//                String keepCacheKey = def.getName() + ".keep";
-//                Object keepCache = localCache.get(keepCacheKey);
-//                if (keepCache != null) {
-//                    localCache.put(key + ".keep", keepCache);
-//                }
-//            }
-
             int access = (nominalDef != null ? nominalDef.getAccess() : Definition.LOCAL_ACCESS);
             if (link != null && access != Definition.LOCAL_ACCESS) {
                 String ownerName = this.def.getName();
@@ -5360,107 +5345,6 @@ if (calcSize != size) {
                 }
                 
             }
-
-            return kept;
-        }
-
-        public boolean contextPut(String key, Holder holder, Context context) {
-            
-            boolean kept = false;
-            boolean persist = false;
-
-            // repeat the above logic for the context cache, if necessary
-            Map<String, Pointer> contextKeepMap = context.getKeepMap();
-            String contextKey = key;
-            if (holder.nominalDef != null) {
-                String fullName = holder.nominalDef.getFullName();
-                if (fullName != null) {
-                    // this sort of solves the problem of multipart keys
-                    if (fullName.endsWith(key)) {
-                        contextKey = fullName;
-                    } else {
-                        int ix = fullName.lastIndexOf('.');
-                        if (ix > 0) {
-                            contextKey = fullName.substring(0, ix + 1) + key;
-                        }
-                    }
-                }
-            }
-
-            // context caching logic goes as follows:
-            //
-            // -- unlike local caching, context caching only happens when explicitly
-            //    specified by a keep statement.
-            //
-            // -- so look for a keep statement for the context key, determined above.
-            //    A keep statement implies that a keep map exists, and a context exists, 
-            //    and a Pointer object is stored in the keep map under the key 
-            //
-            if (contextKeepMap != null && contextKey != null) {
-                Pointer contextp = contextKeepMap.get(contextKey);
-                if (contextp != null) {
-                    Map<String, Object> contextCache = context.getCache();
-                    persist = contextp.persist;
-                    Object oldContextData = contextp.cache.get(contextKey);
-                    if (oldContextData == null) {
-                        Object newContextData;
-                        
-                        newContextData = holder;
-                        //if (def != null) {
-                        //    newContextData = new Holder(def, args, context, data);
-                        //} else {
-                        //    newContextData = data;
-                        //}
-                        
-                        if (contextp.cache != contextCache || !contextp.getKey().equals(contextKey)) {
-                            contextp = new Pointer(contextp.ri, contextp.riAs, contextp.getKey(), contextCache, persist);
-                            contextp.cache.put(contextp.getKey(), newContextData);
-                            newContextData = contextp;
-                        }
-                        contextCache.put(contextKey, newContextData);
-    
-                    } else {
-    
-                        // There is an existing entry.  See if it's a modifier
-                        if (oldContextData instanceof Pointer) {
-                            contextp = (Pointer) oldContextData;
-                            persist = contextp.persist;
-                            if (contextp.cache == contextCache) { // it's a modifier or cache alias
-                                String pkey = contextp.getKey();
-                                if (contextKey.equals(baseKey(pkey)) && !pkey.equals(contextKey)) {   // it's a modifier but not the same modifier
-                                    // move the chain data to the new spot
-                                    synchronized (contextCache) {
-                                        oldContextData = contextCache.get(pkey);
-                                        contextCache.put(pkey, null);
-                                        contextp = new Pointer(contextp.ri, contextp.riAs, contextKey + addLoopModifier(), contextCache, persist);
-                                        contextCache.put(contextp.getKey(), oldContextData);
-                                        contextCache.put(contextKey, contextp);
-                                        oldContextData = contextp;
-                                    }
-                                }
-                            } else {    // it's a table in a keep directive
-                                kept = true;
-                            }
-                        }
-    
-    
-                        // Follow the pointer chain to update the data
-                        Map<String, Object> nextCache = contextCache;
-                        String nextKey = contextKey;
-                        Object nextData = oldContextData;
-                        while (nextData != null && nextData instanceof Pointer) {
-                            Pointer nextp = (Pointer) nextData;
-                            nextCache = nextp.cache;
-                            nextKey = nextp.getKey();
-                            nextData = nextCache.get(nextKey);
-                        }
-                        synchronized (nextCache) {
-                            nextCache.put(nextKey, holder);
-                        }
-                    }
-                }   
-            }
-            
             return kept;
         }
 
@@ -5566,10 +5450,6 @@ if (calcSize != size) {
                 keepMap = newHashMap(Pointer.class);
             }
  
-if ("piece_serializer".equals(def.getName())) {
- System.out.println("Ctx 5541");    
-}
-            
             if (keepCache == null) {
                 // cache the keep cache in the owner entry in the context
                 Entry containerEntry = getOwnerContainerEntry(def);
