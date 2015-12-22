@@ -166,7 +166,7 @@ public class ElementDefinition extends AnonymousDefinition {
                 ParameterList elementParams = def.getParamsForArgs(elementArgs, resolutionContext);
                 resolutionContext.push(def, elementParams, elementArgs, false);
                 try {
-                    Object child = def.getChild(name, childArgs, null, parentArgs, resolutionContext, generate, trySuper, parentObj, resolver);
+                    Object child = def.getChild(name, childArgs, name.getIndexes(), parentArgs, resolutionContext, generate, trySuper, parentObj, resolver);
                     if (child != null && !generate) {
                         Definition childDef = ((DefinitionInstance) child).def;
                         if (childDef != null && childDef.isAliasInContext(context)) {
