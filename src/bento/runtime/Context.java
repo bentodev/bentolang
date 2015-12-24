@@ -2220,7 +2220,7 @@ if (definition.getName().equals("pos")) {
         return instantiatedIndexes;
     }
     
-    private List<Index> resolveIndexes(List<Index> indexes) throws Redirection {
+    public List<Index> resolveIndexes(List<Index> indexes) throws Redirection {
         if (indexes == null || indexes.size() == 0) {
             return indexes;
         }
@@ -5051,7 +5051,10 @@ if (calcSize != size) {
         }
         
         private void put(String key, Holder holder, Context context, int maxLevels) {
-            boolean kept = false;
+if (key.equals("n")) {
+ System.out.println("put " + key + " at ctx 5055");	
+}
+        	boolean kept = false;
             Definition nominalDef = holder.nominalDef;
             Map<String, Object> localCache = getCache();
             synchronized (localCache) {
