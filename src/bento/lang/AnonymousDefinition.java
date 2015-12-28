@@ -887,9 +887,6 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
             
             try {
                 if (childDef instanceof ElementReference) {
-if (childName.toString().contains("all_positions")) {
-    System.out.println(childName.toString() + " at Anon 891");    
-}
                     childDef = ((ElementReference) childDef).getElementDefinition(context);
                     if (childDef == null) {
                         throw new Redirection(Redirection.STANDARD_ERROR, "No definition for element " + childName.toString());

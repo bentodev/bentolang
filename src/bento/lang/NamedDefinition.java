@@ -1075,7 +1075,7 @@ public class NamedDefinition extends AnonymousDefinition {
         } else if (context.peek() == null) {
             throw new Redirection(Redirection.STANDARD_ERROR, "getChild requires a non-empty context; passed context is empty.");
         }
-        NamedDefinition instantiatedDef = (NamedDefinition) context.peek().def;
+        Definition instantiatedDef = context.peek().def;
 
         if (node.getName() == Name.OWNER) {
             Definition owner = getOwnerInContext(context);

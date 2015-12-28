@@ -130,7 +130,7 @@ public class Context {
             try {
                 Definition elementDef = ((ElementReference) definition).getElementDefinition(this);
                 if (elementDef != null) {
-                	definition = elementDef;
+                    definition = elementDef;
                 }
             } catch (Redirection r) {
                 throw new IllegalStateException("Redirection on attempt to get element definition: " + r);
@@ -3523,6 +3523,9 @@ if (definition.getName().equals("pos")) {
     }
 
     public void push(Definition def, ParameterList params, ArgumentList args) throws Redirection {
+if (def instanceof ElementReference && def.getName().indexOf("index") < 0) {
+ System.out.println(def.getName() + " at ctx 3527");   
+}
         Definition contextDef = getContextDefinition(def);
         Entry entry = newEntry(contextDef, contextDef, params, args);
         push(entry);
@@ -3543,6 +3546,9 @@ if (definition.getName().equals("pos")) {
     private void push(Entry entry) throws Redirection {
         boolean newFrame = (entry.superdef == null);
         boolean newScope = (entry.def != entry.superdef);
+if (!(entry.def instanceof NamedDefinition)) {
+  System.out.println("!!! ctx 3547");    
+}
 
         if (entry.def instanceof Site) {
             // if we are pushing a site, share the cache from the
@@ -5051,10 +5057,7 @@ if (calcSize != size) {
         }
         
         private void put(String key, Holder holder, Context context, int maxLevels) {
-if (key.equals("n")) {
- System.out.println("put " + key + " at ctx 5055");	
-}
-        	boolean kept = false;
+            boolean kept = false;
             Definition nominalDef = holder.nominalDef;
             Map<String, Object> localCache = getCache();
             synchronized (localCache) {

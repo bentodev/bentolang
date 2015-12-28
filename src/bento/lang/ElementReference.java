@@ -21,7 +21,7 @@ import java.util.*;
  * @version $Revision: 1.48 $
  */
 
-public class ElementReference extends AnonymousDefinition {
+public class ElementReference extends NamedDefinition {
     private CollectionInstance collection;
     private Definition collectionDef;
     private List<Index> indexes;
