@@ -50,9 +50,7 @@ public class BentoContext implements bento_context {
     public BentoContext(BentoContext bentoContext) {
         site = bentoContext.site;
         context = new Context(bentoContext.context, false);
-        while (!context.peek().equals(context.getRootEntry())) {
-            context.pop();
-        }
+        context.setTop(context.getRootEntry());
         initialized = true;
     }
     

@@ -4016,7 +4016,7 @@ if (unpushedEntries == null) {
         rootEntry = null;
     }
 
-    private void setTop(Entry entry) {
+    void setTop(Entry entry) {
         if (topEntry != null) {
             topEntry.decRefCount();
         }
