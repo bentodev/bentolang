@@ -58,6 +58,9 @@ abstract public class ArithmeticOperator extends BinaryOperator {
                 
             } else {
                 obj1 = firstObj.getValue(context);
+                if (obj1 instanceof Value) {
+                    obj1 = ((Value) obj1).getValue();
+                }
             }
 
             Object obj2 = null;
@@ -76,6 +79,9 @@ abstract public class ArithmeticOperator extends BinaryOperator {
                 
             } else {
                 obj2 = secondObj.getValue(context);
+                if (obj2 instanceof Value) {
+                    obj2 = ((Value) obj2).getValue();
+                }
             }
             
             Object resultArray = arrayOperate(obj1, obj2);
