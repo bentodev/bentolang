@@ -286,7 +286,7 @@ public class ComplexType extends AbstractType implements Initializable {
                baseType.init();
                baseType.setOwner(getOwner());
                baseType.resolve();
-               return baseType.getBaseType();
+               return baseType;
            }
        } else if (len == n) { // && (dims == null || dims.size() == 0)) {  // no dimensions
            Definition def = getDefinition();
@@ -300,7 +300,7 @@ public class ComplexType extends AbstractType implements Initializable {
            baseType.copyChildren(this, 0, n);
            baseType.setOwner(getOwner());
            baseType.resolve();
-           return baseType.getBaseType();
+           return baseType;
        }
    }
 
