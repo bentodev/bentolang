@@ -2,7 +2,7 @@
  *
  * $Id: Context.java,v 1.421 2015/07/13 20:04:24 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -2642,6 +2642,11 @@ if (definition.getName().equals("pos")) {
                 push(argDef, params, argArgs, false);
                 numPushes++;
                 Instantiation aliasInstance = argDef.getAliasInstanceInContext(this);  //.getUltimateInstance(this);
+                if (aliasInstance == null) {
+                    pop();
+                    numPushes--;
+                    break;
+                }
                 Definition newDef = (Definition) aliasInstance.getDefinition(this);  // lookup(this, false);
                 if (newDef == null) {
                     pop();
@@ -3523,9 +3528,6 @@ if (definition.getName().equals("pos")) {
     }
 
     public void push(Definition def, ParameterList params, ArgumentList args) throws Redirection {
-if (def instanceof ElementReference && def.getName().indexOf("index") < 0) {
- System.out.println(def.getName() + " at ctx 3527");   
-}
         Definition contextDef = getContextDefinition(def);
         Entry entry = newEntry(contextDef, contextDef, params, args);
         push(entry);
@@ -3546,9 +3548,6 @@ if (def instanceof ElementReference && def.getName().indexOf("index") < 0) {
     private void push(Entry entry) throws Redirection {
         boolean newFrame = (entry.superdef == null);
         boolean newScope = (entry.def != entry.superdef);
-if (!(entry.def instanceof NamedDefinition)) {
-  System.out.println("!!! ctx 3547");    
-}
 
         if (entry.def instanceof Site) {
             // if we are pushing a site, share the cache from the

@@ -2,7 +2,7 @@
  *
  * $Id: NamedDefinition.java,v 1.150 2015/07/01 13:09:09 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -319,7 +319,7 @@ public class NamedDefinition extends AnonymousDefinition {
             } catch (Redirection r) {
                 ;
             }
-            if (holder != null && holder.resolvedInstance != null) {
+            if (holder != null && holder.resolvedInstance != null && !this.equals(holder.resolvedInstance.getDefinition())) {
                 return true;
             }
         }
@@ -338,7 +338,7 @@ public class NamedDefinition extends AnonymousDefinition {
             } catch (Redirection r) {
                 ;
             }
-            if (holder != null && holder.resolvedInstance != null) {
+            if (holder != null && holder.resolvedInstance != null && !this.equals(holder.resolvedInstance.getDefinition())) {
                 return holder.resolvedInstance.getReferenceName();
             }
         }
@@ -357,10 +357,10 @@ public class NamedDefinition extends AnonymousDefinition {
                 ;
             }
             if (holder != null) {
-            	ResolvedInstance ri = holder.resolvedInstance;
-            	if (ri != null && !this.equals(ri.getDefinition())) {
-                    return holder.resolvedInstance;
-            	}
+                ResolvedInstance ri = holder.resolvedInstance;
+                if (ri != null && !this.equals(ri.getDefinition())) {
+                    return ri;
+                }
             }
         }
         return getAliasInstance();
