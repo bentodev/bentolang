@@ -5800,7 +5800,7 @@ show_this_context [=
 
     /---------- advanced tests ------------/
 
-    basepage[] custom_test_pages = [ memoization_test_page, reflection_test_page, session_test_page, ajax_test_page, file_test_page,
+    basepage[] custom_test_pages = [ memoization_test_page, reflection_test_page, session_test_page, auto_test_page, ajax_test_page, file_test_page,
                                      cli_int_test_page, internal_mem_test, external_mem_test, exec_test_page, server_launch_test_page,
                                      base_test_test_page ]
 
@@ -6040,7 +6040,7 @@ memt [=
 
         /** the global counter object **/
         dynamic counter global_counter [=
-            /** make static_values the cache for n **/
+            /** make global_values the cache for n **/
             int{} counter_cache = global_values
 
         =]
@@ -6189,26 +6189,54 @@ page(r, s) gctest(request r, session s) [=
         static int all_ids{} = { table_name: 0 }
         keep next_id by table_name in all_ids
         
-        dynamic int next_id = curr_id + 1
+        int next_id = curr_id + 1
         dynamic int curr_id = all_ids{table_name}
         
-        log("auto_id: next is " + (curr_id + 1));
-        next_id;
-    =]        
-
-
-page(r, s) autotest(request r, session s) [=
-    int next1 = auto_id("table1")
-    int next2 = auto_id("table2")
-    int next3 = auto_id("table3")
+        next_id(: :);
+        log("auto_id for " + table_name + " is " + next_id);
+    =]
     
-    [| <p>Next1: [= next1; =], show_n([= next1; =]) = [= show_n(next1); =], [= next1; =]</p>
-       <p>Next2: [= next2; =], show_n([= next2; =]) = [= show_n(next2); =], [= next2; =]</p>
-       <p>Next3: [= next3; =], show_n([= next3; =]) = [= show_n(next3); =], [= next3; =]</p>
-    |]
-=]
+    dynamic int current_id(table_name) [=
+        auto_id.all_ids{table_name};
+        log("current_id for " + table_name + " is " + auto_id.all_ids{table_name});
+    =]
 
-show_n(int n) = n
+    global int global_id_sequence(int n) = n
+    dynamic int next_id_sequence = global_id_sequence(: global_id_sequence + 1 :)
+
+
+    basepage(*) auto_test_page(request r, session s) [=
+        label = "Auto ID Test"
+
+        content(request r, session s) [=
+            autotest(r.params);    
+        =]
+    =]
+    
+    dynamic autotest(params{}) [=
+        int tname = params{"table"}
+        boolean auto_table1 = (tname == "table1" || !tname)
+        boolean auto_table2 = (tname == "table2" || !tname)
+        boolean auto_table3 = (tname == "table3" || !tname)
+        
+        int id1 = auto_table1 ? auto_id("table1") : current_id("table1") 
+        int id2 = auto_table2 ? auto_id("table2") : current_id("table2")
+        int id3 = auto_table3 ? auto_id("table3") : current_id("table3")
+        int id_global = next_id_sequence
+        
+        [|
+           <h3>Per table</h3>
+           <p>[= (auto_table1 ? "Auto" : "Current"); =] id for table1: [= id1; =]</p>
+           <p>[= (auto_table2 ? "Auto" : "Current"); =] id for table2: [= id2; =]</p>
+           <p>[= (auto_table3 ? "Auto" : "Current"); =] id for table3: [= id3; =]</p>
+           <h3>Global</h3>
+           <p>Global auto id: [= id_global; =]</p>
+        |]
+    =]
+
+gid [=
+ next_id_sequence;
+=]
 
     dynamic mutation_example [=
         modable_object [=
