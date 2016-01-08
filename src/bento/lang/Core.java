@@ -2,7 +2,7 @@
  *
  * $Id: Core.java,v 1.15 2011/09/16 21:56:03 sthippo Exp $
  *
- * Copyright (c) 2002-2011 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -22,11 +22,14 @@ public class Core extends Site {
 
     private Map<String, Site> siteTable = new HashMap<String, Site>();
     private Map<String, DefinitionTable> defTableTable = new HashMap<String, DefinitionTable>();
-
+    private Map<String, Map<String, Object>> globalCacheTable = new HashMap<String, Map<String, Object>>();
+    
     public Core() {
         super("core");
         setNewDefinitionTable();
         siteTable.put("core", this);
+        setGlobalCache(new HashMap<String, Object>());
+        globalCacheTable.put("core", getGlobalCache());
     }
 
     /** Returns an empty string.  */
@@ -174,4 +177,8 @@ public class Core extends Site {
 	public Map<String, DefinitionTable> getDefTableTable() {
 		return defTableTable;
 	}
+
+	public Map<String, Map<String, Object>> getGlobalCacheTable() {
+        return globalCacheTable;
+    }
 }

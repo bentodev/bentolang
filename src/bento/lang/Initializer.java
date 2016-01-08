@@ -2,7 +2,7 @@
  *
  * $Id: Initializer.java,v 1.35 2015/06/09 13:15:29 sthippo Exp $
  *
- * Copyright (c) 2002-2014 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -13,6 +13,7 @@ package bento.lang;
 
 import bento.runtime.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Initializer extends BentoVisitor {
@@ -68,6 +69,13 @@ public class Initializer extends BentoVisitor {
                 	defTable = site.setNewDefinitionTable();
                 	defTableTable.put(name, defTable);
                 }
+                Map<String, Map<String, Object>> globalCacheTable = core.getGlobalCacheTable();
+                Map<String, Object> globalCache = globalCacheTable.get(name);
+                if (globalCache == null) {
+                    globalCache = new HashMap<String, Object>();
+                    globalCacheTable.put(name,  globalCache);
+                }
+                site.setGlobalCache(globalCache);
                 subdef = site;
 
             } else if (node instanceof ExternStatement) {

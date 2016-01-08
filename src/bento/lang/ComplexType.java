@@ -179,7 +179,7 @@ public class ComplexType extends AbstractType implements Initializable {
            instance.setOwner(getOwner());
            Value result = val;
            try {
-               result = instance.getValue(new Context(def.getSite()));
+               result = instance.getValue(null);    // new Context(def.getSite()));
            } catch (Redirection r) {
                vlog("Error converting value to " + getName() + ": " + r.getMessage());
            }

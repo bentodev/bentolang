@@ -229,14 +229,7 @@ public class Context {
     private BentoDebugger debugger = null;
 
     /** Constructs a context beginning with the specified definition */
-    public Context(Definition def) throws Redirection {
-        this(def, null, null);
-    }
-
-    /** Constructs a context beginning with the specified definition, parameters
-     *  and arguments.
-     */
-    private Context(Definition def, ParameterList params, ArgumentList args) throws Redirection {
+    public Context(Site site) throws Redirection {
         instanceCount++;
         rootContext = this;
         stateFactory = new StateFactory();
@@ -244,12 +237,15 @@ public class Context {
         cache = newHashMap(Object.class);
         keepMap = newHashMap(Pointer.class);
         siteCaches = newHashMapOfMaps(Object.class);
-        globalCache = newHashMap(Object.class);
+        globalCache = site.getGlobalCache();
+        if (globalCache == null) {
+            throw new IllegalStateException("Can't create context; site does not have a global cache");
+        }
         unpushedEntries = new Stack<Entry>();
         
-        if (def != null) {
+        if (site != null) {
             try {
-                push(def, params, args, true);
+                push(site, null, null, true);
                 
             } catch (Redirection r) {
                 vlog("Error creating context: " + r.getMessage());
@@ -257,24 +253,6 @@ public class Context {
             }
         }
         
-        popLimit = topEntry;
-    }
-
-    /** Constructs a new context with the specified root entry.
-     * @throws Redirection 
-     */
-    public Context(Entry rootEntry) throws Redirection {
-        // initialize according to root entry
-        instanceCount++;
-        rootContext = this;
-        stateFactory = new StateFactory();
-        stateCount = stateFactory.lastState();
-        cache = newHashMap(Object.class);
-        keepMap = newHashMap(Pointer.class);
-        siteCaches = newHashMapOfMaps(Object.class);
-        globalCache = newHashMap(Object.class);
-        unpushedEntries = new Stack<Entry>();
-        push(newEntry(rootEntry, true));
         popLimit = topEntry;
     }
 

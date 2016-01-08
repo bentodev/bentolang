@@ -2,7 +2,7 @@
  *
  * $Id: ElementDefinition.java,v 1.46 2015/05/31 17:11:45 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -123,14 +123,15 @@ public class ElementDefinition extends AnonymousDefinition {
             context = elementContext;
         }
         Object element = getElement(context);
-        if (context == null && element instanceof AbstractNode) {
-            AbstractNode node = (AbstractNode) element;
-            try {
-                context = new Context(node.getOwner());
-            } catch (Redirection r) {
-            	throw new IllegalStateException("Unable to create context for child definition " + name.getName() + ": " + r.getMessage());
-                //context = new Context();
-            }
+        if (context == null) { // && element instanceof AbstractNode) {
+            throw new NullPointerException("null context passed to getChildDefinition");
+//            AbstractNode node = (AbstractNode) element;
+//            try {
+//                context = new Context(node.getOwner());
+//            } catch (Redirection r) {
+//            	throw new IllegalStateException("Unable to create context for child definition " + name.getName() + ": " + r.getMessage());
+//                //context = new Context();
+//            }
         }
         if (element instanceof Definition) {
             return ((Definition) element).getChildDefinition(name, context);

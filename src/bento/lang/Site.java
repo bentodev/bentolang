@@ -2,7 +2,7 @@
  *
  * $Id: Site.java,v 1.56 2015/06/09 13:15:29 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -31,6 +31,7 @@ public class Site extends ComplexDefinition {
     protected List<ExternStatement> externs = null;
     protected Core core = null;
     protected site_config siteConfig = null;
+    protected Map<String, Object> globalCache = null;
 
     public Site() {
         super();
@@ -98,6 +99,14 @@ public class Site extends ComplexDefinition {
         this.siteConfig = siteConfig;
     }
 
+    void setGlobalCache(Map<String, Object> globalCache) {
+        this.globalCache = globalCache;
+    } 
+
+    public Map<String, Object> getGlobalCache() {
+        return globalCache;
+    }
+    
     /** Add a site's content to this site */
     synchronized void addContents(Site site) {
         AbstractNode newContents = site.getContents();
