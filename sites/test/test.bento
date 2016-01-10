@@ -6202,7 +6202,7 @@ page(r, s) gctest(request r, session s) [=
     =]
 
     global int global_id_sequence(int n) = n
-    dynamic int next_id_sequence = global_id_sequence(: global_id_sequence + 1 :)
+    dynamic int next_global_id = global_id_sequence(: global_id_sequence + 1 :)
 
 
     basepage(*) auto_test_page(request r, session s) [=
@@ -6222,21 +6222,43 @@ page(r, s) gctest(request r, session s) [=
         int id1 = auto_table1 ? auto_id("table1") : current_id("table1") 
         int id2 = auto_table2 ? auto_id("table2") : current_id("table2")
         int id3 = auto_table3 ? auto_id("table3") : current_id("table3")
-        int id_global = next_id_sequence
+        int id_global = next_global_id
         
         [|
-           <h3>Per table</h3>
-           <p>[= (auto_table1 ? "Auto" : "Current"); =] id for table1: [= id1; =]</p>
-           <p>[= (auto_table2 ? "Auto" : "Current"); =] id for table2: [= id2; =]</p>
-           <p>[= (auto_table3 ? "Auto" : "Current"); =] id for table3: [= id3; =]</p>
-           <h3>Global</h3>
-           <p>Global auto id: [= id_global; =]</p>
+            <h3>Per table</h3>
+            <p>[= (auto_table1 ? "Auto" : "Current"); =] id for table1: [= id1; =]</p>
+            <p>[= (auto_table2 ? "Auto" : "Current"); =] id for table2: [= id2; =]</p>
+            <p>[= (auto_table3 ? "Auto" : "Current"); =] id for table3: [= id3; =]</p>
+            <h3>Global</h3>
+            <p>Global auto id: [= id_global; =]</p>
         |]
     =]
 
 gid [=
- next_id_sequence;
+ next_global_id;
+ " - ";
+ to80x(next_global_id);
+ br;
+ current_time;
+ " - ";
+ to80x(current_time);
 =]
+
+    dynamic to80x(long n) [=
+        dynamic to80(long val) [=
+            int val_mod = val % 80
+            long next_val = val / 80
+            char next_c = '0' + val_mod
+                
+            if (next_val) [=
+                to80(next_val);
+            =]
+            next_c;
+        =]
+        
+        to80(n >> 4);
+        hex((int) (n & 15)); 
+    =]
 
     dynamic mutation_example [=
         modable_object [=

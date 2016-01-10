@@ -20,16 +20,32 @@ import java.util.*;
  */
 public class Core extends Site {
 
-    private Map<String, Site> siteTable = new HashMap<String, Site>();
-    private Map<String, DefinitionTable> defTableTable = new HashMap<String, DefinitionTable>();
-    private Map<String, Map<String, Object>> globalCacheTable = new HashMap<String, Map<String, Object>>();
+    private static Core originalCore = null;
+    
+    private Map<String, Site> siteTable = null;
+    private Map<String, DefinitionTable> defTableTable = null;
+    private Map<String, Map<String, Object>> globalCacheTable = null;
     
     public Core() {
         super("core");
-        setNewDefinitionTable();
-        siteTable.put("core", this);
-        setGlobalCache(new HashMap<String, Object>());
-        globalCacheTable.put("core", getGlobalCache());
+        
+        // only allow one Core to be constructed from scratch; every
+        // further Core is a copy of the first 
+        if (originalCore != null) {
+            siteTable = originalCore.siteTable;
+            defTableTable = originalCore.defTableTable;
+            globalCacheTable = originalCore.globalCacheTable;
+            setDefinitionTable(originalCore.getDefinitionTable());
+        } else {
+            siteTable = new HashMap<String, Site>();
+            defTableTable = new HashMap<String, DefinitionTable>();
+            globalCacheTable = new HashMap<String, Map<String, Object>>();
+            setNewDefinitionTable();
+            siteTable.put("core", this);
+            setGlobalCache(new HashMap<String, Object>());
+            globalCacheTable.put("core", getGlobalCache());
+            originalCore = this;
+        }
     }
 
     /** Returns an empty string.  */

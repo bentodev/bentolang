@@ -4,7 +4,7 @@
  --  platform-dependent core definitions                                    --
  --  Java version                                                           --
  --                                                                         --
- --  Copyright (c) 2002-2014 by bentodev.org.  All rights reserved.         --
+ --  Copyright (c) 2002-2016 by bentodev.org.  All rights reserved.         --
  --                                                                         --
  -----------------------------------------------------------------------------/
 
@@ -92,7 +92,9 @@ core [=
 
     /------ Text utilities ------/
     
-    dynamic chr$(int n) = bento.runtime.Utils.chr$(n);
+    dynamic chr$(int n) = bento.runtime.Utils.chr$(n)
+
+    dynamic hex(int n) = bento.runtime.Utils.hex(n)
 
 	/** Returns the length of str. **/
 	dynamic int strlen(str) = bento.runtime.Utils.strlen(str)

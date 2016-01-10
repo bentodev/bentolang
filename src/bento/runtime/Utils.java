@@ -2,7 +2,7 @@
  *
  * $Id: Utils.java,v 1.48 2015/04/20 12:50:41 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -43,6 +43,10 @@ public class Utils {
     
 	public static String chr$(int n) {
 	    return Character.toString((char) n);	
+	}
+	
+	public static String hex(int n) {
+	    return Integer.toHexString(n);
 	}
 
     public static Map<String, Object> newSortedTable() {

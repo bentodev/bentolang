@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("pos")) {
+if (definition.getName().equals("next_global_id")) {
  System.out.println(definition.getName() + " at ctx 903");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -1597,15 +1597,18 @@ if (definition.getName().equals("pos")) {
         if (topEntry == null || name == null || name.length() == 0) {
             return null;
         }
-       
+
         // use indexes as part of the key otherwise a cached element may be confused with a cached array 
         String key = addIndexesToKey(name, indexes);
-        //List<String>[] keeps = addDynamicKeeps(key, args);
         updateDynamicKeeps(key, args);
         Holder holder = topEntry.getDefHolder(key, makeGlobalKey(fullName), args, local);
-        //if (keeps != null) {
-        //    removeDynamicKeeps(keeps);
-        //}
+        
+        // if we get back a global definition and we weren't passed a full name, we
+        // need to call getDefHolder again for it to check the global cache
+        if (fullName == null && holder != null && holder.nominalDef != null && holder.nominalDef.isGlobal()) {
+            fullName = holder.nominalDef.getFullNameInContext(this);
+            holder = topEntry.getDefHolder(key, makeGlobalKey(fullName), args, local);
+        }
         
         if (holder == null) {
             holder = getContextHolder(name);
@@ -3638,31 +3641,6 @@ if (definition.getName().equals("pos")) {
         }
     }
 
-    private NamedDefinition dealias(NamedDefinition def) {
-        while (def != null && (def.isIdentity() || def.isAlias())) {
-            // if this is an identity, look for the definition of the passed instance.
-            // Look directly in the top entry rather than calling getDefinition, which in
-            // some cases would cause infinite regression
-            if (def.isIdentity()) {
-                Holder holder = peek().getDefHolder(def.getName(), makeGlobalKey(def.getFullNameInContext(this)), null, false);
-                if (holder != null && !def.equals(holder.def)) {
-                    def = (NamedDefinition) holder.def;
-                } else {
-                    break;
-                }
-
-            } else if (def.isAlias()) {
-                Instantiation aliasInstance = def.getAliasInstance();
-                Definition aliasDef = aliasInstance.getDefinition(this, def);
-                if (aliasDef == null) {
-                    break;
-                }
-                def = (NamedDefinition) aliasDef;
-            }
-        }                 
-        return def;
-    }
-    
     private boolean sharesKeeps(Entry entry, Entry prev, boolean forward) {
         boolean shares = false;
         
@@ -5050,6 +5028,8 @@ if (calcSize != size) {
                             String globalKey = makeGlobalKey(nominalDef.getFullNameInContext(context));
                             localPut(globalCache, globalKey, holder);
                         }
+                    } else {
+                        throw new NullPointerException("global cache not found");
                     }
                 }
             }
