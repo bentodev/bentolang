@@ -2,7 +2,7 @@
  *
  * $Id: BentoJettyServer.java,v 1.9 2015/01/30 14:18:07 sthippo Exp $
  *
- * Copyright (c) 2010-2015 bentodev.org
+ * Copyright (c) 2010-2016 bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
