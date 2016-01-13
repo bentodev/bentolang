@@ -94,6 +94,7 @@ public class Core extends Site {
         public MultiSite(Site site) {
             super(site.getName());
             setDefinitionTable(site.getDefinitionTable());
+            setGlobalCache(site.getGlobalCache());
             siteList.add(site);
         }
         
