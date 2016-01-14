@@ -6234,9 +6234,6 @@ page(r, s) gctest(request r, session s) [=
         |]
     =]
 
-    dynamic long current_minutes = current_time / 60000
-    dynamic long current_seconds = current_time / 1000
-
     gtid [=
         next_rsec67_id;
         br;
