@@ -6533,6 +6533,30 @@ x67 [=
     =]
 
 
+    cocotest [=
+    
+        cobj(g) [=
+           co_co = g
+        =]
+        
+        parent_obj [=
+            keep: cobj child_obj(cobj xx) = xx
+            
+            dynamic set_child_obj(cobj z) [=
+                eval(child_obj(: z :));
+            =]
+        =]
+        
+        parent_obj po [=
+            set_child_obj(cobj("G"));
+        =]
+
+        log("constructing po");
+        po;
+        log("constructing co_co");
+        po.child_obj.co_co;
+    =]
+
 
     dynamic mutation_example [=
         modable_object [=

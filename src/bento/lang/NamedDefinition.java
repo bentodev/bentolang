@@ -321,6 +321,8 @@ public class NamedDefinition extends AnonymousDefinition {
             }
             if (holder != null && holder.resolvedInstance != null && !this.equals(holder.resolvedInstance.getDefinition())) {
                 return true;
+            } else {
+                return false;
             }
         }
         return isAlias();

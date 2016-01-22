@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("next_global_id")) {
+if (definition.getName().indexOf("set_child_") >= 0) {
  System.out.println(definition.getName() + " at ctx 903");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -2704,10 +2704,10 @@ if (definition.getName().equals("next_global_id")) {
         }
         
         // if parentObj is a BentoObjectWrapper and we are generating data, delegate to the object
-        if (generate && !dynamicChild && numNameParts == 1 && parentObj != null && parentObj instanceof BentoObjectWrapper) {
-            BentoObjectWrapper obj = (BentoObjectWrapper) parentObj;
-            //return obj.getChildData(name);
-        }
+        //if (generate && !dynamicChild && numNameParts == 1 && parentObj != null && parentObj instanceof BentoObjectWrapper) {
+        //    BentoObjectWrapper obj = (BentoObjectWrapper) parentObj;
+        //    return obj.getChildData(name);
+        //}
         
         try {
             // Keep track of intermediate definitions during alias dereferencing
@@ -2738,7 +2738,7 @@ if (definition.getName().equals("next_global_id")) {
                         aliasInstance = aliasInstance.getUltimateInstance(this);
                     }
                     if (aliasInstance == null) {
-                    	break;
+                        break;
                     }
                     NameNode aliasName = aliasInstance.getReferenceName();
                     if (aliasName.isComplex()) {
