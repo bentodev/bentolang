@@ -2,7 +2,7 @@
  *
  * $Id: Instantiation.java,v 1.272 2015/06/16 14:46:12 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -935,8 +935,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                                         if (holder.data != null && holder.data != UNDEFINED) {
                                             data = holder.data;
                                         }
-                                        if (args == null && holder.args != null) {
-                                            args = holder.args;
+                                        if (args == null && (holder.nominalArgs != null || holder.args != null)) {
+                                            args = (holder.nominalArgs != null ? holder.nominalArgs : holder.args);
                                             if (args.isDynamic()) {
                                                 args = new ArgumentList(args);
                                                 args.setDynamic(false);
@@ -1048,9 +1048,9 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                 }
                 
                 Context resolutionContext = context;
-                //if (holder != null && holder.resolvedInstance != null) {
-                //    resolutionContext = holder.resolvedInstance.getResolutionContext();
-                //}
+                if (holder != null && holder.resolvedInstance != null) {
+                    resolutionContext = holder.resolvedInstance.getResolutionContext();
+                }
                 
                 Object parentObj = (data == UNDEFINED ? null : data);
 //                if (parentObj == null && def instanceof ExternalDefinition) {

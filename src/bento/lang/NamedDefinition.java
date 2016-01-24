@@ -1436,7 +1436,7 @@ public class NamedDefinition extends AnonymousDefinition {
 
             // not an alias; see if it is a construction that defines the child
             AbstractNode contents = getContents();
-            if (!isAlias() && contents instanceof Construction) {
+            if (!isAlias() && !isIdentity() && contents instanceof Construction) {
                 Construction construction = ((Construction) contents).getUltimateConstruction(context);
                 if (construction instanceof Instantiation && !((Instantiation) construction).isParameterKind()) {
                     Instantiation instance = (Instantiation) construction;
@@ -1449,7 +1449,7 @@ public class NamedDefinition extends AnonymousDefinition {
                                 contentDef = contentType.getDefinition();
                             }
                         }
-                        if (contentDef != null && contentDef.getNameNode() != null && (!contentDef.isIdentity() || !contentDef.getNameNode().equals(name)) && !contentDef.getName().equals(Name.THIS)) { // && !contentDef.equals(resolver)) {
+                        if (contentDef != null && contentDef.getNameNode() != null && (!contentDef.isIdentity() || !contentDef.getNameNode().equals(name)) && !contentDef.getName().equals(Name.THIS) && !context.contains(contentDef)) { // && !contentDef.equals(resolver)) {
                             ArgumentList contentArgs = instance.getArguments(); // contentType.getArguments(context);
 
                             // make sure the value we are resolving is not one of the arguments

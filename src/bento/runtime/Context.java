@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().indexOf("set_child_") >= 0) {
+if (definition.getName().indexOf("po") >= 0) {
  System.out.println(definition.getName() + " at ctx 903");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -2726,7 +2726,8 @@ if (definition.getName().indexOf("set_child_") >= 0) {
             }
             ParameterList params = def.getParamsForArgs(args, this);
             
-            if (!def.isExternal() && (!def.isCollection() || parentObj == null)) {
+
+            if (!def.isExternal() && !def.isCollection() && parentObj == null) {
                 boolean newFrame = !topEntry.def.equalsOrExtends(def);
                 push(def, params, args, newFrame);
                 numPushes++;
@@ -3382,8 +3383,16 @@ if (definition.getName().indexOf("set_child_") >= 0) {
         }
     }
     
+    /** Returns true if the passed definition is on the stack. **/
+    public boolean contains(Definition def) {
+        for (Entry entry = topEntry; entry != null; entry = entry.link) {
+            if (entry.def.equalsOrExtends(def)) {
+                return true;
+            }
+        }
+        return false;
+    }
     
-
     public int pushParts(Instantiation instance) throws Redirection {
         if (instance != null) {
             NameNode nameNode = instance.getReferenceName();
