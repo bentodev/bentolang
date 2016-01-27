@@ -3008,7 +3008,7 @@ cu [=
         name = "Object Child Test"
         key = "object_child"
 
-        expected = "ABCDEFG"
+        expected = "ABCDEFGH"
    
         obj [=
             a [| x |]
@@ -3046,7 +3046,18 @@ cu [=
             this;
         =]
 
+        dynamic obj sub_5 [=
+            eval(h(: "H" :));
+            this;
+        =]
+        
         obj cobj(obj o) = o
+
+        parent_obj [=
+            obj ccobj(obj o) = o
+            eval(ccobj(: sub_5 :));            
+        =]
+
         
         sub_1.a;
         eval(cobj(: sub_1 :));
@@ -3062,7 +3073,9 @@ cu [=
         
         eval(cobj(: sub_4 :));
         cobj.g;
-    
+        
+        parent_obj;
+        parent_obj.ccobj.h;
     =]
 
 oct [=
@@ -3072,12 +3085,39 @@ oct [=
   =]
   dynamic obj sub_4 [=
     eval(g(: "G" :));
-    this;
   =]
-  obj cobj(obj o) = o
-  eval(cobj(: sub_4 :));
-  cobj.g;
+  po [=
+    obj cobj(obj o) = o
+    eval(cobj(: sub_4 :));
+  =]
+  po;
+  po.cobj.g;
 =]
+    cocotest [=
+    
+        cobj(g) [=
+           co_co = g
+        =]
+        
+        parent_obj [=
+            keep: cobj child_obj(cobj xx) = xx
+            
+            dynamic set_child_obj(cobj z) [=
+                eval(child_obj(: z :));
+            =]
+
+            this;
+        =]
+        
+        parent_obj po [=
+            set_child_obj(cobj("G"));
+        =]
+
+        log("constructing po");
+        po;
+        log("constructing co_co");
+        po.child_obj.co_co;
+    =]
 
     test_case serialization_test [=
         int category = utilities
@@ -6530,31 +6570,6 @@ x67 [=
         else if (len == 1) [= "0"; =]
 
         computed_to80;
-    =]
-
-
-    cocotest [=
-    
-        cobj(g) [=
-           co_co = g
-        =]
-        
-        parent_obj [=
-            keep: cobj child_obj(cobj xx) = xx
-            
-            dynamic set_child_obj(cobj z) [=
-                eval(child_obj(: z :));
-            =]
-        =]
-        
-        parent_obj po [=
-            set_child_obj(cobj("G"));
-        =]
-
-        log("constructing po");
-        po;
-        log("constructing co_co");
-        po.child_obj.co_co;
     =]
 
 
