@@ -2727,7 +2727,7 @@ if (definition.getName().indexOf("po") >= 0) {
             ParameterList params = def.getParamsForArgs(args, this);
             
 
-            if (!def.isExternal() && !def.isCollection() && parentObj == null) {
+            if (!def.isExternal() && (!def.isCollection() || parentObj == null)) {
                 boolean newFrame = !topEntry.def.equalsOrExtends(def);
                 push(def, params, args, newFrame);
                 numPushes++;

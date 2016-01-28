@@ -3018,6 +3018,7 @@ cu [=
             e [| x |]
             f [| x |]
             g(z) = z
+            h(y) = y
 
             this;
         =]
@@ -3081,10 +3082,10 @@ cu [=
 oct [=
   obj [=
     g(z) = z
-    this;
   =]
   dynamic obj sub_4 [=
     eval(g(: "G" :));
+    this;
   =]
   po [=
     obj cobj(obj o) = o
@@ -3096,17 +3097,16 @@ oct [=
     cocotest [=
     
         cobj(g) [=
-           co_co = g
+           keep: co_co = g
+           this;
         =]
         
         parent_obj [=
-            keep: cobj child_obj(cobj xx) = xx
+            cobj child_obj(cobj xx) = xx
             
             dynamic set_child_obj(cobj z) [=
                 eval(child_obj(: z :));
             =]
-
-            this;
         =]
         
         parent_obj po [=
@@ -3114,7 +3114,7 @@ oct [=
         =]
 
         log("constructing po");
-        po;
+        eval(po);
         log("constructing co_co");
         po.child_obj.co_co;
     =]
