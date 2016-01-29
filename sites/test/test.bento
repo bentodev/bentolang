@@ -3008,7 +3008,7 @@ cu [=
         name = "Object Child Test"
         key = "object_child"
 
-        expected = "ABCDEFGH"
+        expected = "ABCDEFGHI"
    
         obj [=
             a [| x |]
@@ -3018,7 +3018,7 @@ cu [=
             e [| x |]
             f [| x |]
             g(z) = z
-            h(y) = y
+            hi(y) = y
 
             this;
         =]
@@ -3048,7 +3048,12 @@ cu [=
         =]
 
         dynamic obj sub_5 [=
-            eval(h(: "H" :));
+            eval(hi(: "H" :));
+            this;
+        =]
+        
+        dynamic obj sub_6 [=
+            eval(hi(: "I" :));
             this;
         =]
         
@@ -3056,7 +3061,11 @@ cu [=
 
         parent_obj [=
             obj ccobj(obj o) = o
-            eval(ccobj(: sub_5 :));            
+            
+            dynamic set_ccobj(obj oo) [=
+                eval(ccobj(: oo :));
+            =]
+            set_ccobj(sub_5);            
         =]
 
         
@@ -3076,7 +3085,10 @@ cu [=
         cobj.g;
         
         parent_obj;
-        parent_obj.ccobj.h;
+        parent_obj.ccobj.hi;
+        
+        parent_obj.set_ccobj(sub_6);
+        parent_obj.ccobj.hi;
     =]
 
 oct [=
@@ -3087,11 +3099,18 @@ oct [=
     eval(g(: "G" :));
     this;
   =]
+  dynamic obj sub_5 [=
+    eval(g(: "H" :));
+    this;
+  =]
+  
   po [=
     obj cobj(obj o) = o
     eval(cobj(: sub_4 :));
   =]
   po;
+  po.cobj.g;
+  eval(po.cobj(: sub_5 :));
   po.cobj.g;
 =]
     cocotest [=

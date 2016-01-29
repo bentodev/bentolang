@@ -1048,9 +1048,9 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                 }
                 
                 Context resolutionContext = context;
-                //if (holder != null && holder.resolvedInstance != null) {
-                //    resolutionContext = holder.resolvedInstance.getResolutionContext();
-                //}
+                if (holder != null && holder.resolvedInstance != null) {
+                    resolutionContext = holder.resolvedInstance.getResolutionContext();
+                }
                 
                 Object parentObj = (data == UNDEFINED ? null : data);
 //                if (parentObj == null && def instanceof ExternalDefinition) {

@@ -877,8 +877,8 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().indexOf("po") >= 0) {
- System.out.println(definition.getName() + " at ctx 903");    
+if (definition.getName().indexOf("sub_") == 0) {
+ System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
             // context stack with the definition
@@ -2728,9 +2728,12 @@ if (definition.getName().indexOf("po") >= 0) {
             
 
             if (!def.isExternal() && (!def.isCollection() || parentObj == null)) {
-                boolean newFrame = !topEntry.def.equalsOrExtends(def);
-                push(def, params, args, newFrame);
-                numPushes++;
+                
+                if (!def.isIdentity()) {
+                    boolean newFrame = !topEntry.def.equalsOrExtends(def);
+                    push(def, params, args, newFrame);
+                    numPushes++;
+                }
 
                 Definition superDef = def.getSuperDefinition(this);
                 while (def.isAliasInContext(this) && !def.isCollection()) {
