@@ -2,7 +2,7 @@
  *
  * $Id: BentoSite.java,v 1.110 2015/06/15 13:18:24 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -334,9 +334,9 @@ public class BentoSite extends BentoDomain {
 
             if (pageName.equalsIgnoreCase("$debug")) {
                 BentoDebugger debugger = context.getDebugger();
-            if (debugger == null) {
-                debugger = createDebugger();
-            }
+                if (debugger == null) {
+                    debugger = createDebugger();
+                }
             
             } else if (pageName.equalsIgnoreCase("$stat")) {
                 recordRequest("$stat", pageTracker);

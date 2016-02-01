@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().indexOf("sub_") == 0) {
+if (definition.getName().equals("a")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -2681,7 +2681,11 @@ if (definition.getName().indexOf("sub_") == 0) {
 
     public Object getDescendant(Definition parentDef, ArgumentList args, NameNode name, boolean generate, Object parentObj) throws Redirection {
         Definition def = parentDef;
-
+if (def.getName().equals("cobj")) {
+ System.out.println(def.getName() + " at ctx 2685");    
+}
+        
+        
         // if this is a reference to a collection element, forward to its definition
         if (def instanceof ElementReference) {
             Definition elementDef = ((ElementReference) def).getElementDefinition(this);
@@ -2724,11 +2728,9 @@ if (definition.getName().indexOf("sub_") == 0) {
                     args = holder.nominalArgs;
                 }
             }
-            ParameterList params = def.getParamsForArgs(args, this);
             
-
             if (!def.isExternal() && (!def.isCollection() || parentObj == null)) {
-                
+                ParameterList params = def.getParamsForArgs(args, this);
                 if (!def.isIdentity()) {
                     boolean newFrame = !topEntry.def.equalsOrExtends(def);
                     push(def, params, args, newFrame);
@@ -3541,7 +3543,10 @@ if (definition.getName().indexOf("sub_") == 0) {
     private void push(Entry entry) throws Redirection {
         boolean newFrame = (entry.superdef == null);
         boolean newScope = (entry.def != entry.superdef);
-
+if ("po".equals(entry.def.getName())) {
+ System.out.println("push " + entry + " at ctx 3547");
+}
+    
         if (entry.def instanceof Site) {
             // if we are pushing a site, share the cache from the
             // root entry
@@ -5187,7 +5192,7 @@ if (calcSize != size) {
 
             } else {
 
-                // There is an existing entry.  See if it's a modifier
+                // There is an existing entry.  See if it's a pointer
                 if (oldData instanceof Pointer) {
                     p = (Pointer) oldData;
                     persist = p.persist;
@@ -5223,6 +5228,13 @@ if (calcSize != size) {
                     nextCache.put(nextKey, holder);
                 }
                 
+                // if there is new data, clear out the data and resolved instances in the 
+                // cache that have the current key as a prefix, because these are children 
+                // of the old object and are now obsolete
+                if (holder.data != null && holder.data != AbstractNode.UNINSTANTIATED) {
+                    clearKeyChildrenData(cache, key);
+                }              
+                
                 // Finally look for a container cache pointer.  nextKey at this point
                 // should have the unmodified, unaliased version of the key
                 p = (Pointer) cache.get("+" + nextKey);
@@ -5233,11 +5245,49 @@ if (calcSize != size) {
                         nextCache.put(nextKey, holder);
                     }
                 }
-                
+            }
+            // if the key has multiple parts, check to see if there is a
+            // keep map cached for the definition corresponding to the prefix
+            int ix = key.indexOf('.');
+            if (ix > 0) {
+                String prefix = key.substring(0, ix);
+                String childKey = key.substring(ix + 1);
+                Map<String, Object> parentKeepCache = (Map<String, Object>) cache.get(prefix + ".keep");
+                if (parentKeepCache != null) {
+                    Map<String, Pointer> parentKeepMap = (Map<String, Pointer>) parentKeepCache.get("from");
+                    if (parentKeepMap != null) {
+                        Pointer cp = parentKeepMap.get(childKey);
+                        if (cp != null) {
+                            System.out.println("found keep pointer for " + childKey + " in " + prefix + "'s cache");
+                           
+                        }
+                    }
+                }
             }
             return kept;
         }
 
+        /** Clear out the resolved instances and data for all Holders in the cache that 
+         *  have the passed key as a prefix. 
+         */
+        private static void clearKeyChildrenData(Map<String, Object> cache, String key) {
+            String prefix = key + ".";
+            Set<String> keys = cache.keySet();
+            for (String k: keys) {
+                if (k.startsWith(prefix)) {
+                    Object data = cache.get(k);
+                    if (data instanceof Holder) {
+                        Holder holder = (Holder) data;
+                        if (holder.data != null || holder.resolvedInstance != null) {
+                            holder.data = null;
+                            holder.resolvedInstance = null;
+                            cache.put(k, holder);
+                        }
+                    }
+                }
+            }
+        }
+        
         private void checkForPut(String key, Holder holder, Context context, int maxLevels) {
            
             if ((cache != null && cache.get(key) != null) ||

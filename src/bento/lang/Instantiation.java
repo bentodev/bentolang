@@ -1062,8 +1062,15 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                     return (defInstance == null ? null : defInstance.def);
                     
                 } else {
-                    //numPushes += resolutionContext.pushParts(name, name.numParts(), getOwner());
-                    return resolutionContext.getDescendant(def, args, restOfName, true, parentObj);
+                    int numResContextPushes = 0;
+                    try {
+                        //numResContextPushes += resolutionContext.pushParts(name, name.numParts(), getOwner());
+                        return resolutionContext.getDescendant(def, args, restOfName, true, parentObj);
+                    } finally {
+                        while (numResContextPushes-- > 0) {
+                            resolutionContext.pop();
+                        }
+                    }
                 }
             }
 

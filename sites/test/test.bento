@@ -3106,11 +3106,18 @@ oct [=
   
   po [=
     obj cobj(obj o) = o
-    eval(cobj(: sub_4 :));
+    
+    dynamic set_cobj(obj ob) [= eval(cobj(: ob :)); =]
+    
+    set_cobj(sub_4);
   =]
+  po.cobj.type; sp;
   po;
+  sp; po.cobj.type; sp;
   po.cobj.g;
-  eval(po.cobj(: sub_5 :));
+  sp; po.cobj.type; sp;
+  po.set_cobj(sub_5);
+  sp; po.cobj.type; sp;
   po.cobj.g;
 =]
     cocotest [=
@@ -4434,9 +4441,9 @@ nkt [=
         c;
         d(: dparam :);
     =]
-    eval(abcd_container("C", "D"));    
-    eval(abcd_container.a(: "F" :));
-    eval(abcd_container(: "G", "H" :));
+    abcd_container("C", "D");    
+    abcd_container.a(: "F" :);
+    abcd_container(: "G", "H" :);
     abcd_container.a; 
 =]
 
