@@ -5033,7 +5033,7 @@ if (calcSize != size) {
             Definition nominalDef = holder.nominalDef;
             Map<String, Object> localCache = getCache();
             synchronized (localCache) {
-                if (localPut(localCache, key, holder)) {
+                if (localPut(localCache, key, holder, true)) {
                     kept = true;
                 }
             }
@@ -5043,7 +5043,7 @@ if (calcSize != size) {
                     if (globalCache != null) {
                         synchronized (globalCache) {
                             String globalKey = makeGlobalKey(nominalDef.getFullNameInContext(context));
-                            localPut(globalCache, globalKey, holder);
+                            localPut(globalCache, globalKey, holder, true);
                         }
                     } else {
                         throw new NullPointerException("global cache not found");
@@ -5084,7 +5084,7 @@ if (calcSize != size) {
                         if (entry != null) {
                             Map<String, Object> ownerCache = entry.getCache();
                             synchronized (ownerCache) {
-                                entry.localPut(ownerCache, ownerName + "." + key, holder);
+                                entry.localPut(ownerCache, ownerName + "." + key, holder, false);
                             }
                         }
                     }
@@ -5136,7 +5136,7 @@ if (calcSize != size) {
         }
 
         
-        public boolean localPut(Map<String, Object> cache, String key, Holder holder) {
+        public boolean localPut(Map<String, Object> cache, String key, Holder holder, boolean updateContainerChild) {
             boolean kept = false;
             boolean persist = false;
             Pointer p = null;
@@ -5246,20 +5246,26 @@ if (calcSize != size) {
                     }
                 }
             }
-            // if the key has multiple parts, check to see if there is a
-            // keep map cached for the definition corresponding to the prefix
-            int ix = key.indexOf('.');
-            if (ix > 0) {
-                String prefix = key.substring(0, ix);
-                String childKey = key.substring(ix + 1);
-                Map<String, Object> parentKeepCache = (Map<String, Object>) cache.get(prefix + ".keep");
-                if (parentKeepCache != null) {
-                    Map<String, Pointer> parentKeepMap = (Map<String, Pointer>) parentKeepCache.get("from");
-                    if (parentKeepMap != null) {
-                        Pointer cp = parentKeepMap.get(childKey);
-                        if (cp != null) {
-                            System.out.println("found keep pointer for " + childKey + " in " + prefix + "'s cache");
-                           
+            // if the key has multiple parts, it represents a container and child.  If we 
+            // need to update container children (specified by a boolean parameter to this 
+            // function), and we are caching a container child, check to see if there is a
+            // keep map cached for the definition corresponding to the prefix (i.e., the
+            // container).  If so, check to see if that keep map has an entry for the 
+            // child being cached.  If so, update that entry. 
+            if (updateContainerChild) {
+                int ix = key.indexOf('.');
+                if (ix > 0) {
+                    String prefix = key.substring(0, ix);
+                    String childKey = key.substring(ix + 1);
+                    Map<String, Object> parentKeepCache = (Map<String, Object>) cache.get(prefix + ".keep");
+                    if (parentKeepCache != null) {
+                        Map<String, Pointer> parentKeepMap = (Map<String, Pointer>) parentKeepCache.get("from");
+                        if (parentKeepMap != null) {
+                            Pointer cp = parentKeepMap.get(childKey);
+                            if (cp != null) {
+                                System.out.println("found keep pointer for " + childKey + " in " + prefix + "'s cache");
+                               
+                            }
                         }
                     }
                 }
