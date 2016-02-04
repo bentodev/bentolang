@@ -5033,7 +5033,7 @@ if (calcSize != size) {
             Definition nominalDef = holder.nominalDef;
             Map<String, Object> localCache = getCache();
             synchronized (localCache) {
-                if (localPut(localCache, key, holder, true)) {
+                if (localPut(localCache, keepMap, key, holder, true)) {
                     kept = true;
                 }
             }
@@ -5043,7 +5043,7 @@ if (calcSize != size) {
                     if (globalCache != null) {
                         synchronized (globalCache) {
                             String globalKey = makeGlobalKey(nominalDef.getFullNameInContext(context));
-                            localPut(globalCache, globalKey, holder, true);
+                            localPut(globalCache, null, globalKey, holder, true);
                         }
                     } else {
                         throw new NullPointerException("global cache not found");
@@ -5084,7 +5084,7 @@ if (calcSize != size) {
                         if (entry != null) {
                             Map<String, Object> ownerCache = entry.getCache();
                             synchronized (ownerCache) {
-                                entry.localPut(ownerCache, ownerName + "." + key, holder, false);
+                                entry.localPut(ownerCache, null, ownerName + "." + key, holder, false);
                             }
                         }
                     }
@@ -5136,7 +5136,7 @@ if (calcSize != size) {
         }
 
         
-        public boolean localPut(Map<String, Object> cache, String key, Holder holder, boolean updateContainerChild) {
+        private boolean localPut(Map<String, Object> cache, Map<String, Pointer> keepMap, String key, Holder holder, boolean updateContainerChild) {
             boolean kept = false;
             boolean persist = false;
             Pointer p = null;
@@ -5145,14 +5145,8 @@ if (calcSize != size) {
             // if this is the first entry, set up any required pointers for keep tables
             // and modifiers, save the data and return
             if (oldData == null || (oldData instanceof Holder && (((Holder) oldData).data == AbstractNode.UNINSTANTIATED || ((Holder) oldData).data == null))) {
-                Object newData;
-                
-                newData = holder;
-                //if (def != null) {
-                //    newData = new Holder(def, args, context, data);
-                //} else {
-                //    newData = data;
-                //}
+
+                Object newData = holder;
                 if (keepMap != null) {
                     p = keepMap.get(key);
                     if (p != null) {
@@ -5261,11 +5255,12 @@ if (calcSize != size) {
                     if (parentKeepCache != null) {
                         Map<String, Pointer> parentKeepMap = (Map<String, Pointer>) parentKeepCache.get("from");
                         if (parentKeepMap != null) {
-                            Pointer cp = parentKeepMap.get(childKey);
-                            if (cp != null) {
-                                System.out.println("found keep pointer for " + childKey + " in " + prefix + "'s cache");
-                               
-                            }
+                            localPut(parentKeepCache, parentKeepMap, childKey, holder, false);
+//                            Pointer cp = parentKeepMap.get(childKey);
+//                            if (cp != null) {
+//                                System.out.println("found keep pointer for " + childKey + " in " + prefix + "'s cache");
+//                               
+//                            }
                         }
                     }
                 }
