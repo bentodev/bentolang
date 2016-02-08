@@ -4430,21 +4430,15 @@ dkt [=
     =]
 
 nkt [=
-    abcd_container(cparam, dparam) [=
-        keep: a(x) = x
+    abcd_container [=
         b(x) = x
-        c = cparam
-        d(x) = x
-    
-        a("A");
         b("B");
-        c;
-        d(: dparam :);
     =]
-    abcd_container("C", "D");    
-    abcd_container.a(: "F" :);
-    abcd_container(: "G", "H" :);
-    abcd_container.a; 
+    abcd_container;
+    abcd_container.b; 
+    abcd_container(: :);
+    "-";
+    abcd_container.b; 
 =]
 
     test_case cached_identity_test [=

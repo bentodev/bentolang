@@ -2,7 +2,7 @@
  *
  * $Id: AbstractConstruction.java,v 1.130 2015/06/18 13:18:08 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -373,6 +373,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
             Definition defInCache = null;
             Definition nominalDefInCache = null;
             String name = getDefinitionName();
+            NameNode nameNode = getReferenceName();
             Holder holder = null;
             if (context != null && name != null) {
                 holder = context.getDefHolder(name, null, getArguments(), getIndexes(), false);
@@ -400,7 +401,6 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                     def = cacheInfo.def;
                 }
                 if ((cacheability & CACHE_RETRIEVABLE) == CACHE_RETRIEVABLE) {
-                    
                     if (holder == null || holder.def == null) {
                         holder = context.getDefHolder(name, null, getArguments(), getIndexes(), false);
                         if (holder != null) {
@@ -409,8 +409,23 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                         }
                     }
                     Definition ultimateDef = (cacheInfo.def != null ? cacheInfo.def.getUltimateDefinition(context) : null);
-                    if (holder != null) {
-                        data = holder.data;
+                    if (holder != null && holder.data != null) {
+
+                        // if this is the child of a cached object, get the data from the
+                        // object instead of directly from the cache
+                        Holder parentHolder = null;
+                        if (nameNode.numParts() > 1) {
+                            NameNode parentNameNode = new ComplexName(nameNode, 0, nameNode.numParts() - 1);
+                            parentHolder = context.getDefHolder(parentNameNode.getName(), null, parentNameNode.getArguments(), parentNameNode.getIndexes(), false);
+                            if (parentHolder != null && parentHolder.data instanceof BentoObjectWrapper) {
+                                BentoObjectWrapper parentObj = (BentoObjectWrapper) parentHolder.data;
+                                data = parentObj.getChildData(nameNode.getLastPart().getName()); 
+                            }
+                        }
+
+                        if (data == null) {
+                            data = holder.data;
+                        }
                     }
                     
                     if (def != null && def.isIdentity() && defInCache != null) {
@@ -449,7 +464,6 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                             return new BentoObjectWrapper(entry.def, entry.args, null, context);
                         }
                     } else if (def != null && Name.THIS.equals(def.getName()) && def instanceof AliasedDefinition) {
-                        NameNode nameNode = getReferenceName();
                         if (nameNode != null) {
                             int n = nameNode.numParts();
                             if (n > 1 && Name.THIS.equals(nameNode.getLastPart().getName())) {

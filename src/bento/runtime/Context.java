@@ -3543,9 +3543,6 @@ if (def.getName().equals("cobj")) {
     private void push(Entry entry) throws Redirection {
         boolean newFrame = (entry.superdef == null);
         boolean newScope = (entry.def != entry.superdef);
-if ("po".equals(entry.def.getName())) {
- System.out.println("push " + entry + " at ctx 3547");
-}
     
         if (entry.def instanceof Site) {
             // if we are pushing a site, share the cache from the
@@ -5222,13 +5219,6 @@ if (calcSize != size) {
                     nextCache.put(nextKey, holder);
                 }
                 
-                // if there is new data, clear out the data and resolved instances in the 
-                // cache that have the current key as a prefix, because these are children 
-                // of the old object and are now obsolete
-                if (holder.data != null && holder.data != AbstractNode.UNINSTANTIATED) {
-                    clearKeyChildrenData(cache, key);
-                }              
-                
                 // Finally look for a container cache pointer.  nextKey at this point
                 // should have the unmodified, unaliased version of the key
                 p = (Pointer) cache.get("+" + nextKey);
@@ -5268,27 +5258,6 @@ if (calcSize != size) {
             return kept;
         }
 
-        /** Clear out the resolved instances and data for all Holders in the cache that 
-         *  have the passed key as a prefix. 
-         */
-        private static void clearKeyChildrenData(Map<String, Object> cache, String key) {
-            String prefix = key + ".";
-            Set<String> keys = cache.keySet();
-            for (String k: keys) {
-                if (k.startsWith(prefix)) {
-                    Object data = cache.get(k);
-                    if (data instanceof Holder) {
-                        Holder holder = (Holder) data;
-                        if (holder.data != null || holder.resolvedInstance != null) {
-                            holder.data = null;
-                            holder.resolvedInstance = null;
-                            cache.put(k, holder);
-                        }
-                    }
-                }
-            }
-        }
-        
         private void checkForPut(String key, Holder holder, Context context, int maxLevels) {
            
             if ((cache != null && cache.get(key) != null) ||
