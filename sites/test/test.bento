@@ -3111,13 +3111,13 @@ oct [=
     
     set_cobj(sub_4);
   =]
-  po.cobj.type; sp;
+  //po.cobj.type; sp;
   po;
-  sp; po.cobj.type; sp;
+  //sp; po.cobj.type; sp;
   po.cobj.g;
-  sp; po.cobj.type; sp;
+  //sp; po.cobj.type; sp;
   po.set_cobj(sub_5);
-  sp; po.cobj.type; sp;
+  //sp; po.cobj.type; sp;
   po.cobj.g;
 =]
     cocotest [=

@@ -909,7 +909,9 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                 // This will  be overridden by any definition discovered through the
                 // standard process, but will take effect if no such definition exists.
                 if (n > 1) {
-    
+if (n > 2) {
+ System.out.println(name.getName() + " at inst 913");
+}
                     DefinitionTable definitions = getComplexOwner().getDefinitionTable();
                     def = definitions.getDefinition(null, name);
                     if (def != null) {
@@ -920,8 +922,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                             }
                         }
                     } else {
-                        for (int np = n - 1; np > 0; np--) {
-                        //for (int np = 1; np < n; np++) {
+                        //for (int np = n - 1; np > 0; np--) {
+                        for (int np = 1; np < n; np++) {
                             ComplexName prefix = new ComplexName(name, 0, np);
                             restOfName = new ComplexName(name, np, n);
                             nm = prefix.getName();
