@@ -919,9 +919,6 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                             }
                         }
                     } else {
-if (n > 2) {
-  System.out.println(name.getName() + " at inst 923");
-}
                         for (int np = n - 1; np > 0; np--) {
                         //for (int np = 1; np < n; np++) {
                             ComplexName prefix = new ComplexName(name, 0, np);
@@ -1050,7 +1047,8 @@ if (n > 2) {
                 }
                 
                 Context resolutionContext = context;
-                if (holder != null && holder.resolvedInstance != null) {
+                if (holder != null && holder.resolvedInstance != null &&  holder.data != null) {
+System.out.println("--------- using resolution context for " + def.getName());
                     resolutionContext = holder.resolvedInstance.getResolutionContext();
                 }
                 

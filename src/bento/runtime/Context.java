@@ -1651,10 +1651,6 @@ if (definition.getName().equals("plyrs")) {
 
             // use indexes as part of the key otherwise a cached element may be confused with a cached array 
             String key = addIndexesToKey(name, indexes);
-if (key.equals("name") || key.indexOf(".name") > 0) {
-  System.out.println("putting " + key + " at ctx 1655");    
-}
-            
             topEntry.put(key, nominalDef, nominalArgs, def, args, this, data, resolvedInstance, maxCacheLevels);
             
             //if (keeps != null) {
@@ -2800,10 +2796,6 @@ if (def.getName().equals("player_B")) {
                 if (holder != null) {
                     Definition nominalDef = holder.nominalDef;
                     if (nominalDef != null && !nominalDef.isCollection() && nominalDef.getDurability() != Definition.DYNAMIC) { 
-if (!fullNm.equals(nominalDef.getFullNameInContext(this))) {
- System.out.println("def in cache is different at ctx 2796: " + nominalDef.getFullName() + " instead of " + fullNm);
-}
-                        
                         if (nominalDef.isIdentity()) {
                             childDef = holder.def;
                             if (childArgs == null) {
@@ -4218,9 +4210,6 @@ if (calcSize != size) {
             this.containerKey = containerKey;
             this.cache = cache;
             this.persist = persist;
-if (key.equals("name")) {
- System.out.println("Pointer for " + key + " (containerKey: " + containerKey + ") at ctx 4216");    
-}
         }
         
         public String getKey() {
@@ -4698,13 +4687,13 @@ if (key.equals("name")) {
                         ResolvedInstance riAs = resolvedInstances[numInstances - 1];
                         for (int i = 0; i < numInstances; i++) {
                             if (resolvedInstances[i] != null) {
-                                Pointer p = new Pointer(resolvedInstances[i], riAs, keyObj, table, persist);
+                                Pointer p = new Pointer(resolvedInstances[i], riAs, keyObj, containerKey, table, persist);
                                 String keepKey = (inContainer ? key : resolvedInstances[i].getName());
                                 keepMap.put(keepKey, p);
                                 
                                 String contextKey = def.getFullName() + '.' + keepKey;
                                 contextKey = contextKey.substring(contextKey.indexOf('.') + 1);
-                                Pointer contextp = new Pointer(resolvedInstances[i], riAs, contextKey, contextCache, persist);
+                                Pointer contextp = new Pointer(resolvedInstances[i], riAs, contextKey, containerKey, contextCache, persist);
                                 contextKeepMap.put(contextKey, contextp);
                             }
                         }
@@ -4839,6 +4828,10 @@ if (key.equals("name")) {
             // return null rather than continue the search up the context chain in order to
             // force instantiation and avoid bypassing the designated cache.
             if (data == null && keepMap != null && keepMap.get(key) != null) {
+if (key.equals("this_scene")) {
+ System.out.println("getting pointer for " + key + " at ctx 4832");    
+}
+                
                 Pointer p = keepMap.get(key);
                 if (!p.persist) {
                     return null;
