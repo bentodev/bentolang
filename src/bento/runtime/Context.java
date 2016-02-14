@@ -1651,6 +1651,10 @@ if (definition.getName().equals("plyrs")) {
 
             // use indexes as part of the key otherwise a cached element may be confused with a cached array 
             String key = addIndexesToKey(name, indexes);
+if (key.equals("name") || key.indexOf(".name") > 0) {
+  System.out.println("putting " + key + " at ctx 1655");    
+}
+            
             topEntry.put(key, nominalDef, nominalArgs, def, args, this, data, resolvedInstance, maxCacheLevels);
             
             //if (keeps != null) {
@@ -2681,7 +2685,7 @@ if (definition.getName().equals("plyrs")) {
 
     public Object getDescendant(Definition parentDef, ArgumentList args, NameNode name, boolean generate, Object parentObj) throws Redirection {
         Definition def = parentDef;
-if (def.getName().equals("cobj")) {
+if (def.getName().equals("player_B")) {
  System.out.println(def.getName() + " at ctx 2685");    
 }
         
@@ -2719,13 +2723,17 @@ if (def.getName().equals("cobj")) {
             // referenced in the child being instantiated.  Look for cached
             // definitions and arguments
 
-            if (args == null && !(def instanceof AliasedDefinition)) {
+            if ((args == null || !args.isDynamic()) && !(def instanceof AliasedDefinition)) {
                 String nm = def.getName();
                 String fullNm = def.getFullNameInContext(this);
                 Holder holder = getDefHolder(nm, fullNm, null, null, false);
                 if (holder != null && holder.nominalDef != null && holder.nominalDef.getDurability() != Definition.DYNAMIC && !((BentoNode) holder.nominalDef).isDynamic()) {
                     def = holder.nominalDef;
                     args = holder.nominalArgs;
+                    if (generate && def.isIdentity() && holder.data != null && holder.data instanceof BentoObjectWrapper && numNameParts == 1) {
+                        BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
+                        return obj.getChildData(childName);
+                    }
                 }
             }
             
@@ -2792,6 +2800,10 @@ if (def.getName().equals("cobj")) {
                 if (holder != null) {
                     Definition nominalDef = holder.nominalDef;
                     if (nominalDef != null && !nominalDef.isCollection() && nominalDef.getDurability() != Definition.DYNAMIC) { 
+if (!fullNm.equals(nominalDef.getFullNameInContext(this))) {
+ System.out.println("def in cache is different at ctx 2796: " + nominalDef.getFullName() + " instead of " + fullNm);
+}
+                        
                         if (nominalDef.isIdentity()) {
                             childDef = holder.def;
                             if (childArgs == null) {
@@ -2807,7 +2819,7 @@ if (def.getName().equals("cobj")) {
                             dynamicChild = true;    
                         }
 
-                        if (generate && !dynamicChild) {
+                        if (generate && !dynamicChild) { // && fullNm.equals(childDef.getFullNameInContext(this))) {
                             if (holder.data != null && !holder.data.equals(NullValue.NULL_VALUE)) {
                                 if (numNameParts == 1) {
                                     return holder.data;
@@ -4193,17 +4205,22 @@ if (calcSize != size) {
         ResolvedInstance ri;
         ResolvedInstance riAs;
         Object key;
+        Object containerKey;
         Map<String, Object> cache;
         boolean persist;
-        public Pointer(ResolvedInstance ri, Object key, Map<String, Object> cache, boolean persist) {
-            this(ri, ri, key, cache, persist);
+        public Pointer(ResolvedInstance ri, Object key, Object containerKey, Map<String, Object> cache, boolean persist) {
+            this(ri, ri, key, containerKey, cache, persist);
         }
-        public Pointer(ResolvedInstance ri, ResolvedInstance riAs, Object key, Map<String, Object> cache, boolean persist) {
+        public Pointer(ResolvedInstance ri, ResolvedInstance riAs, Object key, Object containerKey, Map<String, Object> cache, boolean persist) {
             this.ri = ri;
             this.riAs = riAs;
             this.key = key;
+            this.containerKey = containerKey;
             this.cache = cache;
             this.persist = persist;
+if (key.equals("name")) {
+ System.out.println("Pointer for " + key + " (containerKey: " + containerKey + ") at ctx 4216");    
+}
         }
         
         public String getKey() {
@@ -4696,17 +4713,17 @@ if (calcSize != size) {
                             if (resolvedInstances[i] != null) {
                                 String name = resolvedInstances[i].getName();
                                 String keepKey = key + name;
-                                Pointer p = new Pointer(resolvedInstances[i], keepKey, table, persist);
+                                Pointer p = new Pointer(resolvedInstances[i], keepKey, containerKey, table, persist);
                                 keepMap.put(keepKey, p);
 
                                 if (inContainer) {
-                                    p = new Pointer(resolvedInstances[i], keepKey, containerTable, persist);
+                                    p = new Pointer(resolvedInstances[i], keepKey, containerKey, containerTable, persist);
                                     keepMap.put(containerKey + name, p);
                                 }
                                 
                                 String contextKey = def.getFullName() + '.' + keepKey;
                                 contextKey = contextKey.substring(contextKey.indexOf('.') + 1);
-                                Pointer contextp = new Pointer(resolvedInstances[i], contextKey, contextCache, persist);
+                                Pointer contextp = new Pointer(resolvedInstances[i], contextKey, containerKey, contextCache, persist);
                                 contextKeepMap.put(contextKey, contextp);
                             }
                         }
@@ -4716,17 +4733,17 @@ if (calcSize != size) {
                     for (int i = 0; i < numInstances; i++) {
                         if (resolvedInstances[i] != null) {
                             String name = resolvedInstances[i].getName();
-                            Pointer p = new Pointer(resolvedInstances[i], name, table, persist);
+                            Pointer p = new Pointer(resolvedInstances[i], name, containerKey, table, persist);
                             keepMap.put(name, p);
                             
                             if (inContainer) {
-                                p = new Pointer(resolvedInstances[i], containerKey + name, containerTable, persist);
+                                p = new Pointer(resolvedInstances[i], containerKey + name, containerKey, containerTable, persist);
                                 keepMap.put("+" + name, p);
                             }
 
                             String contextKey = def.getFullName() + '.' + name;
                             contextKey = contextKey.substring(contextKey.indexOf('.') + 1);
-                            Pointer contextp = new Pointer(resolvedInstances[i], contextKey, contextCache, persist);
+                            Pointer contextp = new Pointer(resolvedInstances[i], contextKey, containerKey, contextCache, persist);
                             contextKeepMap.put(contextKey, contextp);
                         }
                     }
@@ -5158,7 +5175,7 @@ if (calcSize != size) {
                         Map<String, Object> keepTable = p.cache;
                         if (keepTable != cache || !key.equals(p.getKey())) {
                             synchronized (keepTable) {
-                                p = new Pointer(p.ri, p.riAs, p.getKey(), keepTable, persist);
+                                p = new Pointer(p.ri, p.riAs, p.getKey(), p.containerKey, keepTable, persist);
 
                                 // two scenarios: keep as and cached identity.  With keep as, we want the
                                 // pointer def; with cached identity, we want the holder def.  We can tell
@@ -5189,7 +5206,7 @@ if (calcSize != size) {
                     persist = p.persist;
                     Map<String, Object> keepTable = p.cache;
                     if (keepTable != cache || !key.equals(p.getKey())) {
-                        p = new Pointer(p.ri, p.riAs, p.getKey(), keepTable, persist);
+                        p = new Pointer(p.ri, p.riAs, p.getKey(), p.containerKey, keepTable, persist);
 
                         // two scenarios: keep as and cached identity.  With keep as, we want the
                         // pointer def; with cached identity, we want the holder def.  We can tell
