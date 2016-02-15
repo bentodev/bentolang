@@ -380,9 +380,6 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                 if (holder != null && holder.def != null) {
                     defInCache = holder.def;
                     nominalDefInCache = holder.nominalDef;
-                    //if (def == null && !nominalDefInCache.isIdentity() && nominalDefInCache.getDurability() != Definition.DYNAMIC) {
-                    //    def = defInCache;
-                    //}
                 }
             }
             CacheabilityInfo cacheInfo = getCacheability(context, def);

@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("plyrs")) {
+if (definition.getName().equals("retrieved_scene")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -2681,10 +2681,6 @@ if (definition.getName().equals("plyrs")) {
 
     public Object getDescendant(Definition parentDef, ArgumentList args, NameNode name, boolean generate, Object parentObj) throws Redirection {
         Definition def = parentDef;
-if (def.getName().equals("player_B")) {
- System.out.println(def.getName() + " at ctx 2685");    
-}
-        
         
         // if this is a reference to a collection element, forward to its definition
         if (def instanceof ElementReference) {
@@ -4828,10 +4824,6 @@ if (calcSize != size) {
             // return null rather than continue the search up the context chain in order to
             // force instantiation and avoid bypassing the designated cache.
             if (data == null && keepMap != null && keepMap.get(key) != null) {
-if (key.equals("this_scene")) {
- System.out.println("getting pointer for " + key + " at ctx 4832");    
-}
-                
                 Pointer p = keepMap.get(key);
                 if (!p.persist) {
                     return null;
@@ -5256,11 +5248,6 @@ if (key.equals("this_scene")) {
                         Map<String, Pointer> parentKeepMap = (Map<String, Pointer>) parentKeepCache.get("from");
                         if (parentKeepMap != null) {
                             localPut(parentKeepCache, parentKeepMap, childKey, holder, false);
-//                            Pointer cp = parentKeepMap.get(childKey);
-//                            if (cp != null) {
-//                                System.out.println("found keep pointer for " + childKey + " in " + prefix + "'s cache");
-//                               
-//                            }
                         }
                     }
                 }

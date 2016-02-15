@@ -1048,7 +1048,6 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                 
                 Context resolutionContext = context;
                 if (holder != null && holder.resolvedInstance != null &&  holder.data != null) {
-System.out.println("--------- using resolution context for " + def.getName());
                     resolutionContext = holder.resolvedInstance.getResolutionContext();
                 }
                 
