@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("retrieved_scene")) {
+if (definition.getName().equals("current_players")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -2765,10 +2765,16 @@ if (definition.getName().equals("retrieved_scene")) {
                     
                     def = aliasDef;
                     args = aliasArgs;
-                    if (args == null && aliasIndexes == null) {
+                    if ((args == null || !args.isDynamic()) && aliasIndexes == null) {
                         String nm = aliasInstance.getName();
                         String fullNm = parentDef.getFullNameInContext(this) + "." + nm;
                         Holder holder = getDefHolder(nm, fullNm, null, null, false);
+                        if (holder == null && aliasInstance instanceof ResolvedInstance) {
+                            ResolvedInstance ri = (ResolvedInstance) aliasInstance;
+                            if (!equals(ri.getResolutionContext())) {
+                                holder = ri.getResolutionContext().getDefHolder(nm, fullNm, null, null, false);
+                            }
+                        }
                         if (holder != null && holder.nominalDef != null && holder.nominalDef.getDurability() != Definition.DYNAMIC && !((BentoNode) holder.nominalDef).isDynamic()) {
                             def = holder.nominalDef;
                             args = holder.nominalArgs;
@@ -2779,7 +2785,6 @@ if (definition.getName().equals("retrieved_scene")) {
                         }
                     }
                     params = def.getParamsForArgs(args, this);
-                    
                     push(def, params, args, false); //true);
                     numPushes++;
                 }

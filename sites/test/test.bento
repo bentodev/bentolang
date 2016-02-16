@@ -4986,7 +4986,7 @@ ccat [=
         eval(container_obj(a_obj));
         container_obj.bo.a;
 
-        eval(accessor_obj(container_obj(b_obj), container_obj(c_obj)));
+        eval(accessor_obj(container_obj(: b_obj :), container_obj(: c_obj :)));
         accessor_obj.c_o.bo.b;
         accessor_obj.b_o.c;
     =]         
