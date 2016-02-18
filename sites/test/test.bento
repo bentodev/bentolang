@@ -4819,125 +4819,23 @@ cnit [=
     =]
 
 ccat [=
+      
         obj [=
-            child = "x"
+            keep: child(z) = z
             sub;
         =]
 
         obj subobj_a [=
-            keep: child(z) = z
             child("A");
         =]
 
-        obj subobj_b(y) [=
-            keep: child(z) = z
-            child(y);
-        =]
+        obj cached_obj(obj o) = o
         
-        obj subobj_c(v) [=
-            keep: val(z) = z
-            child = val
-            val(v);
-        =]
+        obj aliased_cached_obj = cached_obj
         
-        dynamic show_child(obj ob) [=
-            ob.child;
-        =]
+        eval(cached_obj(subobj_a));
         
-        obj subobj_d [=
-            keep: child(z) = z
-            child("D");
-        =]
-                
-        obj subobj_e(y) [=
-            keep: child(z) = z
-            child(y);
-        =]
-                
-        keep_obj_f(x) [=
-            keep: obj ob = subobj_f(x)
-            ob;
-        =]  
-
-        obj subobj_f(w) [=
-            keep: child(z) = z
-            child(w);
-        =]
-        
-        dynamic keep_obj_g(x) [=
-            keep: obj ob = subobj_g(x)
-            
-            if (x) [=
-                ob;
-            =] else [=
-                ob.child;
-            =]
-        =]  
-
-        obj subobj_g(u) [=
-            keep: child(z) = z
-            eval(child(u));
-            "x";
-        =]
-        
-        keep_obj_h(x) [=
-            keep: obj ob = subobj_h(x)
-            
-            if (ob) [=
-                show_child(ob);
-            =]
-        =]  
-
-        obj subobj_h(u) [=
-            keep: local_child(z) = z
-            child = local_child
-
-            eval(local_child(u));
-            "x";
-        =]
-
-        so [=
-            name = "x"
-        =]
-    
-        so iso(nm) [=
-            keep: name(y) = y
-            
-            name(nm);
-        =]
-    
-        so_ho(so_nm) [=
-            keep: so oh_so = iso(so_nm)
-
-            eval(oh_so);
-            oh_so.name;
-        =]        
-        
-        
-        obj alias_obj_a = subobj_a
-        obj alias_obj_b = subobj_b
-        obj alias_obj_c = subobj_c
-        obj alias_obj_d = subobj_d
-        obj alias_obj_e = subobj_e
-        obj alias_obj_f = keep_obj_f.ob
-
-        //eval(subobj_a);
-        //eval(subobj_b("B"));
-        //eval(subobj_c("C"));
-        //eval(subobj_d);
-        //eval(subobj_e("E"));
-        //eval(keep_obj_f("F"));
-        keep_obj_g("G");
-        
-        //alias_obj_a.child; 
-        //alias_obj_b.child;
-        //alias_obj_c.child;
-        //show_child(alias_obj_d);
-        //show_child(alias_obj_e);
-        //alias_obj_f.child;
-        //keep_obj_g;
-        //keep_obj_h("H");
-        //so_ho("I");
+        aliased_cached_obj.child; 
 =]
     
     

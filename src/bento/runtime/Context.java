@@ -2778,9 +2778,15 @@ if (definition.getName().equals("current_players")) {
                         if (holder != null && holder.nominalDef != null && holder.nominalDef.getDurability() != Definition.DYNAMIC && !((BentoNode) holder.nominalDef).isDynamic()) {
                             def = holder.nominalDef;
                             args = holder.nominalArgs;
-                            if (generate && holder.data != null && holder.data instanceof BentoObjectWrapper && numNameParts == 1) {
+                            if (generate && holder.data != null && holder.data instanceof BentoObjectWrapper) {
                                 BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
-                                return obj.getChildData(childName);
+                                if (numNameParts == 1) {
+                                    return obj.getChildData(childName);
+                                } else {
+                                    Definition objDef = obj.getDefinition();
+                                    Context resolutionContext = obj.getResolutionContext();
+                                    return resolutionContext.getDescendant(objDef, childArgs, name, generate, obj);
+                                }
                             }
                         }
                     }
