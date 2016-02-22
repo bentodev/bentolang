@@ -607,7 +607,7 @@ core [=
                                    (name, value, req_id),
                                    (name, value) [=
    
-        [| <input name="[= name; =]" value="[= value; =]" id="[= value; =]_button" |]
+        [| <input name="[= name; =]" value="[= value; =]" id="[= name; =]_button" |]
         with (onclick_script)     [/ type="button" onclick='[= onclick_script; =]' |]
         else with (req_id)        [/ type="button" onclick="refreshComponent('[= req_id; =]')" |]
         else with (req_component) [/ type="button" onclick="refreshComponent('[= req_component.id; =]')" |]
