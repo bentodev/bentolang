@@ -567,7 +567,7 @@ ss1 [=
         name = "Corresponding Super Test"
         key = "corresponding_super"
 
-        expected = "ABCDEF"
+        expected = "ABCDEFGH"
 
         a = "A"
         b = "x"
@@ -585,14 +585,24 @@ ss1 [=
                 "F";
             =]
             
+            gh [=
+                "G";
+                sub;
+            =]
+            
             a;
             b;
+        =]
+        
+        local_defs local_subs [=
+            this gh = "H"
         =]
         
         local_defs;
         local_defs.c;
         local_defs.d;
-        local_defs.ef;        
+        local_defs.ef;
+        local_subs.gh;  
     =]       
 
 

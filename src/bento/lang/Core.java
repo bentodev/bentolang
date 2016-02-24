@@ -35,6 +35,7 @@ public class Core extends Site {
             siteTable = originalCore.siteTable;
             defTableTable = originalCore.defTableTable;
             globalCacheTable = originalCore.globalCacheTable;
+            setGlobalCache(globalCacheTable.get("core"));
             setDefinitionTable(originalCore.getDefinitionTable());
         } else {
             siteTable = new HashMap<String, Site>();
