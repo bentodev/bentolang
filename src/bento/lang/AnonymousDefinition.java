@@ -2,7 +2,7 @@
  *
  * $Id: AnonymousDefinition.java,v 1.135 2015/07/13 13:10:44 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -891,18 +891,18 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
                     if (childDef == null) {
                         throw new Redirection(Redirection.STANDARD_ERROR, "No definition for element " + childName.toString());
                     }
+
+                // if the child name has one or more indexes, and the definition is a
+                // collection definition, get the appropriate element in the collection.
+                } else if (childDef instanceof CollectionDefinition && childName.hasIndexes()) {
+                    CollectionDefinition collectionDef = (CollectionDefinition) childDef;
+                    childDef = collectionDef.getElementReference(context, childName.getArguments(), childName.getIndexes());
                 }
                 
                 numPushes = context.pushSupersAndAliases(this, args, childDef);
                 //context.repush();
                 //numUnpushes = 0;
 
-                // if the child name has one or more indexes, and the definition is a
-                // collection definition, get the appropriate element in the collection.
-                if (childDef instanceof CollectionDefinition && childName.hasIndexes()) {
-                    CollectionDefinition collectionDef = (CollectionDefinition) childDef;
-                    childDef = collectionDef.getElementReference(context, childName.getArguments(), childName.getIndexes());
-                }
                 int dur = childDef.getDurability();
                 if ((dur == STATIC || dur == GLOBAL) && childDef instanceof AnonymousDefinition) {
                     AnonymousDefinition aDef = (AnonymousDefinition) childDef;
