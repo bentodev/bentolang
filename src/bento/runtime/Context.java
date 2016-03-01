@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("proto")) {
+if (definition.getName().equals("piece_tile") || definition.getName().equals("arg_list") || definition.getName().equals("solid_tile_width")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -1649,6 +1649,10 @@ if (definition.getName().equals("proto")) {
             //List<String>[] keeps = addDynamicKeeps(name, args);
             updateDynamicKeeps(name, args);
 
+if (name.equals("args")) {
+ System.out.println(name + " at ctx 1653");    
+}
+            
             // use indexes as part of the key otherwise a cached element may be confused with a cached array 
             String key = addIndexesToKey(name, indexes);
             topEntry.put(key, nominalDef, nominalArgs, def, args, this, data, resolvedInstance, maxCacheLevels);

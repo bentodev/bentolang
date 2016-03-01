@@ -1763,7 +1763,9 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         } else if (reference instanceof NameNode) {
             NameNode nameNode = getReferenceName();
             String name = nameNode.getName();
-
+if (name.equals("tile_width")) {
+ System.out.println(name + " at Inst 1767");    
+}
             if (localDef != null) {
                 data = instantiate(context, localDef);
 
