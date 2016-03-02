@@ -877,7 +877,9 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("piece_tile") || definition.getName().equals("arg_list") || definition.getName().equals("solid_tile_width")) {
+if (definition.getName().equals("piece_tile")
+        || definition.getName().equals("arg_list")
+        || definition.getName().equals("solid_tile_width")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
