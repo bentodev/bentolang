@@ -803,15 +803,30 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                }
                if (arg instanceof Instantiation) {
                    Instantiation instance = (Instantiation) arg;
+                   int kind = instance.getKind();
+                   NameNode newName = null;
                    if (isParamChild) {
-                       int kind = childOfKind(instance.getKind());
+                       kind = childOfKind(kind);
                        NameNode childName = new ComplexName(name, 1, name.numParts());
-                       name = new ComplexName(instance.getReferenceName(), childName);
+                       newName = new ComplexName(instance.getReferenceName(), childName);
+                   } else if (name.hasIndexes()) {
+                       NameNode argName = instance.getReferenceName();
+                       int numParts = argName.numParts();
+                       if (numParts > 1) {
+                           NameNode newSuffix = new NameWithIndexes(argName.getLastPart().getName(), instance.getArguments(), name.getIndexes());
+                           NameNode newPrefix = new ComplexName(argName, 0, numParts - 1);
+                           newName = new ComplexName(newPrefix, newSuffix);
+                       } else {
+                           newName = new NameWithIndexes(argName.getName(), instance.getArguments(), name.getIndexes());
+                       }
+                   }
+                   
+                   if (newName != null) {
                        Definition instanceOwner = instance.getOwner();
                        if (instanceOwner == null) {
                            instanceOwner = getOwner();
                        }
-                       instance = new Instantiation(name, instanceOwner);
+                       instance = new Instantiation(newName, instanceOwner);
                        instance.setKind(kind);
                    }
                    if (instance != null && instance != this && context.size() > 1) {
