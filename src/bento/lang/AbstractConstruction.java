@@ -381,7 +381,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                     defInCache = holder.def;
                     nominalDefInCache = holder.nominalDef;
                 }
-if (name.equals("tile_width")) {
+if (name.equals("o.b")) {
  System.out.println(name + " at abscon 385");    
 }
             }
@@ -397,8 +397,12 @@ if (name.equals("tile_width")) {
                 // two possbily different cached values for the same object (under two
                 // different names).
                 Object data = null;
-                if (cacheInfo.def != null && def == null) {
-                    def = cacheInfo.def;
+                if (def == null && cacheInfo.def != null) {
+                    if (nominalDefInCache != null && !cacheInfo.def.equalsOrExtends(nominalDefInCache)) {
+                        def = nominalDefInCache;
+                    } else {
+                        def = cacheInfo.def;
+                    }
                 }
                 if ((cacheability & CACHE_RETRIEVABLE) == CACHE_RETRIEVABLE) {
                     if (holder == null || holder.def == null) {
