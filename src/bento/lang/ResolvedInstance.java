@@ -228,7 +228,11 @@ public class ResolvedInstance extends Instantiation { //implements Value {
     }
 
     public Object getData(Context context) throws Redirection {
-        return super.getData(resolutionContext, getDefinition(context));
+        if (isParam || isParamChild) {
+            return resolutionContext.getParameter((NameNode) reference, isContainerParameter(resolutionContext), Object.class);
+        } else {        
+            return super.getData(resolutionContext, getDefinition(context));
+        }
     }
 
     public Object generateData(Context context, Definition def) throws Redirection {
