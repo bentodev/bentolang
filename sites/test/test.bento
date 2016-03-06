@@ -43,8 +43,8 @@ site test [=
                               collection_parse_test, collection_operators_test, collection_utilities_test,
                               compass_layout_test, complex_array_test, conditional_inheritance_test,
                               count_test, corresponding_super_test, dynamic_argument_list_test, 
-                              dynamic_array_test, dynamic_code_block_test, dynamic_keep_test,
-                              dynamic_table_test, 
+                              dynamic_array_test, dynamic_array_element_child_test,
+                              dynamic_code_block_test, dynamic_keep_test, dynamic_table_test, 
                               expression_arg_type_test, external_argument_test, 
                               external_array_parameter_test, external_map_array_test,
                               external_test, higher_order_def_test, indexed_alias_test, insert_test, 
@@ -2481,41 +2481,93 @@ aecat [=
         =]
 	=]
 
+    test_case dynamic_array_element_child_test [=
+        int category = collections
+        name = "Dynamic Array Element Child Test"
+        key = "dynamic_array_element_child"
+    
+        expected = "ABCDEF" 
 
-motest [=
-    mo [=
-       child [| x |]
-    =]
-    
-    mo mosub(c) [=
-        child = c
-    =]
-    
-    modad [=
-        n [| y |]
-    
-        mo[] mos = [ mosub(n) ]
-    =]
-     
-    ro [=
-        enfant [| z |]
-    =]
-    
-    ro rosub(mo momo) [=
-        enfant = momo.child
-    =]
-    
-    rodad(r) [=
-        modad modaddy [=
-            n = r
+        obj [=
+            a = "A"
+            b = "x"
+            c = "x"
+            d = "x"
+            e = "x"
+            f = "x"
         =]
     
-        ro[] ros = [ for mo m in modaddy.mos [= rosub(m) =] ]
+        obj sub_obj [=
+            b = "B"
+        =]
+        
+        obj sub_obj_with_arg(z) [=
+            c = z
+        =]
+        
+        arg [=
+            dd = "D"
+            ee = "z"
+            ff = "z"
+        =]
+        
+        arg arg_with_arg(y) [=
+            ee = y
+        =]
+        
+        arg sub_arg [=
+            ff = "F"
+        =]
+        
+        obj sub_obj_with_arg_with_arg(arg aa) [= 
+            d = aa.dd
+            e = aa.ee
+        =]
+        
+        obj sub_obj_with_local_sub [=
+            arg aa = sub_arg
+            f = aa.ff;
+        =]
+        
+        dynamic item_for_index(obj[] obs, int ix) [=
+            obj o = obs[ix]
+            
+            if (ix == 0) [=
+                o.a;
+            =] else if (ix == 1) [=
+                o.b;
+            =] else if (ix == 2) [=
+                o.c;
+            =] else if (ix == 3) [=
+                o.d;
+            =] else if (ix == 4) [=
+                o.e;
+            =] else if (ix == 5) [=
+                o.f;
+            =] else [=
+                "y";
+            =]
+        =] 
+        
+        obj[] objs = [ obj,
+                       sub_obj, 
+                       sub_obj_with_arg("C"),
+                       sub_obj_with_arg_with_arg(arg),
+                       sub_obj_with_arg_with_arg(arg_with_arg("E")),
+                       sub_obj_with_local_sub
+                     ]
+    
+        items[] = [ for int i from 0 to 6 [=
+                           item_for_index(objs, i),
+                       =]
+                  ]
+                  
+        for item in items [=
+            item;
+        =]
     =]
-    
-    rodad("N").ros[0].enfant;
-=]
-    
+
+   
     test_case dynamic_table_test [=
         int category = collections
         name = "Dynamic Table Test"
