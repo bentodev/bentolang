@@ -727,44 +727,57 @@ public class NamedDefinition extends AnonymousDefinition {
         if (def == null) {
 
 //            AbstractNode contents = getContents();
-//            if (contents instanceof Construction) {
+//            if (context != null && !isAlias() && !isIdentity() && contents instanceof Construction) {
 //                Construction construction = ((Construction) contents).getUltimateConstruction(context);
 //            
-//                if (construction instanceof Instantiation) {
-//                    Definition contentDef = ((Instantiation) construction).getDefinition(context, this);
-//                    ArgumentList contentArgs = null;
-//                    ParameterList contentParams = null;
-//    
-//                    if (contentDef == null || contentDef == this) {
-//                        Type contentType = ((Instantiation) construction).getType(context, this);
-//                        if (contentType != null) {
-//                            contentDef = contentType.getDefinition();
-//                            if (contentDef != null) {
-//                                contentArgs = ((Instantiation) construction).getArguments(); // contentType.getArguments(context);
-//                                contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
+//                if (construction instanceof Instantiation && !((Instantiation) construction).isParameterKind()) {
+//                    Instantiation instance = (Instantiation) construction;
+//                    NameNode contentsName = instance.getReferenceName();
+//                    if (!node.equals(contentsName)) {
+//                        Definition contentDef = instance.getDefinition(context, this);
+//                        ArgumentList contentArgs = null;
+//                        ParameterList contentParams = null;
+//        
+//                        if (contentDef == null || contentDef == this) {
+//                            Type contentType = ((Instantiation) construction).getType(context, this);
+//                            if (contentType != null) {
+//                                contentDef = contentType.getDefinition();
+//                                if (contentDef != null) {
+//                                    contentArgs = ((Instantiation) construction).getArguments(); // contentType.getArguments(context);
+//                                    contentParams = contentDef.getParamsForArgs(contentArgs, context, false);
+//                                }
+//                            }
+//                        }
+//        
+//                        if (contentDef != null) {
+//                            try {
+//                                context.push(contentDef, contentParams, contentArgs, false);
+//                                DefinitionInstance defInstance = (DefinitionInstance) context.getDescendant(contentDef, contentArgs, node, false, null);
+//                                if (defInstance != null) {
+//                                    def = defInstance.def;
+//                                }
+//                            } catch (Redirection r) {
+//                                ;
+//                            } finally {
+//                                context.pop();
 //                            }
 //                        }
 //                    }
-//    
-//                    if (contentDef != null) {
-//                        try {
-//                            context.push(contentDef, contentParams, contentArgs, false);
-//                            DefinitionInstance defInstance = (DefinitionInstance) context.getDescendant(contentDef, contentArgs, node, false, null);
-//                            if (defInstance != null) {
-//                                def = defInstance.def;
-//                            }
-//                        } catch (Redirection r) {
-//                            ;
-//                        } finally {
-//                            context.pop();
-//                        }
-//                    }
-//                } else  {
+//                } else {
 //                    Type type = construction.getType(context, this);
-//                    if (type != null) {
+//                    if (type != null && type != DefaultType.TYPE && !type.isPrimitive() && !type.equals(getType())) {
 //                        Definition runtimeDef = type.getDefinition();
-//                        if (runtimeDef != null && !runtimeDef.equals(this) && runtimeDef.canHaveChildDefinitions()) {
-//                            def = runtimeDef.getChildDefinition(node, context);
+//                        if (runtimeDef != null && !runtimeDef.equals(this) && runtimeDef.getName() != Name.THIS && runtimeDef.canHaveChildDefinitions()) {
+//                            ArgumentList typeArgs = type.getArguments(context);
+//                            ParameterList typeParams = runtimeDef.getParamsForArgs(typeArgs, context, false);
+//                            try {
+//                                context.push(runtimeDef, typeParams, typeArgs, false);
+//                                def = runtimeDef.getChildDefinition(node, context);
+//                            } catch (Redirection r) {
+//                                ;
+//                            } finally {
+//                                context.pop();
+//                            }
 //                        }
 //                    }
 //                }
