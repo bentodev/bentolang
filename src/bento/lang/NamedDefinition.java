@@ -1508,7 +1508,7 @@ public class NamedDefinition extends AnonymousDefinition {
             // which means that if there are multiple super definitions it may not pick the right one.
             if (trySuper) {
                 NamedDefinition nd = getSuperDefinition();
-                if (nd != null) {
+                if (nd != null && (isCollection() == nd.isCollection())) {
                     Type st = getSuper(context);
                     ArgumentList superArgs = st.getArguments(context);
                     // if one of the super arguments is the name we're looking for, avoid
