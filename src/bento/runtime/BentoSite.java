@@ -586,16 +586,19 @@ public class BentoSite extends BentoDomain {
                     if (element instanceof Value) {
                         element = ((Value) element).getValue();
                     }
-                    if (isCollection(element)) {
-                        sb.append(getStringForCollection(element));
-                    } else if (element instanceof Number) {
-                        sb.append(element.toString());
-                    } else {
-                        sb.append('"');
-                        String str = element.toString();
-                        sb.append(str.replace("\"", "\\\""));
-                        sb.append('"');
+                    if (element != null) {
+                        if (isCollection(element)) {
+                            sb.append(getStringForCollection(element));
+                        } else if (element instanceof Number) {
+                            sb.append(element.toString());
+                        } else {
+                            sb.append('"');
+                            String str = element.toString();
+                            sb.append(str.replace("\"", "\\\""));
+                            sb.append('"');
+                        }
                     }
+
                     if (it.hasNext()) {
                         sb.append(", ");
                     }
