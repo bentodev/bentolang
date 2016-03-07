@@ -2,7 +2,7 @@
  *
  * $Id: ResolvedInstance.java,v 1.39 2015/06/19 13:20:04 sthippo Exp $
  *
- * Copyright (c) 2003-2015 by bentodev.org
+ * Copyright (c) 2003-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -228,11 +228,11 @@ public class ResolvedInstance extends Instantiation { //implements Value {
     }
 
     public Object getData(Context context) throws Redirection {
-        if (isParam || isParamChild) {
-            return resolutionContext.getParameter((NameNode) reference, isContainerParameter(resolutionContext), Object.class);
-        } else {        
+        //if (isParam || isParamChild) {
+        //    return resolutionContext.getParameter((NameNode) reference, isContainerParameter(resolutionContext), Object.class);
+        //} else {        
             return super.getData(resolutionContext, getDefinition(context));
-        }
+        //}
     }
 
     public Object generateData(Context context, Definition def) throws Redirection {

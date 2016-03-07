@@ -1238,7 +1238,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
     
     
             // container local
-            ComplexDefinition container = ComplexDefinition.getComplexOwner(owner.getOwner());
+            //ComplexDefinition container = ComplexDefinition.getComplexOwner(owner.getOwner());
+            NamedDefinition container = (NamedDefinition) owner.getOwner();
     
             // if the container is at the site level, we handle it a little differently
             while (container != null  && !(container instanceof Site)) {
@@ -1263,18 +1264,16 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                             Instantiation aliasInstance = ndef.getAliasInstance();
                             ndef = (NamedDefinition) aliasInstance.getDefinition(context);
                         }
-                    
-                        if (ndef instanceof ComplexDefinition) {
-                            container = (ComplexDefinition) ndef;
-                            break;
-                        }
+                        container = ndef;
+                        break;
                     }
                 }
                 def = container.getChildDefinition(name, context);
                 if (def != null) {
                     break;
                 }
-                container = ComplexDefinition.getComplexOwner(container.getOwner());
+                //container = ComplexDefinition.getComplexOwner(container.getOwner());
+                container = (NamedDefinition) container.getOwner();
             }
             
             if (def == null && container instanceof Site) {
@@ -1308,7 +1307,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
             // 6. container superclass
             if (def == null) {
                 container = ComplexDefinition.getComplexOwner(owner.getOwner());
-                while (def == null && container != null) {
+                while (def == null && container != null && !(container instanceof Site)) {
                     Iterator<Context.Entry> it = context.iterator();
                     while (it.hasNext()) {
                         Context.Entry entry = it.next();
