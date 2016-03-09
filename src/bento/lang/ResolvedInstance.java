@@ -24,6 +24,7 @@ import java.util.*;
 public class ResolvedInstance extends Instantiation { //implements Value {
 
     private Context resolutionContext;
+    private boolean sharedContext = false;
     private Object data;
     private Definition def;
 
@@ -73,6 +74,7 @@ public class ResolvedInstance extends Instantiation { //implements Value {
     
     public ResolvedInstance(Definition def, Context context, ArgumentList args, List<Index> indexes) throws Redirection {
         super(def, args, indexes);
+        sharedContext = false;
         if (def instanceof BoundDefinition) {
             resolutionContext = ((BoundDefinition) def).getBoundContext();
         } else {
@@ -98,39 +100,11 @@ public class ResolvedInstance extends Instantiation { //implements Value {
     }
 
 
-    public ResolvedInstance(ResolvedInstance instance) {
-        super();
-        resolutionContext = instance.getResolutionContext();
-        data = instance.getValue();
-        def = instance.def;
-        owner = instance.owner;
-        parent = instance.parent;
-        children = instance.children;
-        firstToken = instance.firstToken;
-        lastToken = instance.lastToken;
-        is_dynamic = instance.is_dynamic;
-        is_static = instance.is_static;
-        localDef = instance.localDef;
-        explicitDef = instance.explicitDef;
-        classDef = instance.classDef;
-        externalDef = instance.externalDef;
-        isParam = instance.isParam;
-        isParamChild = instance.isParamChild;
-        kind = instance.kind;
-        reference = instance.reference;
-        trailingDelimiter = instance.trailingDelimiter;
-        args = instance.args;
-        indexes = instance.indexes;
-    }
-
-
-//    public ResolvedInstance(Instantiation instance, Context context) {
-//        this(instance, context, false);
-//    }
-
     public ResolvedInstance(Instantiation instance, Context context, boolean shared) {
         super();
 
+        sharedContext = shared;
+        
         // make a writeable clone unless shared flag is true
         resolutionContext = shared ? context : context.clone(false);
         data = null;
