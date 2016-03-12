@@ -139,8 +139,8 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                 } else {
                     resolvedInstance = new ResolvedArray(collectionDef, context, instance.getArguments(), instance.getIndexes());
                 }
-            } else if (instance.isParameterKind()) {
-                resolvedInstance = (ResolvedInstance) context.getParameter(instance.getReferenceName(), instance.isContainerParameter(context), ResolvedInstance.class);
+            } else if (instance.isContainerParameter(context)) {
+                resolvedInstance = (ResolvedInstance) context.getParameter(instance.getReferenceName(), true, ResolvedInstance.class);
             } else {
                 resolvedInstance = new ResolvedInstance(instance, context, shareContext);
             }
