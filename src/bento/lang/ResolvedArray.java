@@ -2,7 +2,7 @@
  *
  * ResolvedArray.java
  *
- * Copyright (c) 2015 by bentodev.org
+ * Copyright (c) 2015-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -361,6 +361,26 @@ class ResolvedArray extends ResolvedCollection {
         }
     }
 
+    /** If the collection has been resolved, return a ResolvedInstance representing the element. 
+     */
+    public ResolvedInstance getResolvedElement(Index index, Context context) {
+        if (context == null) {
+            context = getResolutionContext();
+        }
+        
+        if (index instanceof ArrayIndex) {
+            int ix = index.getIndexValue(context).getInt();
+            Object element = (ix >= 0 && ix < array.getSize() ? array.get(ix) : null);
+            if (element instanceof ResolvedInstance) {
+                return (ResolvedInstance) element;
+            }
+        } else {
+            throw new IllegalArgumentException("Unspported index type: " + index.getClass().getName());
+        }
+        
+        return null;
+    }
+    
     public int getSize() {
         if (array != null) {
             return array.getSize();

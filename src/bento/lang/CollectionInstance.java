@@ -2,7 +2,7 @@
  *
  * $Id: CollectionInstance.java,v 1.9 2012/06/01 12:56:15 sthippo Exp $
  *
- * Copyright (c) 2004-2011 by bentodev.org
+ * Copyright (c) 2004-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -44,6 +44,10 @@ public interface CollectionInstance {
 
     public Definition getElement(Index index, Context context);
 
+    /** If the collection has been resolved, return a ResolvedInstance representing the element. 
+     */
+    public ResolvedInstance getResolvedElement(Index index, Context context);
+    
     /** For a growable collection, adds an element to the collection.  Throws
      *  an UnsupportedOperationException on a fixed collection.
      */

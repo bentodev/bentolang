@@ -98,6 +98,8 @@ abstract public class ResolvedCollection extends ResolvedInstance implements Col
     abstract public Iterator<Construction> constructionIterator();
     abstract public Iterator<Index> indexIterator();
     abstract public Definition getElement(Index index, Context context);
+    abstract public ResolvedInstance getResolvedElement(Index index, Context context);
+
     /** For a growable collection, adds an element to the collection.  Throws
      *  an UnsupportedOperationException on a fixed collection.
      */

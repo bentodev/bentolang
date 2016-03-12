@@ -2,7 +2,7 @@
  *
  * $Id: Database.java,v 1.91 2015/06/09 13:15:29 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -321,6 +321,31 @@ public class Database {
                 element = recs.get(key);
             }
             return getElementDefinition(element);
+        }
+
+        /** If the collection has been resolved, return a ResolvedInstance representing the element. 
+         */
+        public ResolvedInstance getResolvedElement(Index index, Context context) {
+            Object element = null;
+            if (context == null) {
+                context = getResolutionContext();
+            }
+            
+            if (index instanceof ArrayIndex) {
+                int i = index.getIndexValue(context).getInt();
+                Object[] keys = recs.keySet().toArray();
+                Arrays.sort(keys);
+                element = recs.get(keys[i]);
+            } else {
+                String key = index.getIndexValue(context).getString();
+                element = recs.get(key);
+            }
+            
+            if (element instanceof ResolvedInstance) {
+                return (ResolvedInstance) element;
+            } else {
+                return null;
+            }
         }
 
         public int getSize() {

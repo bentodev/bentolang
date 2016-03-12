@@ -2,7 +2,7 @@
  *
  * $Id: IndexedInstanceReference.java,v 1.10 2015/04/06 13:52:55 sthippo Exp $
  *
- * Copyright (c) 2012-2015 by bentodev.org
+ * Copyright (c) 2012-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html

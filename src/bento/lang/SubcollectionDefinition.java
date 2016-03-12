@@ -2,7 +2,7 @@
  *
  * $Id: SubcollectionDefinition.java,v 1.25 2014/11/01 19:49:43 sthippo Exp $
  *
- * Copyright (c) 2002-2014 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -307,6 +307,10 @@ public class SubcollectionDefinition extends CollectionDefinition {
             return superInstance.getElement(index, context);
         }
 
+        public ResolvedInstance getResolvedElement(Index index, Context context) {
+            return null;
+        }
+        
         public class ReconciledIterator implements Iterator<Definition> {
             Iterator<Index> indexIt;
 

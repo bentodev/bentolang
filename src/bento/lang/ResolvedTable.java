@@ -2,7 +2,7 @@
  *
  * ResolvedTable.java
  *
- * Copyright (c) 2015 by bentodev.org
+ * Copyright (c) 2015-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -208,6 +208,31 @@ class ResolvedTable extends ResolvedCollection {
             return table.get(key);
         }
         
+    }
+
+    /** If the collection has been resolved, return a ResolvedInstance representing the element. 
+     */
+    public ResolvedInstance getResolvedElement(Index index, Context context) {
+        Object element = null;
+        if (context == null) {
+            context = getResolutionContext();
+        }
+        
+        if (index instanceof ArrayIndex) {
+            int i = index.getIndexValue(context).getInt();
+            Object[] keys = table.keySet().toArray();
+            Arrays.sort(keys);
+            element = getElement(keys[i]);
+        } else {
+            String key = index.getIndexValue(context).getString();
+            element = getElement(key);
+        }
+        
+        if (element instanceof ResolvedInstance) {
+            return (ResolvedInstance) element;
+        } else {
+            return null;
+        }
     }
 
     public int getSize() {

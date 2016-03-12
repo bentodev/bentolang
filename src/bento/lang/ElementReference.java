@@ -2,7 +2,7 @@
  *
  * $Id: ElementReference.java,v 1.48 2015/06/23 13:06:18 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -114,6 +114,11 @@ public class ElementReference extends AnonymousDefinition {
     }
 
     protected Object construct(Context context, ArgumentList args, List<Index> indexes) throws Redirection {
+        ResolvedInstance ri = getResolvedElement(context);
+        if (ri != null) {
+            return ri.generateData();
+        }
+        
         Definition def = getElementDefinition(context);
         if (def == null) {
             return null;
@@ -220,6 +225,38 @@ public class ElementReference extends AnonymousDefinition {
             }
         }
         return def;
+    }
+
+    public ResolvedInstance getResolvedElement(Context context) throws Redirection {
+        Definition def = null;
+        Iterator<Index> it = indexes.iterator();
+        CollectionInstance coll = collection;
+        Index index = it.hasNext() ? it.next() : null;
+        while (index != null) {
+            if (it.hasNext()) {
+                def = coll.getElement(index, context);
+                index = it.next();
+                if (def instanceof ElementDefinition) {
+                    Object obj = ((ElementDefinition) def).getElement(context);
+                    coll = getCollectionInstanceFor(context, obj, index);
+                } else if (def instanceof CollectionDefinition) {
+                    // this isn't ideal
+                    ResolvedCollection rc = (ResolvedCollection) coll;
+                    coll = ((CollectionDefinition) def).getCollectionInstance(rc.getResolutionContext(), rc.getArguments(), rc.getIndexes());
+                } else if (def == null){
+                    throw new IndexOutOfBoundsException("Null element in multidimensional ElementReference");
+                } else {
+                    throw new ClassCastException("Bad definition type for collection");
+                }
+                if (coll == null) {
+                    log("Null collection in multidimensional ElementReference");
+                    break;
+                }
+            } else {
+                return coll.getResolvedElement(index, context);
+            }
+        }
+        return null;
     }
 
     private CollectionInstance getCollectionInstanceFor(Context context, Object obj, Index index) throws Redirection {
