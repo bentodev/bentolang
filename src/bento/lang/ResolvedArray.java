@@ -279,94 +279,86 @@ class ResolvedArray extends ResolvedCollection {
             context = getResolutionContext();
         }
 
-//        ArgumentList args = getArguments();
-//        ParameterList params = def.getParamsForArgs(args, context);
-//        context.push(def, params, args);
-//        try {
+        // If the index is a regular array index, get its value as
+        // an int and return a definition for the element at that
+        // position in the array.  If the index is a table index,
+        // do a search for an element containing the table index's
+        // key value.  If found, return the index of the string in
+        // the array as an integer value; if not found, return -1 as
+        // an integer value.
 
-            // If the index is a regular array index, get its value as
-            // an int and return a definition for the element at that
-            // position in the array.  If the index is a table index,
-            // do a search for an element containing the table index's
-            // key value.  If found, return the index of the string in
-            // the array as an integer value; if not found, return -1 as
-            // an integer value.
+        if (index instanceof ArrayIndex) {
+            int ix = index.getIndexValue(context).getInt();
+            Object element = (ix >= 0 && ix < array.getSize() ? array.get(ix) : null);
+            return getElementDefinition(element);
 
-            if (index instanceof ArrayIndex) {
-                int ix = index.getIndexValue(context).getInt();
-                Object element = (ix >= 0 && ix < array.getSize() ? array.get(ix) : null);
-                return getElementDefinition(element);
+        } else if (index instanceof TableIndex) {
+            // retrieve the element which matches the index key value.  There
+            // are two ways an element can match the key:
+            //
+            // -- if the element is a definition which owns a child named "key"
+            //    compare its instantiated string value to the index key
+            //
+            // -- if the element doesn't have such a "key" field, compare the
+            //    string value of the element itself to the index key.
 
-            } else if (index instanceof TableIndex) {
-                // retrieve the element which matches the index key value.  There
-                // are two ways an element can match the key:
-                //
-                // -- if the element is a definition which owns a child named "key"
-                //    compare its instantiated string value to the index key
-                //
-                // -- if the element doesn't have such a "key" field, compare the
-                //    string value of the element itself to the index key.
+            String key = index.getIndexValue(context).getString();
 
-                String key = index.getIndexValue(context).getString();
+            if (key == null) {
+                return null;
+            }
+            NameNode keyName = new NameNode("key");
+            int size = array.getSize();
+            for (int i = 0; i < size; i++) {
+                Object element = array.get(i);
+                Object object = null;
 
-                if (key == null) {
-                    return null;
-                }
-                NameNode keyName = new NameNode("key");
-                int size = array.getSize();
-                for (int i = 0; i < size; i++) {
-                    Object element = array.get(i);
-                    Object object = null;
-
-                    try {
-                        if (element instanceof Definition) {
-                            Definition keyDef = ((Definition) element).getChildDefinition(keyName, context);
-                            if (keyDef != null) {
-                                object = context.construct(keyDef, null);
-                                if (object == null) {
-                                    // null key, can't match
-                                    continue;
-                                }
-                            }
-                        }
-
-                        if (object == null) {
-                            object = collectionDef.getObjectForElement(element);
+                try {
+                    if (element instanceof Definition) {
+                        Definition keyDef = ((Definition) element).getChildDefinition(keyName, context);
+                        if (keyDef != null) {
+                            object = context.construct(keyDef, null);
                             if (object == null) {
+                                // null key, can't match
                                 continue;
                             }
                         }
-
-                        String elementKey;
-                        if (object instanceof String) {
-                            elementKey = (String) object;
-                        } else if (object instanceof Value) {
-                            elementKey = ((Value) object).getString();
-                        } else if (object instanceof Chunk) {
-                            elementKey = ((Chunk) object).getText(context);
-                        } else if (object instanceof ValueGenerator) {
-                            elementKey = ((ValueGenerator) object).getString(context);
-                        } else {
-                            elementKey = object.toString();
-                        }
-
-                        if (key.equals(elementKey)) {
-                            return getElementDefinition(new Integer(i));
-                        }
-
-                    } catch (Redirection r) {
-                        // don't redirect, we're only checking
-                        continue;
                     }
-                }
-                return getElementDefinition(new Integer(-1));
 
-            } else {
-                throw new IllegalArgumentException("Unknown index type: " + index.getClass().getName());
+                    if (object == null) {
+                        object = collectionDef.getObjectForElement(element);
+                        if (object == null) {
+                            continue;
+                        }
+                    }
+
+                    String elementKey;
+                    if (object instanceof String) {
+                        elementKey = (String) object;
+                    } else if (object instanceof Value) {
+                        elementKey = ((Value) object).getString();
+                    } else if (object instanceof Chunk) {
+                        elementKey = ((Chunk) object).getText(context);
+                    } else if (object instanceof ValueGenerator) {
+                        elementKey = ((ValueGenerator) object).getString(context);
+                    } else {
+                        elementKey = object.toString();
+                    }
+
+                    if (key.equals(elementKey)) {
+                        return getElementDefinition(new Integer(i));
+                    }
+
+                } catch (Redirection r) {
+                    // don't redirect, we're only checking
+                    continue;
+                }
             }
-//        } finally {
-//            context.unpush();
-//        }
+            return getElementDefinition(new Integer(-1));
+
+        } else {
+            throw new IllegalArgumentException("Unknown index type: " + index.getClass().getName());
+        }
     }
 
     public int getSize() {
