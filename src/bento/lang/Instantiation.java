@@ -1239,6 +1239,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
     
             // container local
             //ComplexDefinition container = ComplexDefinition.getComplexOwner(owner.getOwner());
+            // don't need to call getOwnerInContext here because in the loop that follows
+            // we find the subdefinition on the stack
             NamedDefinition container = (NamedDefinition) owner.getOwner();
     
             // if the container is at the site level, we handle it a little differently
@@ -1255,25 +1257,27 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                     if (ndef.equals(owner) || owner.isSubDefinition(ndef)) {
                         continue;    
 
-                    } else if (ndef.equals(container)) {
-                        break;
-
-                    } else if (container.isSubDefinition(ndef)) {
-                    
+                    } else if (ndef.equals(container) || container.isSubDefinition(ndef)) {
                         if (ndef.isAlias()) {
                             Instantiation aliasInstance = ndef.getAliasInstance();
                             ndef = (NamedDefinition) aliasInstance.getDefinition(context);
+                        } else if (ndef.isIdentity()) {
+                            Holder holder = entry.getDefHolder(ndef.getName(), ndef.getFullName(), null, false);
+                            if (holder != null && holder.def != null) {
+                                ndef = (NamedDefinition) holder.def;
+                            }
                         }
                         container = ndef;
                         break;
                     }
                 }
+                
                 def = container.getChildDefinition(name, context);
                 if (def != null) {
                     break;
                 }
                 //container = ComplexDefinition.getComplexOwner(container.getOwner());
-                container = (NamedDefinition) container.getOwner();
+                container = (NamedDefinition) container.getOwnerInContext(context);
             }
             
             if (def == null && container instanceof Site) {
@@ -1777,7 +1781,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         } else if (reference instanceof NameNode) {
             NameNode nameNode = getReferenceName();
             String name = nameNode.getName();
-if (name.equals("tile_width")) {
+if (name.equals("tile_depth")) {
  System.out.println(name + " at Inst 1767");    
 }
             if (localDef != null) {

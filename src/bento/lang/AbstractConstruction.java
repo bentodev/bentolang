@@ -139,6 +139,8 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                 } else {
                     resolvedInstance = new ResolvedArray(collectionDef, context, instance.getArguments(), instance.getIndexes());
                 }
+            } else if (instance.isParameterKind()) {
+                resolvedInstance = (ResolvedInstance) context.getParameter(instance.getReferenceName(), instance.isContainerParameter(context), ResolvedInstance.class);
             } else {
                 resolvedInstance = new ResolvedInstance(instance, context, shareContext);
             }
@@ -381,7 +383,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                     defInCache = holder.def;
                     nominalDefInCache = holder.nominalDef;
                 }
-if (name.equals("tile_width")) {
+if (name.equals("tile_depth")) {
  System.out.println(name + " at abscon 385");    
 }
             }

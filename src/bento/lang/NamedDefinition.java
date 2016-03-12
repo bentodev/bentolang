@@ -1370,8 +1370,17 @@ public class NamedDefinition extends AnonymousDefinition {
                         prefixParams = prefixDef.getParamsForArgs(prefixArgs, context);
                         prefixIndexes = null;
                     }
-                }
+                } 
                 if (prefixDef != null) {
+                    
+                    if (prefixDef.isIdentity()) {
+                        Holder holder = context.peek().getDefHolder(prefixDef.getName(), prefixDef.getFullName(), null, false);
+                        if (holder != null && holder.def != null) {
+                            prefixDef = (NamedDefinition) holder.def;
+                            prefixArgs = holder.args;
+                        }
+                    }                    
+                    
                     try {
                         context.push(prefixDef, prefixParams, prefixArgs);
                         

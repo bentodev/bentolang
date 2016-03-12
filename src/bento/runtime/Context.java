@@ -879,8 +879,9 @@ public class Context {
         if (!definition.isAnonymous() && !definition.isExternal()) {
 if (definition.getName().equals("piece_tile")
         || definition.getName().equals("arg_list")
-        || definition.getName().equals("solid_tile_width")) {
- System.out.println(definition.getName() + " at ctx 881");    
+        || definition.getName().equals("tile_depth")) {
+ Definition owner = definition.getOwnerInContext(this);    
+ System.out.println(definition.getName() + " at ctx 881, owner in context: " + owner.getName());    
 }
             // get the arguments and parameters, if any, to push on the
             // context stack with the definition
@@ -1651,10 +1652,6 @@ if (definition.getName().equals("piece_tile")
             //List<String>[] keeps = addDynamicKeeps(name, args);
             updateDynamicKeeps(name, args);
 
-if (name.equals("args")) {
- System.out.println(name + " at ctx 1653");    
-}
-            
             // use indexes as part of the key otherwise a cached element may be confused with a cached array 
             String key = addIndexesToKey(name, indexes);
             topEntry.put(key, nominalDef, nominalArgs, def, args, this, data, resolvedInstance, maxCacheLevels);
@@ -3327,6 +3324,8 @@ if (name.equals("args")) {
                 }
             } else if (returnClass == Definition.class) {
                 return argDef;
+            } else if (returnClass == ResolvedInstance.class) {
+                return new ResolvedInstance(argDef, this, argArgs, null);
             } else {
                 Object data = (argDef == null ? null : construct(argDef, argArgs));
                 if (data == null) {
