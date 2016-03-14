@@ -874,6 +874,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         NameNode restOfName = null;
         List<Index> indexes = getIndexes();
         ArgumentList args = getArguments();
+        List<Index> prefixIndexes = null;
+        ArgumentList prefixArgs = null;
  
         NamedDefinition owner = (NamedDefinition) getOwner().getSubdefInContext(context);
 
@@ -915,6 +917,10 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
 
             if (def == null) {
                 int n = name.numParts();
+                
+                if (n == 1) {
+                    prefixArgs = args;
+                    prefixIndexes = indexes;
     
                 // if this is a multipart name, only look up the first part, then
                 // resolve the rest directly using the found definition.  But since
@@ -923,7 +929,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                 // also look up the explicit or external definition, if one exists.
                 // This will  be overridden by any definition discovered through the
                 // standard process, but will take effect if no such definition exists.
-                if (n > 1) {
+
+                } else {
                     DefinitionTable definitions = getComplexOwner().getDefinitionTable();
                     def = definitions.getDefinition(null, name);
                     if (def != null) {
@@ -939,21 +946,21 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                             ComplexName prefix = new ComplexName(name, 0, np);
                             restOfName = new ComplexName(name, np, n);
                             nm = prefix.getName();
-                            indexes = prefix.getIndexes();
-                            args = prefix.getArguments();
-                            if (indexes == null) {
-                                holder = context.getDefHolder(nm, null, args, indexes, false);
+                            prefixIndexes = prefix.getIndexes();
+                            prefixArgs = prefix.getArguments();
+                            if (prefixIndexes == null) {
+                                holder = context.getDefHolder(nm, null, prefixArgs, prefixIndexes, false);
                                 if (holder != null && holder.nominalDef != null && !holder.nominalDef.equals(context.getDefiningDef())) {
                                     def = holder.nominalDef;
                                     if (holder.nominalDef.getDurability() != Definition.DYNAMIC && !((BentoNode) holder.nominalDef).isDynamic() && (args == null || !args.isDynamic())) {
                                         if (holder.data != null && holder.data != UNDEFINED) {
                                             data = holder.data;
                                         }
-                                        if (args == null && (holder.nominalArgs != null || holder.args != null)) {
-                                            args = (holder.nominalArgs != null ? holder.nominalArgs : holder.args);
-                                            if (args.isDynamic()) {
-                                                args = new ArgumentList(args);
-                                                args.setDynamic(false);
+                                        if (prefixArgs == null && (holder.nominalArgs != null || holder.args != null)) {
+                                            prefixArgs = (holder.nominalArgs != null ? holder.nominalArgs : holder.args);
+                                            if (prefixArgs.isDynamic()) {
+                                                prefixArgs = new ArgumentList(prefixArgs);
+                                                prefixArgs.setDynamic(false);
                                             }
                                         }
                                         if (holder.resolvedInstance != null) {
@@ -976,8 +983,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                         if (def == null) {
                             restOfName = new ComplexName(name, 1, n);
                             name = name.getFirstPart();
-                            indexes = name.getIndexes();
-                            args = name.getArguments();
+                            prefixIndexes = name.getIndexes();
+                            prefixArgs = name.getArguments();
                         }
                         
                         
@@ -1041,7 +1048,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
 //                }
 //            }
             if (def == null) {
-                def = lookupDef(name, indexes, getParent(), owner, classDef, context, resolver);
+                def = lookupDef(name, prefixIndexes, getParent(), owner, classDef, context, resolver);
                 dereferencedIndexes = true;
                 if (def == null) {
                     return (generate ? UNDEFINED : null);
@@ -1053,7 +1060,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
             // to be able to override external definitions
             if (restOfName != null) {
                 if (indexes != null && !dereferencedIndexes) {
-                    def = context.dereference(def, args, indexes);
+                    def = context.dereference(def, prefixArgs, prefixIndexes);
                     indexes = null;
                 }
                 if (numPushes > 0) {
@@ -1072,14 +1079,14 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
 //                    parentObj = ((ExternalDefinition) def).getObject();
 //                }
                 if (!generate) {
-                    DefinitionInstance defInstance = (DefinitionInstance) resolutionContext.getDescendant(def, args, restOfName, false, parentObj);
+                    DefinitionInstance defInstance = (DefinitionInstance) resolutionContext.getDescendant(def, prefixArgs, restOfName, false, parentObj);
                     return (defInstance == null ? null : defInstance.def);
                     
                 } else {
                     int numResContextPushes = 0;
                     try {
                         //numResContextPushes += resolutionContext.pushParts(name, name.numParts(), getOwner());
-                        return resolutionContext.getDescendant(def, args, restOfName, true, parentObj);
+                        return resolutionContext.getDescendant(def, prefixArgs, restOfName, true, parentObj);
                     } finally {
                         while (numResContextPushes-- > 0) {
                             resolutionContext.pop();

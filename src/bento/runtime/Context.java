@@ -877,11 +877,8 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("piece_tile")
-        || definition.getName().equals("arg_list")
-        || definition.getName().equals("tile_depth")) {
- Definition owner = definition.getOwnerInContext(this);    
- System.out.println(definition.getName() + " at ctx 881, owner in context: " + owner.getName());    
+if (definition.getName().equals("next_frame")) {
+ System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
             // context stack with the definition
@@ -2690,7 +2687,7 @@ if (definition.getName().equals("piece_tile")
             Definition elementDef = ((ElementReference) def).getElementDefinition(this);
             if (elementDef instanceof ElementDefinition) {
                 // might have to fix the args and parentArgs here
-                return ((ElementDefinition) elementDef).getChild(name, args, null, null, this, generate, true, parentObj, null); 
+                return ((ElementDefinition) elementDef).getChild(name, name.getArguments(), null, null, this, generate, true, parentObj, null); 
             }
         }
 

@@ -45,6 +45,9 @@ public class ResolvedInstance extends Instantiation { //implements Value {
                 }
                 ResolvedInstance ri = new ResolvedInstance(argInstance, sharedContext, true);
                 resolvedArgs.set(i, ri);
+            } else if (arg instanceof Expression) {
+                arg = ((Expression) arg).resolveExpression(sharedContext);
+                resolvedArgs.set(i,  arg);
             }
         }
         

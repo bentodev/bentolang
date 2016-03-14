@@ -1563,7 +1563,7 @@ public class NamedDefinition extends AnonymousDefinition {
                         ParameterList superParams = nd.getParamsForArgs(superArgs, context, false);
                         context.push(instantiatedDef, superParams, superArgs, false);
                         try {
-                            Object child = nd.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
+                            Object child = nd.getChild(node, args, indexes, superArgs, context, generate, trySuper, parentObj, resolver);
                             if ((!generate && child != null) || (generate && child != UNDEFINED)) {
                                 return child;
                             }
