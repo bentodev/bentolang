@@ -408,6 +408,9 @@ public class AnonymousDefinition extends BentoStatement implements Definition {
                 return name;
             }
             Definition contextDef = owner.getSubdefInContext(context);
+            if (this.equals(contextDef)) {
+                return getFullName();
+            }
             String ownerName = contextDef.getFullNameInContext(context);
             if (ownerName != null && ownerName.length() > 0) {
                 name = ownerName + '.' + name;

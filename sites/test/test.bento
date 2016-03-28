@@ -57,7 +57,7 @@ site test [=
                               nested_parameter_test, 
                               object_child_test, over_inheritance_test, owner_type_test,
                               parameter_test, parameter_child_array_test,
-                              passed_cache_test, recursion_test,
+                              passed_cache_test, recursion_test, recursive_dynamic_array_test,
                               redirection_test, return_type_test, self_referential_update_test,
                               serialization_test, simple_inheritance_test, simple_insert_test,
                               simple_instantiation_test, sort_test, special_names_test, super_in_sub_test, 
@@ -2567,7 +2567,44 @@ aecat [=
         =]
     =]
 
-   
+    test_case recursive_dynamic_array_test [=    
+        int category = collections
+        name = "Recursive Dynamic Array Test"
+        key = "recursive_dynamic_array"
+    
+        expected = "ABCDE" 
+
+        base_obj [=
+            base_obj[] child_objs = []
+            
+            dynamic base_obj[] all_desc_objs = [
+                    for base_obj bo in child_objs [=
+                        bo,
+                        for base_obj bbo in bo.all_desc_objs [=
+                           bbo
+                        =]
+                    =]
+                ]
+
+            type;
+        =]
+        
+        base_obj A [/]
+        base_obj B [=
+            base_obj[] child_objs = [ C, D ]
+        =]
+        base_obj C [/]
+        base_obj D [/]
+        base_obj E [/]
+        base_obj mom [=
+            base_obj[] child_objs = [ A, B, E ]
+        =]
+        
+        for base_obj o in mom.all_desc_objs [=
+            o;
+        =]
+    =]
+
     test_case dynamic_table_test [=
         int category = collections
         name = "Dynamic Table Test"
@@ -7345,5 +7382,4 @@ tlm [=
             sp;
         =]
     =]
-    
 =]
