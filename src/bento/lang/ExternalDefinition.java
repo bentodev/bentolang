@@ -2,7 +2,7 @@
  *
  * $Id: ExternalDefinition.java,v 1.163 2015/06/09 13:15:28 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -1375,15 +1375,16 @@ class MethodDefinition extends ExternalDefinition {
     
     public Object getChild(NameNode node, ArgumentList args, List<Index> indexes, ArgumentList parentArgs, Context argContext, boolean generate, boolean trySuper, Object parentObj, Definition resolver) throws Redirection {
         if (parentObj == null && generate == true) {
-            Class<?> c = getExternalClass(argContext);
-            if (ResolvedInstance.class.isAssignableFrom(c)) {
-                ExternalConstruction construction = (ExternalConstruction) getContents();
-                if (construction != null) {
-                    parentObj = construction.generateData(argContext, this);
-                }
+            ExternalConstruction construction = (ExternalConstruction) getContents();
+            if (construction != null) {
+                parentObj = construction.generateData(argContext, this);
             }
         }
-        return super.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj, resolver);
+        if (parentObj instanceof BentoObjectWrapper) {
+            return ((BentoObjectWrapper) parentObj).getChild(node, args, indexes, parentArgs, generate, trySuper, null, resolver);
+        } else {
+            return super.getChild(node, args, indexes, parentArgs, argContext, generate, trySuper, parentObj, resolver);
+        }
     }
     
     

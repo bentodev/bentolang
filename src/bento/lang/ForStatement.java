@@ -2,7 +2,7 @@
  *
  * $Id: ForStatement.java,v 1.51 2015/06/01 12:58:56 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -12,7 +12,6 @@ package bento.lang;
 
 import bento.runtime.BentoObjectWrapper;
 import bento.runtime.Context;
-import bento.runtime.Holder;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -424,6 +423,9 @@ public class ForStatement extends AbstractConstruction implements ConstructionCo
                             type = forDef.getType();
                         }
                         Object data = instance.generateData(context, def);
+                        if (data instanceof BentoObjectWrapper) {
+                            data = ((BentoObjectWrapper) data).getData();
+                        }
                         if (data instanceof Value) {
                         	data = ((Value)data).getValue();
                         }

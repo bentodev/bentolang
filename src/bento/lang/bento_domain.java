@@ -2,15 +2,13 @@
  *
  * $Id: bento_domain.java,v 1.14 2014/12/31 14:03:16 sthippo Exp $
  *
- * Copyright (c) 2002-2014 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
  */
 
 package bento.lang;
-
-import bento.runtime.Request;
 
 import java.util.Map;
 
@@ -45,7 +43,7 @@ public interface bento_domain {
     
     public Object get(String expr) throws Redirection;
     public Definition get_definition(String expr) throws Redirection;
-    public ResolvedInstance get_instance(String expr) throws Redirection;
+    public Object get_instance(String expr) throws Redirection;
     public Object[] get_array(String expr) throws Redirection;
     public Map<String, Object> get_table(String expr) throws Redirection;
 

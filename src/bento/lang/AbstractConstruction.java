@@ -591,6 +591,9 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
     public Value getValue(Context context) throws Redirection {
         Object data = null;
         data = getData(context);
+        if (data instanceof ResolvedInstance) {
+            data = ((ResolvedInstance) data).generateData();
+        }
         if (data instanceof CollectionInstance) {
             data = ((CollectionInstance) data).getCollectionObject();
         }

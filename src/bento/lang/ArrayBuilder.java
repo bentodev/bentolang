@@ -2,7 +2,7 @@
  *
  * $Id: ArrayBuilder.java,v 1.7 2015/06/18 20:13:37 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -10,6 +10,7 @@
 
 package bento.lang;
 
+import bento.runtime.BentoObjectWrapper;
 import bento.runtime.Context;
 import bento.runtime.Logger;
 
@@ -358,16 +359,33 @@ class ArrayInstance implements BentoArray, DynamicObject {
         if (data == null) {
             Logger.vlog("data for array instance is null; initializing to empty array");
             array = new FixedArray(new Object[0]);
-        } else if (data instanceof BentoArray) {
-            array = (BentoArray) data;
-        } else if (data instanceof Object[]) {
-            array = new FixedArray((Object[]) data);
-        } else if (data instanceof List<?>) {
-            array = new GrowableArray((List<?>) data);
-        } else if (data instanceof ResolvedArray) {
-            array = ((ResolvedArray) data).getArray();
         } else {
-            throw new UninitializedObjectException("Unable to initialize array, data type not supported: " + data.getClass().getName());
+            Object obj = data;
+            if (data instanceof BentoObjectWrapper) {
+                try {
+                    obj = ((BentoObjectWrapper) data).getData();
+                } catch (Redirection r) {
+                    throw new UninitializedObjectException("Unable to initialize array: " + r.getMessage());
+                }
+            } else if (data instanceof ResolvedInstance) {
+                try {
+                    obj = ((ResolvedInstance) data).generateData();
+                } catch (Redirection r) {
+                    throw new UninitializedObjectException("Unable to initialize array: " + r.getMessage());
+                }
+            }
+        
+            if (obj instanceof BentoArray) {
+                array = (BentoArray) obj;
+            } else if (obj instanceof Object[]) {
+                array = new FixedArray((Object[]) obj);
+            } else if (obj instanceof List<?>) {
+                array = new GrowableArray((List<?>) obj);
+            } else if (obj instanceof ResolvedArray) {
+                array = ((ResolvedArray) obj).getArray();
+            } else {
+                throw new UninitializedObjectException("Unable to initialize array, data type not supported: " + obj.getClass().getName());
+            }
         }
     }
 

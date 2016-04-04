@@ -2,7 +2,7 @@
  *
  * $Id: BentoObjectWrapper.java,v 1.11 2015/07/10 12:51:11 sthippo Exp $
  *
- * Copyright (c) 2005-2015 by bentodev.org
+ * Copyright (c) 2005-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -29,15 +29,19 @@ public class BentoObjectWrapper {
     /** Constructs a new BentoWrapperObject, given an arbitrary Bento construction
      *  and a BentoSite.
      */
-    public BentoObjectWrapper(Construction construction, BentoSite site) {
+    public BentoObjectWrapper(Construction construction, BentoDomain site) {
         this.construction = construction;
         if (construction instanceof ResolvedInstance) {
-            context = ((ResolvedInstance) construction).getResolutionContext();
+            ResolvedInstance ri = (ResolvedInstance) construction;
+            context = ri.getResolutionContext();
+            def = ri.getDefinition();
+            type = ri.getType(null);
+                    
         } else {
             context = site.getNewContext();
+            type = construction.getType(context, null);
+            def = type.getDefinition();
         }
-        type = construction.getType(context, null);
-        def = type.getDefinition();
     }
 
     /** Constructs a new BentoWrapperObject, given a definition, data

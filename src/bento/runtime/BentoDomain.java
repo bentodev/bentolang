@@ -2,7 +2,7 @@
  *
  * $Id: BentoDomain.java,v 1.32 2015/06/15 13:18:24 sthippo Exp $
  *
- * Copyright (c) 2003-2015 by bentodev.org
+ * Copyright (c) 2003-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -659,6 +659,7 @@ public class BentoDomain implements bento_domain {
     public Instantiation getInstance(Site site, String typeName, String name, ArgumentList[] argLists, Context argContext) {
         Definition def = getDefinition(name);
         if (def != null) {
+            @SuppressWarnings("rawtypes")
             ListNode[] paramsAndArgs = def.getMatch(argLists, argContext);
             ArgumentList args = (paramsAndArgs == null ? null : (ArgumentList) paramsAndArgs[1]);
             return new Instantiation(def, args, null);
@@ -726,12 +727,13 @@ public class BentoDomain implements bento_domain {
         }
     }
     
-    public ResolvedInstance get_instance(String expression) throws Redirection {
+    public Object get_instance(String expression) throws Redirection {
         try {
             BentoParser parser = new BentoParser(new StringReader(expression));
             Instantiation instance = parser.parseInstance();
             instance.setOwner(site);
-            return new ResolvedInstance(instance, siteContext, false);
+            Construction construction = new ResolvedInstance(instance, siteContext, false);
+            return new BentoObjectWrapper(construction, this);
         } catch (Exception e) {
             System.out.println("Exception getting definition: " + e);
             System.out.println("Expression:\n" + expression);
