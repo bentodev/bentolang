@@ -490,19 +490,21 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                         ArgumentList nominalArgs = args;
                         ResolvedInstance ri = null;
                         
+
+                        if (data instanceof ResolvedInstance) {
+                            ri = (ResolvedInstance) data;
+                            data = ri.generateData();
+                        
                         // if an object wrapper is itself wrapped in a Value,
                         // unwrap it
-                        if (data instanceof Value) {
+                        } else if (data instanceof Value) {
                             Object val = ((Value) data).getValue();
                             if (val instanceof BentoObjectWrapper) {
                                 data = val;
                             }
                         }
                         
-                        if (data instanceof ResolvedInstance) {
-                            ri = (ResolvedInstance) data;
-                            data = ri.generateData();
-                        } else if (data instanceof BentoObjectWrapper) {
+                        if (data instanceof BentoObjectWrapper) {
                             Definition objDef = ((BentoObjectWrapper) data).getDefinition();
                             if (objDef != null) {
                                 def = objDef;

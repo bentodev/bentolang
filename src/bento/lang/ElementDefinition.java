@@ -44,6 +44,8 @@ public class ElementDefinition extends AnonymousDefinition {
             ElementDefinition def = (ElementDefinition) element;
             setContents(def.getContents());
             wrapped = def.wrapped;
+        } else if (element instanceof ResolvedInstance) {
+            setContents((AbstractNode) element);
         } else if (element instanceof Value) {
             Value value = (Value) element;
             Definition owner = getOwner();

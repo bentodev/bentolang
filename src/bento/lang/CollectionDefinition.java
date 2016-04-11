@@ -10,6 +10,7 @@
 
 package bento.lang;
 
+import bento.runtime.BentoObjectWrapper;
 import bento.runtime.Context;
 import bento.runtime.Holder;
 
@@ -354,7 +355,7 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
     }
 
     protected Object instantiateCollectionObject(Context context, Object collection) throws Redirection {
-        Type st = getSuper();
+        //Type st = getSuper();
         // this seems to be unnecessary
         boolean resolveOnly = false; //!(st == null || st.isPrimitive() || st.isExternal());
 
@@ -370,10 +371,10 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
             for (int i = 0; i < elementArray.length; i++) {
                 Object obj = getObjectForElement(elementArray[i]);
                 if (resolveOnly) {
-                    obj = resolveElement(obj, context);
+                    obj = resolveElement(context, obj);
                     array[i] = obj;
                 } else {
-                    array[i] = getObjectValue(context, obj);
+                    array[i] = getUnresolvedObjectValue(context, obj);
                 }
             }
             return array;
@@ -384,10 +385,10 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
             while (it.hasNext()) {
                 Object obj = getObjectForElement(it.next());
                 if (resolveOnly) {
-                    obj = resolveElement(obj, context);
+                    obj = resolveElement(context, obj);
                     list.add(obj);
                 } else {
-                    list.add(getObjectValue(context, obj));
+                    list.add(getUnresolvedObjectValue(context, obj));
                 }
             }
             return list;
@@ -404,7 +405,14 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
         }
     }
     
-    private Object resolveElement(Object element, Context context) {
+    private static Object getUnresolvedObjectValue(Context context, Object element) {
+        //if (!(element instanceof ResolvedInstance) && !(element instanceof BentoObjectWrapper)) {
+            return getObjectValue(context, element);
+        //}
+        //return element;
+    }
+    
+    private Object resolveElement(Context context, Object element) {
         if (element instanceof ResolvedInstance) {
             return element;
         } else if (element instanceof Instantiation) {

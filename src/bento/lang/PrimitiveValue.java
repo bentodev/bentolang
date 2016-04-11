@@ -2,7 +2,7 @@
  *
  * $Id: PrimitiveValue.java,v 1.38 2015/07/04 17:41:13 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -423,9 +423,9 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
                 if (objects.length == 0) {
                     return "[]";
                 } else {
-                    String str = "[" + getStringFor(objects[0]);
+                    String str = "[" + getRecursiveStringFor(objects[0]);
                     for (int i = 1; i < objects.length; i++) {
-                        str = str + "," + getStringFor(objects[i]);
+                        str = str + "," + getRecursiveStringFor(objects[i]);
                     }
                     str = str + "]";
                     return str;
@@ -435,7 +435,7 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
                 Iterator<?> it = ((Collection<?>) value).iterator();
                 while (it.hasNext()) {
                     Object obj = it.next();
-                    str = str + getStringFor(obj);
+                    str = str + getRecursiveStringFor(obj);
                     if (it.hasNext()) {
                         str = str + ",";
                     }
@@ -457,12 +457,20 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
                 ;
             }
             return (str == null ? "" : str);
+        } else if (value instanceof ResolvedInstance) {
+            String str = ((ResolvedInstance) value).getString();
+            return (str == null ? "" : str);
         }
         // didn't fall into any of the above categories
         String str = value.toString();
         return (str == null ? "" : str);
     }
 
+    private static String getRecursiveStringFor(Object obj) {
+        String str = getStringFor(obj);
+        return str;
+    }
+    
     public static boolean getBooleanFor(Object value) {
         if (value == null) {
             return false;

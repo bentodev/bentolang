@@ -633,7 +633,7 @@ public class Context {
                                 if (data == null) {
                                     data = chunkData;
                                 } else {
-                                    data = PrimitiveValue.getStringFor(data) + chunkData;
+                                    data = PrimitiveValue.getStringFor(data) + PrimitiveValue.getStringFor(chunkData);
                                 }
                             }
                         }
@@ -843,7 +843,7 @@ public class Context {
                                 if (data == null) {
                                     data = chunkData;
                                 } else {
-                                    data = PrimitiveValue.getStringFor(data) + chunkData;
+                                    data = PrimitiveValue.getStringFor(data) + PrimitiveValue.getStringFor(chunkData);
                                 }
                             }
                         }
@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("assign_global_vars")) {
+if (definition.getName().equals("bar")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -3009,6 +3009,10 @@ if (definition.getName().equals("assign_global_vars")) {
             collection = ((ValueGenerator) collection).getData(this);
         }
 
+        if (collection instanceof BentoArray) {
+            collection = ((BentoArray) collection).getArrayObject();
+        }
+        
         boolean isArray = collection.getClass().isArray();
         boolean isList = (collection instanceof List<?>);
         if (index instanceof TableIndex) {
@@ -3290,7 +3294,7 @@ if (definition.getName().equals("assign_global_vars")) {
                     if (argDef.isAlias()) {
                         NameNode aliasName = argDef.getAlias();
                         childName = new ComplexName(aliasName, childName);
-                        NamedDefinition ndef = (NamedDefinition) peek().def;
+                        Definition ndef = peek().def;
                         childDef = ExternalDefinition.createForName(ndef, childName, param.getType(), argDef.getAccess(), argDef.getDurability(), this);
                     }
 
@@ -3306,7 +3310,7 @@ if (definition.getName().equals("assign_global_vars")) {
                 }
                 argDef = childDef;
 
-                if (arg instanceof Value && ((Value) arg).getValueClass().equals(BentoObjectWrapper.class)) {
+                if (arg instanceof Value && BentoObjectWrapper.class.equals(((Value) arg).getValueClass())) {
                     BentoObjectWrapper wrapper = (BentoObjectWrapper) ((Value) arg).getValue();
                     Context argContext = wrapper.context;
                     argDef = new BoundDefinition(argDef, argContext);

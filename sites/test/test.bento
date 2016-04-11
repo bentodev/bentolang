@@ -1732,13 +1732,16 @@ iat [=
     =]
 
 lpt [=
-        jk[] = [ 'J', 'K' ]
-       
-        array_holder(a[]) [=
-            aa[] = a
+        dynamic foo(a) [=
+            x = a
         =]
-        for x in array_holder(jk).aa [=
-            x;
+
+        dynamic bar(foo f) [=
+            f.x;
+        =]
+        foo[] de = [ foo("D"), foo("E") ]
+        for foo f: de [=
+            bar(f);
         =]
 =]
 

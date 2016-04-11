@@ -21,7 +21,7 @@ import java.util.*;
  * @author Michael St. Hippolyte
  * @version $Revision: 1.39 $
  */
-public class ResolvedInstance extends Instantiation { //implements Value {
+public class ResolvedInstance extends Instantiation implements Value {
 
     private Context resolutionContext;
     private boolean sharedContext = false;
@@ -315,17 +315,17 @@ public class ResolvedInstance extends Instantiation { //implements Value {
     public Object getValue() {
         if (data == null) {
             try {
-                data = getValue(resolutionContext);
+                data = getData(resolutionContext);
             } catch (Redirection r) {
-                data = new NullValue();
+                ;
             }
         }
         return data;
     }
 
     public Class<?> getValueClass() {
-        
-        return getValue().getClass();
+        Object value = getValue();
+        return (value == null ? null : value.getClass());
     }
     
     public boolean equals(Object obj) {

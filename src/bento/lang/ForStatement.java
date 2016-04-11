@@ -129,7 +129,7 @@ public class ForStatement extends AbstractConstruction implements ConstructionCo
 
                     } else {
                         Object data = body.getData(context);
-                        if (data instanceof Value) {
+                        if (data instanceof Value && !(data instanceof ResolvedInstance)) {
                             data = ((Value) data).getValue();
                         }
                         if (data != null && data instanceof Construction) {
@@ -426,7 +426,7 @@ public class ForStatement extends AbstractConstruction implements ConstructionCo
                         if (data instanceof BentoObjectWrapper) {
                             data = ((BentoObjectWrapper) data).getData();
                         }
-                        if (data instanceof Value) {
+                        if (data instanceof Value && !(data instanceof ResolvedCollection)) {
                         	data = ((Value)data).getValue();
                         }
                         if (data == null) {
