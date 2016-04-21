@@ -2340,7 +2340,7 @@ if (definition.getName().equals("bar")) {
                             break;
                         }
                         
-                        if (a instanceof Value) {
+                        if (a instanceof Value && !(a instanceof Instantiation)) {
                             Object o = ((Value) a).getValue();
                             a = o;
                         }

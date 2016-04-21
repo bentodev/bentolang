@@ -477,11 +477,12 @@ public class BentoDomain implements bento_domain {
                 
             if (collectionObj instanceof ResolvedCollection) {
                 collectionObj = ((ResolvedCollection) collectionObj).getCollectionObject();
-                if (collectionObj instanceof List || collectionObj.getClass().isArray()) {
-                    collectionObj = ArrayBuilder.instantiateElements(collectionObj, context);
-                } else if (collectionObj instanceof Map) {
-                    // any function equivalent to instantiateElements we can call?
-                }
+            }
+
+            if (collectionObj instanceof List || collectionObj.getClass().isArray()) {
+                collectionObj = ArrayBuilder.instantiateElements(collectionObj, context);
+            } else if (collectionObj instanceof Map) {
+                // any function equivalent to instantiateElements we can call?
             }
       
         } catch (Redirection r) {
