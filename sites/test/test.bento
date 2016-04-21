@@ -3010,6 +3010,11 @@ cop [=
   array_1[] = [ "a" ]
   array_2[] = [ "b", "c" ]
   array_3[] = array_1 + array_2
+        a = "a"
+        c = "c"
+        if (a in array_1) [| A |] else [| x |]
+        if (a in array_2) [| x |] else [| B |]
+        if (c in array_3) [| C |] else [| x |]
   array_1.count;
   array_2.count;
   array_3.count;

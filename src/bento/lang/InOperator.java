@@ -2,7 +2,7 @@
  *
  * $Id: InOperator.java,v 1.1 2009/04/06 13:16:46 sthippo Exp $
  *
- * Copyright (c) 2009 by bentodev.org
+ * Copyright (c) 2009-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -10,6 +10,7 @@
 
 package bento.lang;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
@@ -26,24 +27,37 @@ import bento.runtime.Context;
  */
 public class InOperator extends BinaryOperator {
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Value operate(Value firstVal, Value secondVal) {
         
         Object memberObj = firstVal.getValue();
         Object collectionObj = secondVal.getValue();
         boolean isIn = false;
+
         
-        Class clazz = collectionObj.getClass();
-        if (clazz.isArray()) {
-            List list = Arrays.asList(collectionObj);
-            isIn = list.contains(memberObj);
-
-        } else if (collectionObj instanceof List) {
-            isIn = ((List) collectionObj).contains(memberObj);
-                
-        } else if (collectionObj instanceof Map) {
+        if (collectionObj instanceof Map) {
             isIn = ((Map) collectionObj).containsValue(memberObj);
-        }        
-
+        } else {
+            List<?> list = null;
+            Class clazz = collectionObj.getClass();
+            if (clazz.isArray()) {
+                list = Arrays.asList(collectionObj);
+            } else if (collectionObj instanceof List) {
+                list = ((List<?>) collectionObj);
+            }
+            
+            if (list != null) {
+                Iterator<Object> it = (Iterator<Object>) list.iterator();
+                while (it.hasNext()) {
+                    Object element = it.next();
+                    if (element.equals(memberObj)) {
+                        isIn = true;
+                    } else if (element instanceof Value && memberObj.equals(((Value) element).getValue())) {
+                        isIn = true;    
+                    }
+                }
+            }
+        }
         return new PrimitiveValue(isIn);
     }
 
