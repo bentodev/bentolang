@@ -2,7 +2,7 @@
  *
  * $Id: BentoServer.java,v 1.83 2015/07/13 20:04:24 sthippo Exp $
  *
- * Copyright (c) 2004-2015 bentodev.org
+ * Copyright (c) 2004-2016 bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -1082,10 +1082,9 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
             bentoContext = (BentoContext) site.context();
             site.getPropertyInContext("session_init", bentoContext.getContext());
             session.setAttribute("@", bentoContext);
- 
-        } else if (bentoContext.isInUse()) {
-            bentoContext = new BentoContext(bentoContext);
         }
+
+        bentoContext = new BentoContext(bentoContext);
         
         Context context = null;
         synchronized (bentoContext) {
