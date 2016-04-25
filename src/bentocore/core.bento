@@ -945,8 +945,6 @@ core [=
         eval(result);
         eval(messages);
         
-        log("test_result for " + name + " has message " + messages[0]); 
-        
         this;
     =]
 
