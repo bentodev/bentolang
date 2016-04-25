@@ -357,7 +357,7 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
     protected Object instantiateCollectionObject(Context context, Object collection) throws Redirection {
         //Type st = getSuper();
         // this seems to be unnecessary
-        boolean resolveOnly = true;  // false; //!(st == null || st.isPrimitive() || st.isExternal());
+        boolean resolveOnly = false; //!(st == null || st.isPrimitive() || st.isExternal());
 
         if (collection == null) {
             return null;

@@ -2,7 +2,7 @@
  *
  * $Id: RelationalOperator.java,v 1.10 2015/06/01 12:58:56 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -47,6 +47,7 @@ abstract public class RelationalOperator extends BinaryOperator {
                 if (obj1 instanceof BentoArray) {
                     obj1 = ((BentoArray) obj1).getArrayObject();
                 }
+                obj1 = ArrayBuilder.instantiateElements(obj1, context);
 
             } else if (firstObj instanceof Value) {
                 obj1 = ((Value) firstObj).getValue();
@@ -62,6 +63,7 @@ abstract public class RelationalOperator extends BinaryOperator {
                 if (obj2 instanceof BentoArray) {
                     obj2 = ((BentoArray) obj2).getArrayObject();
                 }
+                obj2 = ArrayBuilder.instantiateElements(obj2, context);
 
             } else if (secondObj instanceof Value) {
                 obj2 = ((Value) secondObj).getValue();

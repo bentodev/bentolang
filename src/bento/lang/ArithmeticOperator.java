@@ -2,7 +2,7 @@
  *
  * $Id: ArithmeticOperator.java,v 1.12 2015/05/28 12:54:26 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -52,6 +52,7 @@ abstract public class ArithmeticOperator extends BinaryOperator {
                 if (obj1 == null) {
                     obj1 = new Object[0];
                 }
+                obj1 = ArrayBuilder.instantiateElements(obj1, context);
 
             } else if (firstObj instanceof Value) {
                 obj1 = ((Value) firstObj).getValue();
@@ -73,6 +74,7 @@ abstract public class ArithmeticOperator extends BinaryOperator {
                 if (obj2 == null) {
                     obj2 = new Object[0];
                 }
+                obj2 = ArrayBuilder.instantiateElements(obj2, context);
 
             } else if (secondObj instanceof Value) {
                 obj2 = ((Value) secondObj).getValue();

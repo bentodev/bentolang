@@ -77,10 +77,11 @@ public class ResolvedInstance extends Instantiation implements Value {
     
     public ResolvedInstance(Definition def, Context context, ArgumentList args, List<Index> indexes) throws Redirection {
         super(def, args, indexes);
+
         sharedContext = false;
         if (def instanceof BoundDefinition) {
             resolutionContext = ((BoundDefinition) def).getBoundContext();
-        } else {
+        } else if (!def.isIdentity()) {
             if (args != null && args.isDynamic()) {
                 args = instantiateArguments(args, context);
                 setArguments(args);
@@ -92,6 +93,8 @@ public class ResolvedInstance extends Instantiation implements Value {
             } finally {
                 context.pop();
             }
+        } else {
+            resolutionContext = context.clone(false);
         }
         data = null;
         this.def = def;
@@ -205,11 +208,7 @@ public class ResolvedInstance extends Instantiation implements Value {
     }
 
     public Object getData(Context context) throws Redirection {
-        //if (isParam || isParamChild) {
-        //    return resolutionContext.getParameter((NameNode) reference, isContainerParameter(resolutionContext), Object.class);
-        //} else {        
-            return super.getData(resolutionContext, getDefinition(context));
-        //}
+        return super.getData(resolutionContext, getDefinition(context));
     }
 
     public Object generateData(Context context, Definition def) throws Redirection {
@@ -279,13 +278,11 @@ public class ResolvedInstance extends Instantiation implements Value {
     // Get data without a context
     public String getString() {
         try {
-			return getString(resolutionContext);
-		} catch (Redirection r) {
-			// TODO Auto-generated catch block
-			r.printStackTrace();
-			return "";
-		}
-        
+            return getString(resolutionContext);
+        } catch (Redirection r) {
+            r.printStackTrace();
+            return "";
+        }
     }
 
     public boolean getBoolean() {
@@ -329,11 +326,11 @@ public class ResolvedInstance extends Instantiation implements Value {
     }
     
     public boolean equals(Object obj) {
-    	if (obj != null && obj instanceof ResolvedInstance) {
-    		ResolvedInstance ri = (ResolvedInstance) obj;
-    		return (def.equals(ri.def) && resolutionContext.equals(ri.resolutionContext));
-    	}
-    	return false;
+        if (obj != null && obj instanceof ResolvedInstance) {
+            ResolvedInstance ri = (ResolvedInstance) obj;
+            return (def.equals(ri.def) && resolutionContext.equals(ri.resolutionContext));
+        }
+        return false;
     }
     
     public String toString(String prefix) {

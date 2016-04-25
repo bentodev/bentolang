@@ -2,7 +2,7 @@
  *
  * $Id: ShiftOperator.java,v 1.6 2015/06/11 12:54:01 sthippo Exp $
  *
- * Copyright (c) 2002-2011 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -58,7 +58,8 @@ abstract public class ShiftOperator extends BinaryOperator {
 
     private int getShiftAmount(Value value) {
         Class<?> type = value.getValueClass();
-        if (type == Byte.TYPE || type == Short.TYPE || type == Integer.TYPE || type == Character.TYPE) {
+        if (type == Byte.TYPE || type == Short.TYPE || type == Integer.TYPE || type == Long.TYPE || type == Character.TYPE ||
+              type == Byte.class || type == Short.class || type == Integer.class || type == Long.class || type == Character.class) {
             return value.getInt();
         } else {
             throw new UnsupportedOperationException("Second operand of shift operator must be an integral type");

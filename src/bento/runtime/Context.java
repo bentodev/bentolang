@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("bar")) {
+if (definition.getName().equals("add_to_array")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -2238,7 +2238,7 @@ if (definition.getName().equals("bar")) {
     }
     
     private Object instantiateParameterChild(ComplexName childName, DefParameter param, Object arg, List<Index> indexes) throws Redirection {
-        if (arg instanceof Value) {
+        if (arg instanceof Value && !(arg instanceof Instantiation)) {
             Object val = ((Value) arg).getValue();
             if (val instanceof BentoObjectWrapper) {
                 arg = val;
