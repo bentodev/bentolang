@@ -34,7 +34,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
 
     public static final String NAME = "BentoServer";
     public static final String MAJOR_VERSION = "1.8";
-    public static final String MINOR_VERSION = "4";
+    public static final String MINOR_VERSION = "5";
     public static final String VERSION = MAJOR_VERSION + "." + MINOR_VERSION;
     public static final String NAME_AND_VERSION = NAME + " " + VERSION;
 
