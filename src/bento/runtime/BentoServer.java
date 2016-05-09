@@ -34,7 +34,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
 
     public static final String NAME = "BentoServer";
     public static final String MAJOR_VERSION = "1.8";
-    public static final String MINOR_VERSION = "5";
+    public static final String MINOR_VERSION = "6";
     public static final String VERSION = MAJOR_VERSION + "." + MINOR_VERSION;
     public static final String NAME_AND_VERSION = NAME + " " + VERSION;
 
@@ -63,6 +63,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
     private String address = null;
     private String port = null;
     private boolean initedOk = false;
+    private String stateFileName = null;
     private String logFileName = null;
     private boolean appendToLog = true;
     private PrintStream log = null;
@@ -143,60 +144,62 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
             System.out.println("Usage:");
             System.out.println("          java -jar bento.jar [flags]\n");
             System.out.println("where the optional flags are among the following (in any order):\n");
-            System.out.println("Flag                              Effect");
+            System.out.println("Flag                           Effect");
             System.out.println("----------------------------------------------------------------------------");
-            System.out.println("-site <name>                 Specifies the site name.  If present, this must");
-            System.out.println("                             correspond to the name of a site defined in the");
-            System.out.println("                             bento code.  If not present, the site name must");
-            System.out.println("                             be defined elsewhere, e.g. in site_config.bento.\n");
-            System.out.println("-address <address>[:<port>]  Sets the address and port which the server");
-            System.out.println("                             listens on.\n");
-            System.out.println("-port <port>                 Sets the port which the server listens on.\n");
-            System.out.println("-host <virtual host name>    Name of virtual host; if not present, all local");
-            System.out.println("                             hosts are handled.\n");
-            System.out.println("-timeout <millisecs>         Sets the length of time the server must process");
-            System.out.println("                             a request by before returning a timeout error.");
-            System.out.println("                             A zero or negative value means the request will");
-            System.out.println("                             never time out.  The default value is zero.\n");
-            System.out.println("-filesfirst                  Files first option.  If this flag is present,");
-            System.out.println("                             then the server looks for files before bento");
-            System.out.println("                             objects to satisfy a request.  If not present,");
-            System.out.println("                             the server looks for bento objects first, and");
-            System.out.println("                             looks for files only when no suitable object by");
-            System.out.println("                             the requested name exists.\n");
-            System.out.println("-docbase <path or url>       Base location for documents.  When a file needs");
-            System.out.println("                             to be retrieved, the server looks for it");
-            System.out.println("                             relative to this path or URL.  If this flag is");
-            System.out.println("                             not present, the docbase defaults to the current");
-            System.out.println("                             directory.\n");
-            System.out.println("-bentopath <pathnames>       Sets the initial bentopath, which is a string");
-            System.out.println("                             of pathnames separated by the platform-specific");
-            System.out.println("                             path separator character (e.g., colon on Unix");
-            System.out.println("                             and semicolon on Windows).  Pathnames may");
-            System.out.println("                             specify either files or directories.  At");
-            System.out.println("                             startup, for each pathname, the Bento server");
-            System.out.println("                             loads either the indicated file (if the pathname");
-            System.out.println("                             specifies a file) or all the files with a .bento");
-            System.out.println("                             extension in the indicated directory (if the");
-            System.out.println("                             pathname specifies a directory).\n");
-            System.out.println("-recursive                   Recursive bentopath option.\n");
-            System.out.println("-multithreaded               Multithreaded compilation.  If this flag is");
-            System.out.println("                             present, then bento files are compiled in");
-            System.out.println("                             independent threads.\n");
-            System.out.println("-customcore                  Custom core definitions supplied in bentopath;");
-            System.out.println("                             core files will not be autoloaded from");
-            System.out.println("                             bento.jar.\n");
-            System.out.println("-sharecore                   All sites should share a single core, supplied");
-            System.out.println("                             by the first site loaded.\n");
-            System.out.println("-log <path>                  All output messages are logged in the specified");
-            System.out.println("                             file.  The file is overwritten if it already");
-            System.out.println("                             exists.\n");
-            System.out.println("-log.append <path>           All output messages are logged in the specified");
-            System.out.println("                             file.  If the file exists, the current content");
-            System.out.println("                             is preserved, and messages are appended to the");
-            System.out.println("                             end of the file./n");
-            System.out.println("-verbose                     Verbose output messages for debugging.\n");
-            System.out.println("-debug                       Enable the built-in debugger.\n");
+            System.out.println("-s, --site <name>              Specifies the site name.  If present, this must");
+            System.out.println("                               correspond to the name of a site defined in the");
+            System.out.println("                               bento code.  If not present, the site name must");
+            System.out.println("                               be defined elsewhere, e.g. in site_config.bento.\n");
+            System.out.println("-a, --address <addr>[:<port>]  Sets the address and port which the server");
+            System.out.println("                               listens on.\n");
+            System.out.println("-p, --port <port>              Sets the port which the server listens on.\n");
+            System.out.println("-h, --host <hostname>          Name of virtual host; if not present, all local");
+            System.out.println("                               hosts are handled.\n");
+            System.out.println("-t, --timeout <millisecs>      Sets the length of time the server must process");
+            System.out.println("                               a request by before returning a timeout error.");
+            System.out.println("                               A zero or negative value means the request will");
+            System.out.println("                               never time out.  The default value is zero.\n");
+            System.out.println("-ff, --filesfirst              Files first option.  If this flag is present,");
+            System.out.println("                               then the server looks for files before bento");
+            System.out.println("                               objects to satisfy a request.  If not present,");
+            System.out.println("                               the server looks for bento objects first, and");
+            System.out.println("                               looks for files only when no suitable object by");
+            System.out.println("                               the requested name exists.\n");
+            System.out.println("--filebase <path or url>       Base location for documents.  When a file needs");
+            System.out.println("                               to be retrieved, the server looks for it");
+            System.out.println("                               relative to this path or URL.  If this flag is");
+            System.out.println("                               not present, the docbase defaults to the current");
+            System.out.println("                               directory.\n");
+            System.out.println("-bp, --bentopath <pathnames>   Sets the initial bentopath, which is a string");
+            System.out.println("                               of pathnames separated by the platform-specific");
+            System.out.println("                               path separator character (e.g., colon on Unix");
+            System.out.println("                               and semicolon on Windows).  Pathnames may");
+            System.out.println("                               specify either files or directories.  At");
+            System.out.println("                               startup, for each pathname, the Bento server");
+            System.out.println("                               loads either the indicated file (if the pathname");
+            System.out.println("                               specifies a file) or all the files with a .bento");
+            System.out.println("                               extension in the indicated directory (if the");
+            System.out.println("                               pathname specifies a directory).\n");
+            System.out.println("-r, --recursive                Recursive bentopath option.\n");
+            System.out.println("-m, --multithreaded            Multithreaded compilation.  If this flag is");
+            System.out.println("                               present, then bento files are compiled in");
+            System.out.println("                               independent threads.\n");
+            System.out.println("-cc, --customcore              Custom core definitions supplied in bentopath;");
+            System.out.println("                               core files will not be autoloaded from");
+            System.out.println("                               bento.jar.\n");
+            System.out.println("-sc, --sharecore               All sites should share a single core, supplied");
+            System.out.println("                               by the first site loaded.\n");
+            System.out.println("-sf, --statefile <filename>    Instructs the server to write state intormation");
+            System.out.println("                               to a file.\n");
+            System.out.println("-l, --log <path>               All output messages are logged in the specified");
+            System.out.println("                               file.  The file is overwritten if it already");
+            System.out.println("                               exists.\n");
+            System.out.println("-la, --log.append <path>       All output messages are logged in the specified");
+            System.out.println("                               file.  If the file exists, the current content");
+            System.out.println("                               is preserved, and messages are appended to the");
+            System.out.println("                               end of the file./n");
+            System.out.println("-v, --verbose                  Verbose output messages for debugging.\n");
+            System.out.println("--debug                       Enable the built-in debugger.\n");
             System.out.println("-?                           This screen.\n\n");
             System.out.println("Flags may be abbreviated to their initial letters, e.g. -a instead of -address,");
             System.out.println("or -l.a instead of -log.append.\n");
@@ -220,7 +223,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
             String arg = args[i];
             String nextArg = (i + 1 < args.length ? args[i + 1] : null);
             boolean noNextArg = (nextArg == null || nextArg.startsWith("-"));
-            if (arg.equals("-site") || arg.equals("-s")) {
+            if (arg.equals("--site") || arg.equals("-s")) {
                 if (noNextArg) {
                     numProblems++;
                     String msg = "site name not provided";
@@ -230,7 +233,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                     initParams.put("site", nextArg);
                 }
 
-            } else if (arg.equals("-address") || arg.equals("-a")) {
+            } else if (arg.equals("--address") || arg.equals("-a")) {
                 if (noNextArg) {
                     numProblems++;
                     String msg = "address not provided";
@@ -240,7 +243,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                     i++;
                 }
 
-            } else if (arg.equals("-port") || arg.equals("-p")) {
+            } else if (arg.equals("--port") || arg.equals("-p")) {
                 if (noNextArg) {
                     numProblems++;
                     String msg = "port not provided";
@@ -250,7 +253,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                     i++;
                 }
 
-            } else if (arg.equals("-host") || arg.equals("-h")) {
+            } else if (arg.equals("--host") || arg.equals("-h")) {
                 if (noNextArg) {
                     numProblems++;
                     String msg = "host not provided";
@@ -260,7 +263,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                     i++;
                 }
 
-            } else if (arg.equals("-timeout") || arg.equals("-t")) {
+            } else if (arg.equals("--timeout") || arg.equals("-t")) {
                 if (noNextArg) {
                     numProblems++;
                     String msg = "timeout value not provided";
@@ -270,7 +273,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                     i++;
                 }
 
-            } else if (arg.equals("-filebase") || arg.equals("-docbase") || arg.equals("-d")) {
+            } else if (arg.equals("--filebase") || arg.equals("--docbase")) {
                 if (noNextArg) {
                     numProblems++;
                     String msg = "filebase not provided";
@@ -280,10 +283,10 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                     i++;
                 }
 
-            } else if (arg.equals("-filesfirst") || arg.equals("-f")) {
+            } else if (arg.equals("--filesfirst") || arg.equals("-ff")) {
                 initParams.put("filesfirst", "true");
 
-            } else if (arg.equals("-bentopath") || arg.equals("-b")) {
+            } else if (arg.equals("--bentopath") || arg.equals("-bp")) {
                 if (noNextArg) {
                     numProblems++;
                     String msg = "bentopath not provided";
@@ -293,19 +296,29 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                     i++;
                 }
 
-            } else if (arg.equals("-recursive") || arg.equals("-r")) {
+            } else if (arg.equals("--recursive") || arg.equals("-r")) {
                 initParams.put("recursive", "true");
 
-            } else if (arg.equals("-multithreaded") || arg.equals("-m")) {
+            } else if (arg.equals("--multithreaded") || arg.equals("-m")) {
                 initParams.put("multithreaded", "true");
 
-            } else if (arg.equals("-customcore") || arg.equals("-cc")) {
+            } else if (arg.equals("--customcore") || arg.equals("-cc")) {
                 initParams.put("customcore", "true");
 
-            } else if (arg.equals("-sharecore") || arg.equals("-sc")) {
+            } else if (arg.equals("--sharecore") || arg.equals("-sc")) {
                 initParams.put("sharecore", "true");
 
-            } else if (arg.equals("-log") || arg.equals("-l")) {
+            } else if (arg.equals("--statefile") || arg.equals("-sf")) {
+                if (noNextArg) {
+                    numProblems++;
+                    String msg = "state filename not provided";
+                    initParams.put("problem" + numProblems, msg);
+                } else {
+                    initParams.put("statefile", nextArg);
+                    i++;
+                }
+
+            } else if (arg.equals("--log") || arg.equals("-l")) {
                 if (noNextArg) {
                     numProblems++;
                     String msg = "log file not provided";
@@ -315,7 +328,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                     i++;
                 }
 
-            } else if (arg.equals("-log.append") || arg.equals("-l.a")) {
+            } else if (arg.equals("--log.append") || arg.equals("-l.a")) {
                 if (noNextArg) {
                     numProblems++;
                     String msg = "log.append file not provided";
@@ -326,10 +339,10 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                     i++;
                 }
 
-            } else if (arg.equals("-verbose") || arg.equals("-v")) {
+            } else if (arg.equals("--verbose") || arg.equals("-v")) {
                 initParams.put("verbose", "true");
 
-            } else if (arg.equals("-debug")) {
+            } else if (arg.equals("--debug")) {
                 initParams.put("debug", "true");
 
             } else {
@@ -417,6 +430,8 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         } else {
             asyncTimeout = 0L;
         }
+        
+        stateFileName = initParams.get("statefile");
         
         logFileName = initParams.get("log");
         String appendLog = initParams.get("log.append");
@@ -559,6 +574,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         slog("             site = " + (siteName == null ? "(no name)" : siteName));
         slog("             bentopath = " + bentoPath);
         slog("             recursive = " + recursive);
+        slog("             state file = " + (stateFileName == null ? "(none)" : stateFileName));
         slog("             log file = " + SiteBuilder.getLogFile());
         slog("             multithreaded = " + multithreaded);
         slog("             autoloadcore = " + !customCore);
