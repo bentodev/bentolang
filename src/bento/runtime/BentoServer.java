@@ -53,6 +53,10 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         EXPIRED
     }
     
+    public static final String SERVER_STARTED = "STARTED";
+    public static final String SERVER_STOPPED = "STOPPED";
+    public static final String SERVER_FAILED = "FAILED";
+    
     protected Exception exception = null;
     protected BentoSite mainSite = null;
     protected Map<String, BentoSite> sites = new HashMap<String, BentoSite>();
@@ -133,13 +137,17 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
             if (server.initedOk) {
                 try {
                     server.startServer();
+                    
                 } catch (Exception e) {
                     noProblems = false;
                 }
             } else {
                 noProblems = false;
             }
-
+            if (server.exception != null) {
+            	noProblems = false;
+            }
+            
         } else {
             System.out.println("Usage:");
             System.out.println("          java -jar bento.jar [flags]\n");
@@ -465,7 +473,20 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         return ("true".equalsIgnoreCase(param) || "yes".equalsIgnoreCase(param) || "1".equalsIgnoreCase(param));
     }
 
-
+    public void recordState(String state) {
+        if (stateFileName != null) {
+        	try {
+                PrintStream ps = new PrintStream(new FileOutputStream(stateFileName, false));
+                Date now = new Date();
+                ps.println(state + " " + now.toString());
+                ps.close();
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        	}
+        }
+    }
+    
+    
     private void startServer() {
         try {
             loadSite();
@@ -480,6 +501,8 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
             standaloneServer.startServer();
             
         } catch (Exception e) {
+            recordState("FAILED");
+
             System.err.println("Exception starting BentoServer: " + e);
             exception = e;
             e.printStackTrace(System.err);

@@ -139,10 +139,12 @@ public class BentoJettyServer extends Server implements BentoStandaloneServer {
             setConnectors(connectors);
             setHandler(handlers);
             start();
+            bentoServer.recordState(BentoServer.SERVER_STARTED);
             join();
 
         } catch (Exception e) {
-            exception = e;
+            bentoServer.recordState(BentoServer.SERVER_FAILED);
+        	exception = e;
             throw e;
         }
     }
@@ -155,6 +157,7 @@ public class BentoJettyServer extends Server implements BentoStandaloneServer {
             }
         }
         stop();
+        bentoServer.recordState(BentoServer.SERVER_STOPPED);
     }
     
     static void link(Node[] parseResults) {

@@ -191,7 +191,8 @@ status()
     echo
     echo "BENTO_HOME    = $BENTO_HOME"
     echo "BENTO_PID     = $BENTO_PID"
-    echo "BENTO_USER    = $BENTO_USER
+    echo "BENTO_STATE   = $BENTO_STATE"
+    echo "BENTO_USER    = $BENTO_USER"
     echo "CLASSPATH     = $CLASSPATH"
     echo "JAVA          = $JAVA"
     echo "JAVA_OPTIONS  = ${JAVA_OPTIONS[*]}"
@@ -294,9 +295,12 @@ BENTO_STATE="$BENTO_RUN/${NAME}.state"
 ##################################################
 # Add the state file to the BENTO_ARGS
 ##################################################
-if [ -z $BENTO_ARGS ]
+if [ -z "$BENTO_ARGS" ]
 then
-    BENTO_ARGS="-
+    BENTO_ARGS="-sf $BENTO_STATE"
+else
+    BENTO_ARGS="$BENTO_ARGS -sf $BENTO_STATE"
+fi
 
 ##################################################
 # Setup JAVA if unset
