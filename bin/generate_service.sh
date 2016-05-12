@@ -13,6 +13,12 @@ then
     BENTO_HOME=/opt/$SERVICE_NAME
 fi
 
+if [ -z "$BENTO_SH" ]
+then
+    BENTO_SH=$BENTO_HOME/bin/bentoserver.sh
+fi
+
+
 cat > /usr/lib/systemd/system/$SERVICE_NAME.service <<EOF
 [Unit]
 Description=BentoServer
@@ -21,9 +27,9 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=$BENTO_HOME/bin/bentoserver.sh start
-ExecStop=$BENTO_HOME/bin/bentoserver.sh stop
-ExecReload=$BENTO_HOME/bin/bentoserver.sh restart
+ExecStart=$BENTO_SH start
+ExecStop=$BENTO_SH stop
+ExecReload=$BENTO_SH restart
 Restart=on-success
 User=bento
 Group=bento
