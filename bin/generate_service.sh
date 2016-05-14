@@ -18,7 +18,7 @@ then
     BENTO_SH=$BENTO_HOME/bin/bentoserver.sh
 fi
 
-$SERVICE_ENV="Environment=SERVICE_NAME=$SERVICE_NAME"
+SERVICE_ENV="Environment=SERVICE_NAME=$SERVICE_NAME"
 
 mkdir -p /usr/lib/systemd/system
 cat > /usr/lib/systemd/system/$SERVICE_NAME.service <<EOF
