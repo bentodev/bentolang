@@ -240,6 +240,10 @@ then
     then
         BENTO_HOME=".."
 
+    elif [ -n $SERVICE_NAME ] && [ -f "/opt/$SERVICE_NAME/$BENTO_JAR_PATH" ]
+    then
+        BENTO_HOME="/opt/$SERVICE_NAME"
+
     elif [ -f "/opt/bento/$BENTO_JAR_PATH" ]
     then
         BENTO_HOME="/opt/bento"

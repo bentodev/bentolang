@@ -18,6 +18,8 @@ then
     BENTO_SH=$BENTO_HOME/bin/bentoserver.sh
 fi
 
+$SERVICE_ENV="Environment=SERVICE_NAME=$SERVICE_NAME"
+
 mkdir -p /usr/lib/systemd/system
 cat > /usr/lib/systemd/system/$SERVICE_NAME.service <<EOF
 [Unit]
@@ -34,6 +36,7 @@ Restart=on-success
 User=bento
 Group=bento
 TimeoutSec=300
+$SERVICE_ENV
 
 [Install]
 WantedBy=multi-user.target
