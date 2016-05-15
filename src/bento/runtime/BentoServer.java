@@ -210,7 +210,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
             System.out.println("--debug                       Enable the built-in debugger.\n");
             System.out.println("-?                           This screen.\n\n");
             System.out.println("Flags may be abbreviated to their initial letters, e.g. -a instead of -address,");
-            System.out.println("or -l.a instead of -log.append.\n");
+            System.out.println("or -la instead of -log.append.\n");
         }
     }
 
@@ -336,7 +336,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                     i++;
                 }
 
-            } else if (arg.equals("--log.append") || arg.equals("-l.a")) {
+            } else if (arg.equals("--log.append") || arg.equals("-la")) {
                 if (noNextArg) {
                     numProblems++;
                     String msg = "log.append file not provided";

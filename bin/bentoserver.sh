@@ -3,26 +3,37 @@
 # Startup script for Bento running on jetty
 # Adapted from jetty.sh in the jetty 9.3 distribution
 
-##################################################
+#####################################################
 # Set the name which is used by other variables.
 # Defaults to the file name without extension.
-##################################################
+#####################################################
+
+echo "SERVICE_HOME starts as $SERVICE_HOME"
+echo "SERVICE_NAME starts as $SERVICE_NAME"
+
+
 NAME=$(echo $(basename $0) | sed -e 's/^[SK][0-9]*//' -e 's/\.sh$//')
+if [ -z "$SERVICE_NAME" ]
+then
+    SERVICE_NAME=$NAME
+fi
 
 
 usage()
 {
+    echo
     echo "Usage: ${0##*/} [-d] {start|stop|run|restart|status}"
-    return 1
+    echo
+    exit 1
 }
 
 [ $# -gt 0 ] || usage
 
 
-##################################################
+#####################################################
 # Some utility functions
-##################################################
-find_directory()
+#####################################################
+list_op()
 {
     local L OP=$1
     shift
@@ -62,9 +73,9 @@ started()
     return 1
 }
 
-##################################################
+#####################################################
 # Functions to actually perform the actions
-##################################################
+#####################################################
 
 start()
 {
@@ -208,15 +219,16 @@ status()
 }
 
 
-##################################################
+#####################################################
 # Get the action
-##################################################
+#####################################################
 NO_START=0
 DEBUG=0
 
 while [[ $1 = -* ]]; do
     case $1 in
       -d) DEBUG=1 ;;
+      --debug) DEBUG=1 ;;
     esac
     shift
 done
@@ -224,15 +236,14 @@ ACTION=$1
 shift
 
 
-##################################################
+#####################################################
 # Try to find BENTO_HOME if not already set
-##################################################
+#####################################################
 
 BENTO_JAR_PATH="./lib/bento.jar"
 if [ -z $BENTO_HOME ]
 then
-    BENTO_SH=$0
-    if [ -f $BENTO_JAR_PATH ]
+    if [ -f "$BENTO_JAR_PATH" ]
     then
         BENTO_HOME="."
 
@@ -259,17 +270,26 @@ then
     else
       echo "ERROR: BENTO_HOME not set and Bento not installed in a standard location"
       exit 1
-
     fi
 fi
-    
+
 cd "$BENTO_HOME"
 BENTO_HOME=$PWD
 
+if [ "$SERVICE_HOME" == "" ]
+then
+    SERVICE_HOME="$BENTO_HOME"
+fi
 
-##################################################
+cd "$SERVICE_HOME"
+SERVICE_HOME=$PWD
+
+echo "BENTO_HOME is $BENTO_HOME"
+echo "SERVICE_HOME is $SERVICE_HOME"
+
+#####################################################
 # Set the classpath
-##################################################
+#####################################################
 for jar_file in $BENTO_HOME/lib/*.jar; do
     if [ -z $CLASSPATH ]
     then
@@ -285,7 +305,7 @@ done
 #####################################################
 if [ -z "$BENTO_RUN" ]
 then
-    BENTO_RUN=$(find_directory -w /var/run /usr/var/run $BENTO_HOME /tmp)
+    BENTO_RUN=$(list_op -w /var/run /usr/var/run $SERVICE_HOME /tmp)
 fi
 
 if [ -z "$BENTO_PID" ]
@@ -293,22 +313,55 @@ then
     BENTO_PID="$BENTO_RUN/${NAME}.pid"
 fi
 
+
 BENTO_STATE="$BENTO_RUN/${NAME}.state"
 
+#####################################################
+# Generate a log file name and find a place for it
+#####################################################
+LOG_DIR=$(list_op -w /var/log $SERVICE_HOME /tmp .)
 
-##################################################
-# Add the state file to the BENTO_ARGS
-##################################################
-if [ -z "$BENTO_ARGS" ]
+if [ -z "$LOG_DIR" ]
 then
-    BENTO_ARGS="-sf $BENTO_STATE"
-else
-    BENTO_ARGS="$BENTO_ARGS -sf $BENTO_STATE"
+    echo "ERROR: Unable to find writable location for log file"
+    exit 1
 fi
 
-##################################################
+case "$LOG_DIR" in
+    /var/log)
+        LOG_DIR="/var/log/${NAME}"
+        ;;
+    $SERVICE_HOME)
+        LOG_DIR="$SERVICE_HOME/log"
+        ;;
+    /tmp)
+        LOG_DIR="/tmp/log"
+        ;;
+    .)
+        LOG_DIR="./log"
+        ;;
+esac
+
+mkdir -p $LOG_DIR
+
+NOW=$(date +"%F")
+LOG_FILE="$LOG_DIR/${NAME}-$NOW.log"
+
+echo "Logging to $LOG_FILE"
+
+#####################################################
+# Add the state file to the BENTO_ARGS
+#####################################################
+if [ -z "$BENTO_ARGS" ]
+then
+    BENTO_ARGS="-sf $BENTO_STATE -la $LOG_FILE"
+else
+    BENTO_ARGS="$BENTO_ARGS -sf $BENTO_STATE -la $LOG_FILE"
+fi
+
+#####################################################
 # Setup JAVA if unset
-##################################################
+#####################################################
 if [ -z "$JAVA" ]
 then
     JAVA=$(which java)
@@ -325,9 +378,9 @@ RUN_ARGS=(${JAVA_OPTIONS[@]} -cp ${CLASSPATH} bento.runtime.BentoServer ${BENTO_
 RUN_CMD=("$JAVA" ${RUN_ARGS[@]})
 
 
-##################################################
+#####################################################
 # Do the action
-##################################################
+#####################################################
 case "$ACTION" in
     start)
         echo -n "Starting BentoServer: "
