@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash -xe
 #
 # Startup script for Bento running on jetty
 # Adapted from jetty.sh in the jetty 9.3 distribution
@@ -93,7 +93,7 @@ start()
         fi
 
         start-stop-daemon -S -p"$BENTO_PID" $CH_USER -d"$BENTO_HOME" -b -m -a "$JAVA" -- "${RUN_ARGS[@]}"
-        echo -S -p"$BENTO_PID" $CH_USER -d"$BENTO_HOME" -b -m -a "$JAVA" -- "${RUN_ARGS[@]}"
+        echo "start-stop-daemon -S -p$BENTO_PID $CH_USER -d$BENTO_HOME -b -m -a $JAVA -- ${RUN_ARGS[@]}"
 
     else
 
