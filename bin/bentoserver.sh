@@ -359,6 +359,12 @@ else
     BENTO_ARGS="$BENTO_ARGS -sf $BENTO_STATE -la $LOG_FILE"
 fi
 
+if [ -n "$HOST_ADDRESS" ]
+then
+    echo "Listening on $HOST_ADDRESS"
+    BENTO_ARGS="$BENTO_ARGS -a $HOST_ADDRESS"
+fi
+
 #####################################################
 # Setup JAVA if unset
 #####################################################
