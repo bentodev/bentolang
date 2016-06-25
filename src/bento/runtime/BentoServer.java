@@ -33,8 +33,8 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
     private static final long serialVersionUID = 1L;
 
     public static final String NAME = "BentoServer";
-    public static final String MAJOR_VERSION = "1.8";
-    public static final String MINOR_VERSION = "6";
+    public static final String MAJOR_VERSION = "1.9";
+    public static final String MINOR_VERSION = "0";
     public static final String VERSION = MAJOR_VERSION + "." + MINOR_VERSION;
     public static final String NAME_AND_VERSION = NAME + " " + VERSION;
 

@@ -1440,11 +1440,12 @@ void ArrayElementExpression() #void:
 {
     (
       LOOKAHEAD("[=" ArrayElementExpression() ("," | "]"))
-      ArrayConventionalInitBlock()
+      ArrayInitBlock()
     |
-      ElementExpression()
-    | 
+      LOOKAHEAD(ArrayDynamicInitExpression())
       ArrayDynamicInitExpression()
+    | 
+      ElementExpression() 
     )
 }
 
@@ -1523,6 +1524,7 @@ void TableDynamicElementExpression() #void:
 {}
 {
     (
+      LOOKAHEAD(TableDynamicInitExpression())
       TableDynamicInitExpression()
     | 
       TableDynamicElement()
@@ -2057,7 +2059,7 @@ void ArrayDynamicInitExpression() #void:
     |
       ArrayInitForExpression()
     |
-      ArrayDynamicInitBlock()
+      ArrayInitBlock()
     )
 }
 
@@ -2106,17 +2108,8 @@ void ArrayInitForExpression() #ForExpression:
     "for" Iterator(false) ( "and" Iterator(false) | "or" Iterator(true) )* ArrayInitBlock()
 }
 
-void ArrayInitBlock() #void:
-{}
-{
-    (
-      ArrayConventionalInitBlock()
-    |
-      ArrayDynamicInitBlock()
-    )
-}
 
-Block ArrayConventionalInitBlock() #DynamicElementBlock:
+Block ArrayInitBlock() #DynamicElementBlock:
 {
     Block catchBlock;
 }
@@ -2124,45 +2117,19 @@ Block ArrayConventionalInitBlock() #DynamicElementBlock:
     (
       "[=" [ ArrayElementExpression() ( LOOKAHEAD(2) "," ArrayElementExpression() )* [ "," ] ] "=]"
     )
-    [ catchBlock = ArrayConventionalInitCatchBlock() { jjtThis.setCatch(catchBlock); } ]
+    [ catchBlock = ArrayInitCatchBlock() { jjtThis.setCatch(catchBlock); } ]
     {
         return jjtThis;
     }
 }
 
-Block ArrayDynamicInitBlock() #DynamicElementBlock:
-{
-    Block catchBlock;
-}
-{
-    (
-      "[[" [ ArrayElementExpression() ( LOOKAHEAD(2) "," ArrayElementExpression() )* [ "," ] ] "]]"
-    | 
-      "[%" [ ArrayElementExpression() ( LOOKAHEAD(2) "," ArrayElementExpression() )* [ "," ] ] "%]"
-    )
-    [ catchBlock = ArrayDynamicInitCatchBlock() { jjtThis.setCatch(catchBlock); } ]
-    {
-        return jjtThis;
-    }
-}
 
-Block ArrayConventionalInitCatchBlock() #void:
+Block ArrayInitCatchBlock() #void:
 {
     Block block = null;
 }
 {
-    "catch"  block = ArrayConventionalInitBlock()
-    {
-        return block;
-    }
-}
-
-Block ArrayDynamicInitCatchBlock() #void:
-{
-    Block block = null;
-}
-{
-    "catch"  block = ArrayDynamicInitBlock()
+    "catch"  block = ArrayInitBlock()
     {
         return block;
     }
@@ -2177,7 +2144,7 @@ void TableDynamicInitExpression() #void:
     |
       TableInitForExpression()
     |
-      TableDynamicInitBlock()
+      TableInitBlock()
     )
 }
 
@@ -2226,17 +2193,7 @@ void TableInitForExpression() #ForExpression:
     "for" Iterator(false) ( "and" Iterator(false) | "or" Iterator(true) )* TableInitBlock()
 }
 
-void TableInitBlock() #void:
-{}
-{
-    (
-      TableConventionalInitBlock()
-    |
-      TableDynamicInitBlock()
-    )
-}
-
-Block TableConventionalInitBlock() #DynamicElementBlock:
+Block TableInitBlock() #DynamicElementBlock:
 {
     Block catchBlock;
 }
@@ -2244,51 +2201,24 @@ Block TableConventionalInitBlock() #DynamicElementBlock:
     (
       "[=" [ TableDynamicElementExpression() ( LOOKAHEAD(2) "," TableDynamicElementExpression() )* [ "," ] ] "=]"
     )
-    [ catchBlock = TableConventionalInitCatchBlock() { jjtThis.setCatch(catchBlock); } ]
+    [ catchBlock = TableInitCatchBlock() { jjtThis.setCatch(catchBlock); } ]
     {
         return jjtThis;
     }
 }
 
 
-Block TableDynamicInitBlock() #DynamicElementBlock:
-{
-    Block catchBlock;
-}
-{
-    (
-      "[[" [ TableDynamicElementExpression() ( LOOKAHEAD(2) "," TableDynamicElementExpression() )* [ "," ] ] "]]"
-    | 
-      "[%" [ TableDynamicElementExpression() ( LOOKAHEAD(2) "," TableDynamicElementExpression() )* [ "," ] ] "%]"
-    )
-    [ catchBlock = TableDynamicInitCatchBlock() { jjtThis.setCatch(catchBlock); } ]
-    {
-        return jjtThis;
-    }
-}
-
-
-Block TableConventionalInitCatchBlock() #void:
+Block TableInitCatchBlock() #void:
 {
     Block block = null;
 }
 {
-    "catch"  block = TableConventionalInitBlock()
+    "catch"  block = TableInitBlock()
     {
         return block;
     }
 }
 
-Block TableDynamicInitCatchBlock() #void:
-{
-    Block block = null;
-}
-{
-    "catch"  block = TableDynamicInitBlock()
-    {
-        return block;
-    }
-}
 
 void DefExpression() #void:
 {}
@@ -2825,9 +2755,32 @@ void UnaryExpression() #void:
     CastExpression()
   |
     IsaExpression()
+  |
+    ExpressionComprehension()
   )
 }
 
+void ExpressionComprehension() #void:
+{}
+{
+  (    ComprehensionForExpression()
+  |
+    ComprehensionConditionalExpression() 
+  )}
+
+void ComprehensionForExpression() #void:
+{}
+{
+    ArrayInitForExpression()
+}
+
+void ComprehensionConditionalExpression() #void:
+{}
+{
+    ArrayInitConditionalExpression() 
+}
+
+  
 void PositiveExpression() #void:
 {}
 {

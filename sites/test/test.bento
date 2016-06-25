@@ -7,7 +7,7 @@ site test [=
 
 
     copyright [|
-        Copyright &copy; 2004-2015 by <a href="http://www.bentodev.org">bentodev.org</a><br>
+        Copyright &copy; 2004-2016 by <a href="http://www.bentodev.org">bentodev.org</a><br>
     |]
 
     /------------------------------------------------------------------/
@@ -45,7 +45,8 @@ site test [=
                               count_test, corresponding_super_test, dynamic_argument_list_test, 
                               dynamic_array_test, dynamic_array_element_child_test,
                               dynamic_code_block_test, dynamic_keep_test, dynamic_table_test, 
-                              expression_arg_type_test, external_argument_test, 
+                              expression_arg_type_test, expression_comprehension_test, 
+                              external_argument_test, 
                               external_array_parameter_test, external_map_array_test,
                               external_test, higher_order_def_test, indexed_alias_test, insert_test, 
                               keep_test, keep_prefix_test, keep_scope_test,
@@ -2657,9 +2658,9 @@ aecat [=
                "f": "F"
             =],
             
-            [% "g": ghval(tru) %],
+            [= "g": ghval(tru) =],
             
-            [% hkey: ghval(fals) %],
+            [= hkey: ghval(fals) =],
 
             for ii iii in ii_array [=
                 "i": iii
@@ -5517,6 +5518,31 @@ cot [=
         childless_alias_def.super_child;
         childless_alias_def_2.super_child_2;
     =]
+
+    test_case expression_comprehension_test [=
+        int category = arithmetic
+        
+        name = "Expression Comprehension Test"
+        key = "expression_comprehension"
+
+        expected = "ABC"
+    
+        int looped_expression = 1 + for int i = 2 to 5 [= i =]
+        int iffed_expression(boolean flag) = 1 + if (flag) [= 1 =]
+        
+        if (looped_expression == 10)      [| A |] else [| x |]
+        if (iffed_expression(true) == 2)  [| B |] else [| x |]
+        if (iffed_expression(false) == 1) [| C |] else [| x |]
+    =]
+
+ect [=
+ int looped_expression = 1 + for int i = 2 to 5 [= i =]
+ int iffed_expression(boolean flag) = 1 + if (flag) [= 1 =]
+
+ if (looped_expression == 10)      [| A |] else [| x |]
+ if (iffed_expression(true) == 2)  [| B |] else [| x |]
+ if (iffed_expression(false) == 1) [| C |] else [| x |]
+=]
 
     test_case dynamic_code_block_test [=
         int category = dynamic_code
