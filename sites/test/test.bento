@@ -5536,8 +5536,8 @@ cot [=
     =]
 
 ect [=
- int looped_expression = 1 + for int i = 2 to 5 [= i =]
- int iffed_expression(boolean flag) = 1 + if (flag) [= 1 =]
+ dynamic int looped_expression = 1 + for int i = 2 to 5 [= i =]
+ dynamic int iffed_expression(boolean flag) = 1 + if (flag) [= 1 =]
 
  if (looped_expression == 10)      [| A |] else [| x |]
  if (iffed_expression(true) == 2)  [| B |] else [| x |]

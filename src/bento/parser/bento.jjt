@@ -2768,16 +2768,76 @@ void ExpressionComprehension() #void:
     ComprehensionConditionalExpression() 
   )}
 
-void ComprehensionForExpression() #void:
+void ComprehensionConditionalExpression() #ConditionalExpression:
 {}
 {
-    ArrayInitForExpression()
+    ( ComprehensionIfExpression() | ComprehensionWithExpression() )
+    (
+        LOOKAHEAD(2)
+        ComprehensionElseIfOrWithExpression()
+    )*
+    [ ComprehensionElseExpression() ]
 }
 
-void ComprehensionConditionalExpression() #void:
+void ComprehensionIfExpression() #void:
 {}
 {
-    ArrayInitConditionalExpression() 
+    "if" ValueExpression()
+        ComprehensionBlock()
+}
+
+void ComprehensionWithExpression() #void:
+{}
+{
+    "with" WithPredicateExpression()
+        ComprehensionBlock()
+}
+
+
+void ComprehensionElseIfOrWithExpression() #void:
+{}
+{
+    "else" ( "if" ValueExpression() | "with" WithPredicateExpression() ) ComprehensionBlock()
+}
+
+void ComprehensionElseExpression() #void:
+{}
+{
+    "else"
+        ComprehensionBlock()
+}
+
+void ComprehensionForExpression() #ForExpression:
+{}
+{
+    "for" Iterator(false) ( "and" Iterator(false) | "or" Iterator(true) )* ComprehensionBlock()
+}
+
+
+Block ComprehensionBlock() #BentoBlock:
+{
+    Block catchBlock;
+}
+{
+    (
+      "[=" [ ArrayElementExpression() ( LOOKAHEAD(2) "," ArrayElementExpression() )* [ "," ] ] "=]"
+    )
+    [ catchBlock = ComprehensionCatchBlock() { jjtThis.setCatch(catchBlock); } ]
+    {
+        return jjtThis;
+    }
+}
+
+
+Block ComprehensionCatchBlock() #void:
+{
+    Block block = null;
+}
+{
+    "catch"  block = ComprehensionBlock()
+    {
+        return block;
+    }
 }
 
   

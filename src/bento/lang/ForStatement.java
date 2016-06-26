@@ -129,11 +129,15 @@ public class ForStatement extends AbstractConstruction implements ConstructionCo
 
                     } else {
                         Object data = body.getData(context);
-                        if (data instanceof Value && !(data instanceof ResolvedInstance)) {
-                            data = ((Value) data).getValue();
-                        }
-                        if (data != null && data instanceof Construction) {
-                            constructions.add((Construction) data);
+                        //if (data instanceof Value && !(data instanceof ResolvedInstance)) {
+                        //    data = ((Value) data).getValue();
+                        //}
+                        if (data != null) {
+                            if (data instanceof Construction) {
+                                constructions.add((Construction) data);
+                            } else {
+                                constructions.add(getConstructionForElement(data, context));
+                            }
                         }
                     }
                     popParams(context, n);

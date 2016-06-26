@@ -10,6 +10,8 @@
 
 package bento.lang;
 
+import java.util.Iterator;
+
 import bento.runtime.Context;
 
 /**
@@ -36,10 +38,19 @@ public class BinaryExpression extends Expression {
         // AddOperator.
         int len = getNumChildren();
         ValueSource val = (ValueSource) getChild(0);
+        Definition owner = getOwner();
         for (int i = 1; i < len - 1; i += 2) {
             BinaryOperator op = (BinaryOperator) getChild(i);
             ValueSource nextVal = (ValueSource) getChild(i + 1);
-            val = op.operate(val, nextVal, context, getOwner());
+            if (nextVal instanceof ForStatement) {
+                Iterator<Construction> vals = ((ForStatement) nextVal).generateConstructions(context).iterator();
+                while (vals.hasNext()) {
+                    val = op.operate(val, vals.next(), context, owner);
+                }
+                
+            } else {
+                val = op.operate(val, nextVal, context, owner);
+            }
         }
         return val;
 
