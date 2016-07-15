@@ -567,7 +567,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         Object[] all_sites = mainSite.getPropertyArray("all_sites");
         if (all_sites != null && all_sites.length > 0) {
             for (int i = 0; i < all_sites.length; i++) {
-                site_config sc = new site_config_wrapper((Construction) all_sites[i], mainSite);
+                site_config sc = new site_config_wrapper((BentoObjectWrapper) all_sites[i]);
                 String nm = sc.name();
                 if (nm.equals(siteName)) {
                     continue;
@@ -640,7 +640,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
     
     static void link(Node[] parseResults) {
         for (int i = 0; i < parseResults.length; i++) {
-            parseResults[i].jjtAccept(new SiteLoader.Linker(), null);
+            parseResults[i].jjtAccept(new SiteLoader.Linker(true), null);
         }
     }
 
@@ -1251,21 +1251,23 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
     
 
     /** Class to provide Java access to Bento site_config object. **/
-    public static class site_config_wrapper extends BentoObjectWrapper implements site_config {
-        public site_config_wrapper(Construction site_config, BentoSite mainSite) {
-            super(site_config, mainSite);
+    public static class site_config_wrapper implements site_config {
+        BentoObjectWrapper site_config;
+    	
+    	public site_config_wrapper(BentoObjectWrapper site_config) {
+            this.site_config = site_config;
         }
 
         /** Returns the name of the site. **/
         public String name() {
-            return getChildText("name");
+            return site_config.getChildText("name");
         }
         
         /** The directories and/or files containing the Bento source
          *  code for this site.
          **/
         public String bentopath() {
-            return getChildText("bentopath");
+            return site_config.getChildText("bentopath");
             
         }
         
@@ -1273,7 +1275,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
          *  code for core.
          **/
         public String corepath() {
-            return getChildText("corepath");
+            return site_config.getChildText("corepath");
             
         }
         
@@ -1281,7 +1283,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
          *  code specific to this site (not including core).
          **/
         public String sitepath() {
-            return getChildText("sitepath");
+            return site_config.getChildText("sitepath");
             
         }
         
@@ -1289,12 +1291,12 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
          *  for Bento source files.
          **/
         public boolean recursive() {
-            return getChildBoolean("recursive");
+            return site_config.getChildBoolean("recursive");
         }
         
         /** The base directory for file-based resources. **/
         public String filepath() {
-            return getChildData("filepath").toString();
+            return site_config.getChildData("filepath").toString();
         }
 
         /** The files first setting.  If true, the server should look for files 
@@ -1303,7 +1305,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
          *  suitable Bento object by the requested name exists.
          */
         public boolean files_first() {
-            return getChildBoolean("files_first");
+            return site_config.getChildBoolean("files_first");
         }
        
     }

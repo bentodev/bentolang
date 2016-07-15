@@ -104,10 +104,12 @@ public class NameNode extends AbstractNode implements Name {
      *  else throws an IndexOutOfBounds exception.
      */
     public NameNode getPart(int n) {
-        if (n == 0) {
+        if (n == 0 && (parts == null || parts.length <= 1)) {
             return this;
+        } else if (n < parts.length) {
+        	return new NameNode(parts[n]);
         } else {
-            throw new IndexOutOfBoundsException("name only has 1 part");
+            throw new IndexOutOfBoundsException("name does not have part " + n);
         }
     }
 

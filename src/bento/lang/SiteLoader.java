@@ -485,10 +485,15 @@ public class SiteLoader {
 
     public static class Linker extends BentoVisitor {
 
-//        Definition definitionDef = null;
-//        Type definitionType = null;
-//        
-        public Object handleNode(BentoNode node, Object data) {
+    	private boolean errorOnUnresolvedType = false;
+    	
+        public Linker() { }
+        
+        public Linker(boolean errorOnUnresolvedType) {
+        	this.errorOnUnresolvedType = errorOnUnresolvedType;
+        }
+    	
+    	public Object handleNode(BentoNode node, Object data) {
             if (node instanceof Instantiation) {
                 Instantiation instance = (Instantiation) node;
                 if (!instance.isDynamic()) {
@@ -506,7 +511,7 @@ public class SiteLoader {
                 Type type = (Type) node;
                 if (type.getDefinition() == null && !type.isPrimitive() && !type.isSpecial()) {
                     type.resolve();
-                    if (type.getDefinition() == null && !type.isExternal()) {
+                    if (errorOnUnresolvedType && type.getDefinition() == null && !type.isExternal()) {
                         throw new LinkException("Unable to resolve type " + type.getName());
                     }
                 }

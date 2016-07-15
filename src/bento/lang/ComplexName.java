@@ -29,12 +29,12 @@ public class ComplexName extends NameNode implements Name, Initializable {
         super();
     }
 
-    public ComplexName(AbstractNode node, int start, int end) {
+    public ComplexName(NameNode node, int start, int end) {
         super();
         int len = end - start;
         children = new AbstractNode[len];
         for (int i = 0; i < len; i++) {
-            children[i] = (AbstractNode) node.children[start + i].clone();
+            children[i] = node.getPart(start + i);
             children[i].parent = this;
         }
         super.setName(computeName());
