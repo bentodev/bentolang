@@ -47,4 +47,7 @@ public interface Construction extends Chunk {
     public Object getData(Context context, Definition def) throws Redirection;
     
     public Construction getUltimateConstruction(Context context);
+
+    public boolean isPrimitive();
+
 }

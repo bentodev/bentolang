@@ -1458,7 +1458,7 @@ public class NamedDefinition extends AnonymousDefinition {
 
             // not an alias; see if it is a construction that defines the child
             AbstractNode contents = getContents();
-            if (!isAlias() && !isIdentity() && contents instanceof Construction) {
+            if (!isAlias() && !isIdentity() && contents instanceof Construction && !((Construction) contents).isPrimitive()) {
                 Construction construction = ((Construction) contents).getUltimateConstruction(context);
                 if (construction instanceof Instantiation && !((Instantiation) construction).isParameterKind()) {
                     Instantiation instance = (Instantiation) construction;

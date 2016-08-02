@@ -2,7 +2,7 @@
  *
  * $Id: ArgumentList.java,v 1.24 2015/04/01 13:11:27 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -41,6 +41,7 @@ public class ArgumentList extends ListNode<Construction> {
         public long getLong(Context context) throws Redirection      { return 0; }
 		public double getDouble(Context context) throws Redirection  { return 0; }
 		public Value getValue(Context context) throws Redirection    { return NullValue.NULL_VALUE; }
+		public boolean isPrimitive()                                 { return true; }
     };
 
     private boolean dynamic = false;
