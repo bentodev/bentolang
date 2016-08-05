@@ -2,7 +2,7 @@
  *
  * $Id: BinaryOperator.java,v 1.12 2015/05/28 12:54:26 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -44,7 +44,7 @@ abstract public class BinaryOperator extends AbstractOperator {
      *  to handle such special cases.  The function should call the standard version
      *  of <code>operate</code> to handle standard cases.
      */
-    public Value operate(ValueSource firstObj, ValueSource secondObj, Context context, Definition resolver) throws Redirection {
+    public Value operate(ValueSource firstObj, ValueSource secondObj, Context context) throws Redirection {
         return operate(firstObj.getValue(context), new DeferredValue(secondObj, context));	
     }
 
@@ -187,9 +187,9 @@ abstract public class BinaryOperator extends AbstractOperator {
         }
     }
 
-    protected Type getValueSourceType(Object obj, Context context, Definition resolver) {
+    protected Type getValueSourceType(Object obj, Context context, boolean generate) {
         if (obj instanceof Construction) {
-            return ((Construction) obj).getType(context, resolver);
+            return ((Construction) obj).getType(context, generate);
         } else if (obj instanceof PrimitiveValue) {
             return ((PrimitiveValue) obj).getType();
         } else {

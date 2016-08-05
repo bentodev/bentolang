@@ -2,7 +2,7 @@
  *
  * $Id: ChoiceExpression.java,v 1.13 2015/06/18 13:18:09 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -57,13 +57,13 @@ public class ChoiceExpression extends Expression {
         return this;
     }
 
-    public Type getType(Context context, Definition resolver) {
+    public Type getType(Context context, boolean generate) {
         try {
             Value test = getChildValue(context, 0);
             if (test.getBoolean()) {
-                return getChildType(context, resolver, 1);
+                return getChildType(context, generate, 1);
             } else {
-                return getChildType(context, resolver, 2);
+                return getChildType(context, generate, 2);
             }
         } catch (Redirection r) {
             return DefaultType.TYPE;

@@ -37,9 +37,9 @@ abstract public class ArithmeticOperator extends BinaryOperator {
     /** Some arithmetic operators can operate on arrays */
     abstract public Object arrayOperate(Object op1, Object op2);
 
-    public Value operate(ValueSource firstObj, ValueSource secondObj, Context context, Definition resolver) throws Redirection {
-        Type type1 = getValueSourceType(firstObj, context, resolver);
-        Type type2 = getValueSourceType(secondObj, context, resolver);
+    public Value operate(ValueSource firstObj, ValueSource secondObj, Context context) throws Redirection {
+        Type type1 = getValueSourceType(firstObj, context, true);
+        Type type2 = getValueSourceType(secondObj, context, true);
         
         if ((type1 != null && type1.isArray()) || (type2 != null && type2.isArray())) {
             Object obj1 = null;

@@ -2,7 +2,7 @@
  *
  * $Id: Block.java,v 1.34 2015/04/01 13:11:27 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -130,12 +130,12 @@ abstract public class Block extends AbstractNode implements Construction, Constr
         return context.construct(block.getConstructions());
     }
 
-    public Type getType(Context context, Definition resolver) {
+    public Type getType(Context context, boolean generate) {
         Construction construction = getUltimateConstruction(context);
         if (construction == null) {
             return PrimitiveType.VOID;
         } else if (construction != this) {
-            return construction.getType(context, resolver);
+            return construction.getType(context, generate);
         } else {
             return DefaultType.TYPE;
         }

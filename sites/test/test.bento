@@ -3201,32 +3201,19 @@ cu [=
 
 oct [=
   obj [=
-    g(z) = z
+    g = "x"
   =]
-  dynamic obj sub_4 [=
-    eval(g(: "G" :));
-    this;
+  dynamic obj sub_1 [=
+    g = "G"
   =]
-  dynamic obj sub_5 [=
-    eval(g(: "H" :));
-    this;
+  dynamic obj sub_3 [=
+    if (true) [=
+        sub1;
+    =]
   =]
   
-  po [=
-    obj cobj(obj o) = o
-    
-    dynamic set_cobj(obj ob) [= eval(cobj(: ob :)); =]
-    
-    set_cobj(sub_4);
-  =]
-  //po.cobj.type; sp;
-  po;
-  //sp; po.cobj.type; sp;
-  po.cobj.g;
-  //sp; po.cobj.type; sp;
-  po.set_cobj(sub_5);
-  //sp; po.cobj.type; sp;
-  po.cobj.g;
+  sub_3.g;
+  
 =]
     cocotest [=
     

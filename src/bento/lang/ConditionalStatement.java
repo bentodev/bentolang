@@ -2,7 +2,7 @@
  *
  * $Id: ConditionalStatement.java,v 1.15 2015/07/06 16:26:15 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -177,30 +177,44 @@ public class ConditionalStatement extends AbstractConstruction implements Constr
         return data;
     }
 
-    public Type getType(Context context, Definition resolver) {
-        if ((body == null || body.getNumChildren() == 0) && (elseBody == null || elseBody.getNumChildren() == 0) && elseIf == null) {
-            return PrimitiveType.VOID;
+    public Type getType(Context context, boolean generate) {
+        if (body == null || body.getNumChildren() == 0 || ((elseBody == null || elseBody.getNumChildren() == 0) && elseIf == null)) {
+            return DefaultType.TYPE;
         }
-        try {
-            if (valueOf(condition, context).getBoolean()) {
-                if (body != null && body.getNumChildren() > 0) {
-                    return body.getType(context, resolver);
-                } else {
-                    return PrimitiveType.VOID;
-                }
-            } else {
-                if (elseBody != null && elseBody.getNumChildren() > 0) {
-                    return elseBody.getType(context, resolver);
-                } else if (elseIf != null) {
-                    return elseIf.getType(context, resolver);
-                } else {
-                    return PrimitiveType.VOID;
-                }
+        Type bodyType = body.getType(context, generate);
+        Type elseType;
+        if (elseBody != null && elseBody.getNumChildren() > 0) {
+        	elseType = elseBody.getType(context, generate);
+        } else if (elseIf != null) {
+            elseType = elseIf.getType(context, generate);
+        } else {
+            return DefaultType.TYPE;
+        }
+        return findCommonType(context, bodyType, elseType);
+    }
+    
+    private Type findCommonType(Context context, Type type1, Type type2) {
+    	if (type1.equals(PrimitiveType.VOID) || type2.equals(PrimitiveType.VOID)) {
+    		return PrimitiveType.VOID;
+    	} else if (type1.equals(DefaultType.TYPE) || type2.equals(DefaultType.TYPE)) {
+    	    return DefaultType.TYPE;
+    	} else if (type2.isTypeOf(type1, context)) {
+    		return type1;
+    	} else if (type1.isTypeOf(type2, context)) {
+    		return type2;
+    	} else {
+            type1 = type1.getSuper();
+            if (type1 == null) {
+            	return DefaultType.TYPE;
             }
-        } catch (Redirection r) {
-        	;
-        }
-        return DefaultType.TYPE;
+            type2 = type2.getSuper();
+            if (type2 == null) {
+            	return DefaultType.TYPE;
+            }
+    		return findCommonType(context, type1, type2);
+    	}
+    	
+    	
     }
 
     public String toString(String prefix) {

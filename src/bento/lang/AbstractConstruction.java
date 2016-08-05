@@ -582,7 +582,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
     }
 
 
-    public Type getType(Context context, Definition resolver) {
+    public Type getType(Context context, boolean generate) {
         return DefaultType.TYPE;
     }
 

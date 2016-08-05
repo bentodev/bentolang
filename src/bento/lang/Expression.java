@@ -2,7 +2,7 @@
  *
  * $Id: Expression.java,v 1.22 2015/06/18 13:18:09 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -101,7 +101,7 @@ abstract public class Expression extends AbstractConstruction implements ValueGe
         return false;
     }
 
-    abstract public Type getType(Context context, Definition resolver);
+    abstract public Type getType(Context context, boolean generate);
     /*  {
         try {
             Value value = getValue(context);
@@ -138,10 +138,10 @@ abstract public class Expression extends AbstractConstruction implements ValueGe
         }
     }
 
-    protected Type getChildType(Context context, Definition resolver, int n) {
+    protected Type getChildType(Context context, boolean generate, int n) {
         Object child = getChild(n);
         if (child instanceof Construction) {
-            return ((Construction) child).getType(context, resolver);
+            return ((Construction) child).getType(context, generate);
         } else {
             try {
                 Value value = getChildValue(context, n);

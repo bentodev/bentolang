@@ -473,7 +473,7 @@ public class ExternalDefinition extends ComplexDefinition {
                     } else if (obj instanceof Value) {
                         params[i] = ((Value) obj).getValueClass();
                     } else if (obj instanceof Construction) {
-                        paramType = ((Construction) obj).getType(context, this);
+                        paramType = ((Construction) obj).getType(context, generate);
                         if (paramType == null) {
                             params[i] = Object.class;
                         } else {

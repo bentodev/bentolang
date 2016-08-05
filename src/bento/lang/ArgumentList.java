@@ -30,7 +30,7 @@ public class ArgumentList extends ListNode<Construction> {
         public Object getData(Context context)                       { return null; }
         public Object getData(Context context, Definition def)       { return null; }
         public boolean isAbstract(Context context)                   { return false; }
-        public Type getType(Context context, Definition resolver)    { return null; }
+        public Type getType(Context context, boolean generate)       { return null; }
         public String getDefinitionName()                            { return null; }
         public Construction getUltimateConstruction(Context context) { return this; }
         public String toString()                                     { return "(missing arg)"; }

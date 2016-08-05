@@ -2,7 +2,7 @@
  *
  * $Id: BinaryExpression.java,v 1.12 2015/06/18 13:18:09 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -38,18 +38,17 @@ public class BinaryExpression extends Expression {
         // AddOperator.
         int len = getNumChildren();
         ValueSource val = (ValueSource) getChild(0);
-        Definition owner = getOwner();
         for (int i = 1; i < len - 1; i += 2) {
             BinaryOperator op = (BinaryOperator) getChild(i);
             ValueSource nextVal = (ValueSource) getChild(i + 1);
             if (nextVal instanceof ForStatement) {
                 Iterator<Construction> vals = ((ForStatement) nextVal).generateConstructions(context).iterator();
                 while (vals.hasNext()) {
-                    val = op.operate(val, vals.next(), context, owner);
+                    val = op.operate(val, vals.next(), context);
                 }
                 
             } else {
-                val = op.operate(val, nextVal, context, owner);
+                val = op.operate(val, nextVal, context);
             }
         }
         return val;
@@ -63,12 +62,12 @@ public class BinaryExpression extends Expression {
 //        return val;
     }
 
-    public Type getType(Context context, Definition resolver) {
+    public Type getType(Context context, boolean generate) {
         int len = getNumChildren();
-        Type type = getChildType(context, resolver, 0);
+        Type type = getChildType(context, generate, 0);
         for (int i = 1; i < len - 1; i += 2) {
             BinaryOperator op = (BinaryOperator) getChild(i);
-            type = op.getResultType(type, getChildType(context, resolver, i + 1), context);
+            type = op.getResultType(type, getChildType(context, generate, i + 1), context);
         }
         return type;
     }

@@ -30,7 +30,7 @@ import bento.runtime.Context;
 public interface Construction extends Chunk {
 
     /** Returns the type of this construction in the specified context. */
-    public Type getType(Context context, Definition resolver);
+    public Type getType(Context context, boolean generate);
 
     /** Returns the name of the definition being constructed */
     public String getDefinitionName();

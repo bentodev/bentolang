@@ -46,7 +46,7 @@ public class NullValue extends Block implements Value {
 
     /** Returns <code>true</code> */
     public boolean isPrimitive() {
-        return (type <= LITERAL_STRING);
+        return true;
     }
 
     /** Returns <code>true</code> if this is a null static block,
