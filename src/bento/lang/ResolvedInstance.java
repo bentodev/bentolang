@@ -234,8 +234,8 @@ public class ResolvedInstance extends Instantiation implements Value {
         }
     }
 
-    public Type getType(Context context, Definition resolver) {
-        return super.getType(resolutionContext, resolver);
+    public Type getType(Context context, boolean generate) {
+        return super.getType(resolutionContext, generate);
     }
 
     public Object instantiate(Context context, Definition definition, ArgumentList args, List<Index> indexes) throws Redirection {
@@ -271,8 +271,8 @@ public class ResolvedInstance extends Instantiation implements Value {
         return def;
     }
 
-    public Type getType(Definition resolver) {
-        return super.getType(resolutionContext, resolver);
+    public Type getType() {
+        return super.getType(resolutionContext, false);
     }
 
     // Get data without a context

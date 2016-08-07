@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("wgen_db")) {
+if (definition.getName().equals("single_const_parent")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -915,7 +915,7 @@ if (definition.getName().equals("wgen_db")) {
                 AbstractNode contents = definition.getContents();
                 Definition constructedDef = null;
                 if (contents instanceof Construction) {
-                    Type constructedType = ((Construction) contents).getType(this, definition);
+                    Type constructedType = ((Construction) contents).getType(this, true);
                     if (constructedType != null) {
                         constructedDef = constructedType.getDefinition();
                     }
@@ -3310,11 +3310,11 @@ if (definition.getName().equals("wgen_db")) {
                 }
                 argDef = childDef;
 
-                if (arg instanceof Value && BentoObjectWrapper.class.equals(((Value) arg).getValueClass())) {
-                    BentoObjectWrapper wrapper = (BentoObjectWrapper) ((Value) arg).getValue();
-                    Context argContext = wrapper.context;
-                    argDef = new BoundDefinition(argDef, argContext);
-                }
+                //if (arg instanceof Value && BentoObjectWrapper.class.equals(((Value) arg).getValueClass())) {
+                //    BentoObjectWrapper wrapper = (BentoObjectWrapper) ((Value) arg).getValue();
+                //    Context argContext = wrapper.context;
+                //    argDef = new BoundDefinition(argDef, argContext);
+                //}
             }
 
             if (returnClass == Entry.class) {

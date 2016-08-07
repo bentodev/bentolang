@@ -491,7 +491,7 @@ ss1 [=
         
     =]
 
-    test_case children_of_overridden_super_test [=
+    /-- test_case --/ children_of_overridden_super_test [=
         int category = instantiations
         name = "Children of Overridden Super Test"
         key = "base_child_subclass"

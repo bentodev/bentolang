@@ -422,7 +422,7 @@ public class BentoSite extends BentoDomain {
                         }
                     }
                     if (data == null) {
-                        Type type = instance.getType(context, null);
+                        Type type = instance.getType(context, false);
                         log(type.getName() + " " + (pageName.charAt(0) == '$' ? pageName.substring(1) : pageName) + " is empty.");
                         return false;
                     }

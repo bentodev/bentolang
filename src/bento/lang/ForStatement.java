@@ -759,7 +759,7 @@ class Combo extends ArgumentList implements Construction {
     }
 
     public String getDefinitionName()                            { return null; }
-    public Type getType(Context context, Definition resolver)    { return null; }
+    public Type getType(Context context, boolean generate)       { return null; }
     public boolean getBoolean(Context context)                   { return false; }
     public Object getData(Context context)                       { return null; }
     public Object getData(Context context, Definition def)       { return null; }

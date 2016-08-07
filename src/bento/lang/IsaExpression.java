@@ -2,7 +2,7 @@
  *
  * $Id: IsaExpression.java,v 1.10 2015/06/18 13:18:09 sthippo Exp $
  *
- * Copyright (c) 2003-2015 by bentodev.org
+ * Copyright (c) 2003-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -36,7 +36,7 @@ public class IsaExpression extends Expression {
     }
 
     /** Always returns boolean type */
-    public Type getType(Context context, Definition resolver) {
+    public Type getType(Context context, boolean generate) {
         return PrimitiveType.BOOLEAN;
     }
 

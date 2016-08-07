@@ -2,7 +2,7 @@
  *
  * $Id: TableElement.java,v 1.14 2015/04/01 13:11:27 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -83,7 +83,7 @@ public class TableElement extends ElementDefinition implements Construction {
         return super.getName();
     }
 
-    public Type getType(Context context, Definition resolver) {
+    public Type getType(Context context, boolean generate) {
         return super.getType();
     }
 

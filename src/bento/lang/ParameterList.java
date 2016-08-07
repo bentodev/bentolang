@@ -2,7 +2,7 @@
  *
  * $Id: ParameterList.java,v 1.28 2015/04/13 13:09:10 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -158,7 +158,7 @@ public class ParameterList extends ListNode<DefParameter> {
                         argType = ((Instantiation) arg).getNarrowType(argContext, resolver);
                     }
                 } else if (arg instanceof Construction) {
-                    argType = ((Construction) arg).getType(argContext, resolver);
+                    argType = ((Construction) arg).getType(argContext, false);
                 } else if (arg instanceof Definition) {
                     argType = ((Definition) arg).getType();
                 } else if (arg instanceof PrimitiveValue) {

@@ -275,7 +275,7 @@ public class ElementDefinition extends AnonymousDefinition {
         if (contents instanceof PrimitiveValue) {
             contentType = ((PrimitiveValue) contents).getType();
         } else if (contents instanceof ResolvedInstance) {
-            contentType = ((ResolvedInstance) contents).getType(null);
+            contentType = ((ResolvedInstance) contents).getType();
         }
         
         Type collectionType = DefaultType.TYPE;

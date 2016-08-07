@@ -1466,7 +1466,7 @@ public class NamedDefinition extends AnonymousDefinition {
                     if (!node.equals(name) && (resolver == null || !resolver.getNameNode().equals(name))) {
                         Definition contentDef = instance.getDefinition(context, this);
                         if (contentDef == null || contentDef == this) {
-                            Type contentType = instance.getType(context, this);
+                            Type contentType = instance.getType(context, generate);
                             if (contentType != null) {
                                 contentDef = contentType.getDefinition();
                             }
@@ -1504,7 +1504,7 @@ public class NamedDefinition extends AnonymousDefinition {
                         }
                     }
                 } else if (!this.equals(resolver)) {
-                    Type type = construction.getType(context, this);
+                    Type type = construction.getType(context, generate);
                     if (type != null && type != DefaultType.TYPE && !type.isPrimitive() && !type.equals(getType())) {
                         Definition runtimeDef = type.getDefinition();
                         if (runtimeDef != null && runtimeDef.getName() != Name.THIS && runtimeDef.canHaveChildDefinitions()) {
@@ -1970,7 +1970,7 @@ public class NamedDefinition extends AnonymousDefinition {
                     ParameterList contentParams = null;
     
                     if (contentDef == null || contentDef == this) {
-                        Type contentType = ((Instantiation) construction).getType(context, this);
+                        Type contentType = ((Instantiation) construction).getType(context, generate);
                         if (contentType != null) {
                             contentDef = contentType.getDefinition();
                             if (contentDef != null) {
@@ -1994,7 +1994,7 @@ public class NamedDefinition extends AnonymousDefinition {
                         }
                     }
                 } else  {
-                    Type type = construction.getType(context, this);
+                    Type type = construction.getType(context, generate);
                     if (type != null) {
                         Definition runtimeDef = type.getDefinition();
                         if (runtimeDef != null && runtimeDef.canHaveChildDefinitions()) {

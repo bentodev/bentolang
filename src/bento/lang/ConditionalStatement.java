@@ -184,7 +184,7 @@ public class ConditionalStatement extends AbstractConstruction implements Constr
         Type bodyType = body.getType(context, generate);
         Type elseType;
         if (elseBody != null && elseBody.getNumChildren() > 0) {
-        	elseType = elseBody.getType(context, generate);
+            elseType = elseBody.getType(context, generate);
         } else if (elseIf != null) {
             elseType = elseIf.getType(context, generate);
         } else {
@@ -194,27 +194,19 @@ public class ConditionalStatement extends AbstractConstruction implements Constr
     }
     
     private Type findCommonType(Context context, Type type1, Type type2) {
-    	if (type1.equals(PrimitiveType.VOID) || type2.equals(PrimitiveType.VOID)) {
-    		return PrimitiveType.VOID;
-    	} else if (type1.equals(DefaultType.TYPE) || type2.equals(DefaultType.TYPE)) {
-    	    return DefaultType.TYPE;
-    	} else if (type2.isTypeOf(type1, context)) {
-    		return type1;
-    	} else if (type1.isTypeOf(type2, context)) {
-    		return type2;
-    	} else {
-            type1 = type1.getSuper();
-            if (type1 == null) {
-            	return DefaultType.TYPE;
-            }
-            type2 = type2.getSuper();
-            if (type2 == null) {
-            	return DefaultType.TYPE;
-            }
-    		return findCommonType(context, type1, type2);
-    	}
-    	
-    	
+        if (type1 == null || type2 == null) {
+            return DefaultType.TYPE;
+        } else if (type1.equals(PrimitiveType.VOID) || type2.equals(PrimitiveType.VOID)) {
+            return PrimitiveType.VOID;
+        } else if (type1.equals(DefaultType.TYPE) || type2.equals(DefaultType.TYPE)) {
+            return DefaultType.TYPE;
+        } else if (type2.isTypeOf(type1, context)) {
+            return type1;
+        } else if (type1.isTypeOf(type2, context)) {
+            return type2;
+        } else {
+            return findCommonType(context, type1.getSuper(), type2.getSuper());
+        }
     }
 
     public String toString(String prefix) {

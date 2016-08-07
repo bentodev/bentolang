@@ -370,7 +370,7 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
     }
 
     /** Returns the type of this construction in the specified context. */
-    public Type getType(Context context, Definition resolver) {
+    public Type getType(Context context, boolean generate) {
         return getType(); 
     }
 

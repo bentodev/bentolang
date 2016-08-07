@@ -533,8 +533,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
     }
 
     /** Returns this instantiation's type in this context. */
-    public Type getType(Context context, Definition resolver) {
-        return getType(context, resolver, false);
+    public Type getType(Context context, boolean generate) {
+        return getType(context, null, generate, false);
     }
 
 
@@ -544,11 +544,11 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
      *  subtype of the parameter type.
      */
     public Type getNarrowType(Context context, Definition resolver) {
-        return getType(context, resolver, true);
+        return getType(context, resolver, false, true);
     }
 
 
-    private Type getType(Context context, Definition resolver, boolean narrow) {
+    private Type getType(Context context, Definition resolver, boolean generate, boolean narrow) {
         if (reference instanceof Definition) {
             return ((Definition) reference).getType();
 
@@ -556,7 +556,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
             return ((PrimitiveValue) reference).getType();
 
         } else if (reference instanceof Expression) {
-            return ((Expression) reference).getType(context, resolver);
+            return ((Expression) reference).getType(context, generate);
             
         } else {
 
@@ -1788,7 +1788,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         } else if (reference instanceof NameNode) {
             NameNode nameNode = getReferenceName();
             String name = nameNode.getName();
-if (name.equals("wgen_db")) {
+if (name.equals("single_const_parent")) {
  System.out.println(name + " at Inst 1767");    
 }
             if (localDef != null) {

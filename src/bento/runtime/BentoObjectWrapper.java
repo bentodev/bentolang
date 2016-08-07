@@ -35,11 +35,11 @@ public class BentoObjectWrapper {
             ResolvedInstance ri = (ResolvedInstance) construction;
             context = ri.getResolutionContext();
             def = ri.getDefinition();
-            type = ri.getType(null);
+            type = ri.getType();
                     
         } else {
             context = site.getNewContext();
-            type = construction.getType(context, null);
+            type = construction.getType(context, false);
             def = type.getDefinition();
         }
     }

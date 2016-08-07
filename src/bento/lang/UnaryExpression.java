@@ -2,7 +2,7 @@
  *
  * $Id: UnaryExpression.java,v 1.9 2015/06/18 13:18:09 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -36,9 +36,9 @@ public class UnaryExpression extends Expression {
         return op.operate(operand);
     }
 
-    public Type getType(Context context, Definition resolver) {
+    public Type getType(Context context, boolean generate) {
         UnaryOperator op = (UnaryOperator) getChild(0);
-        return op.getResultType(getChildType(context, resolver, 1));
+        return op.getResultType(getChildType(context, generate, 1));
     }
 
     public Expression resolveExpression(Context context) {
