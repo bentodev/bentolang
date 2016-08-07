@@ -178,19 +178,39 @@ public class ConditionalStatement extends AbstractConstruction implements Constr
     }
 
     public Type getType(Context context, boolean generate) {
-        if (body == null || body.getNumChildren() == 0 || ((elseBody == null || elseBody.getNumChildren() == 0) && elseIf == null)) {
-            return DefaultType.TYPE;
-        }
-        Type bodyType = body.getType(context, generate);
-        Type elseType;
-        if (elseBody != null && elseBody.getNumChildren() > 0) {
-            elseType = elseBody.getType(context, generate);
-        } else if (elseIf != null) {
-            elseType = elseIf.getType(context, generate);
+        if (generate) {
+            try {
+                if (valueOf(condition, context).getBoolean()) {
+                    if (body != null && body.getNumChildren() > 0) {
+                        return body.getType(context, generate);
+                    } else {
+                        return DefaultType.TYPE;                    }
+                } else {
+                    if (elseBody != null && elseBody.getNumChildren() > 0) {
+                        return elseBody.getType(context, generate);
+                    } else if (elseIf != null) {
+                        return elseIf.getType(context, generate);
+                    } else {
+                        return DefaultType.TYPE;                    }
+                }
+            } catch (Redirection r) {
+                return DefaultType.TYPE;
+            }
         } else {
-            return DefaultType.TYPE;
+            if (body == null || body.getNumChildren() == 0 || ((elseBody == null || elseBody.getNumChildren() == 0) && elseIf == null)) {
+                return DefaultType.TYPE;
+            }
+            Type bodyType = body.getType(context, generate);
+            Type elseType;
+            if (elseBody != null && elseBody.getNumChildren() > 0) {
+                elseType = elseBody.getType(context, generate);
+            } else if (elseIf != null) {
+                elseType = elseIf.getType(context, generate);
+            } else {
+                return DefaultType.TYPE;
+            }
+            return findCommonType(context, bodyType, elseType);
         }
-        return findCommonType(context, bodyType, elseType);
     }
     
     private Type findCommonType(Context context, Type type1, Type type2) {
