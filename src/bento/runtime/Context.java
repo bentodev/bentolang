@@ -3310,11 +3310,11 @@ if (definition.getName().equals("single_const_parent")) {
                 }
                 argDef = childDef;
 
-                //if (arg instanceof Value && BentoObjectWrapper.class.equals(((Value) arg).getValueClass())) {
-                //    BentoObjectWrapper wrapper = (BentoObjectWrapper) ((Value) arg).getValue();
-                //    Context argContext = wrapper.context;
-                //    argDef = new BoundDefinition(argDef, argContext);
-                //}
+                if (arg instanceof PrimitiveValue && BentoObjectWrapper.class.equals(((PrimitiveValue) arg).getValueClass())) {
+                    BentoObjectWrapper wrapper = (BentoObjectWrapper) ((Value) arg).getValue();
+                    Context argContext = wrapper.context;
+                    argDef = new BoundDefinition(argDef, argContext);
+                }
             }
 
             if (returnClass == Entry.class) {
