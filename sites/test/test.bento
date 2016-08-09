@@ -38,6 +38,7 @@ site test [=
                               cache_test, cached_aliased_parameter_test, cached_array_test,
                               cached_child_of_alias_test, cached_external_object_test, 
                               cached_identity_test, cached_object_test, char_utilities_test,
+                              child_of_parameterized_super_test,
                               children_of_global_test, children_of_overridden_super_test,
                               children_of_static_test,
                               collection_parse_test, collection_operators_test, collection_utilities_test,
@@ -61,7 +62,8 @@ site test [=
                               passed_cache_test, recursion_test, recursive_dynamic_array_test,
                               redirection_test, return_type_test, self_referential_update_test,
                               serialization_test, simple_inheritance_test, simple_insert_test,
-                              simple_instantiation_test, sort_test, special_names_test, super_in_sub_test, 
+                              simple_instantiation_test, sort_test, special_names_test, 
+                              super_child_test, super_in_sub_test, 
                               table_test, table_element_type_test, table_parameter_test,
                               text_utilities_test, this_type_test, type_test ]
 
@@ -5530,6 +5532,39 @@ ect [=
  if (iffed_expression(true) == 2)  [| B |] else [| x |]
  if (iffed_expression(false) == 1) [| C |] else [| x |]
 =]
+
+    /-- test_case --/ child_of_parameterized_super_test [=
+        int category = instantiations
+        name = "Child of Parameterized Super Test"
+        key = "parameterized_super_child"
+
+        expected = "ABC"
+    
+        super_parent(x) [=
+            dynamic aa = x
+            dynamic bb = x
+            dynamic cc = x
+        =]
+         
+        super_parent("A") aparent [=
+            dynamic a = aa
+        =]
+        
+        super_parent("B") bparent [=
+            dynamic b = bb
+        =]
+        
+        dynamic show(z) [=
+            z;
+        =]
+        
+        aparent.a;
+        show(bparent.b);
+        super_parent("C").cc;
+    =]
+        
+         
+        
 
     test_case dynamic_code_block_test [=
         int category = dynamic_code
