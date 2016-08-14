@@ -2524,6 +2524,28 @@ if (definition.getName().equals("single_const_parent")) {
         }
     }
 
+    public int pushSupers(Definition def, Definition superDef) throws Redirection {
+        int numPushes = 0;
+        Stack<Entry> supers = new Stack<Entry>();
+        Definition contextDef = def;
+        
+        while (superDef != null) {
+            Type st = def.getSuper(this); 
+            ArgumentList args = st.getArguments(this);
+            ParameterList params = superDef.getParamsForArgs(args, this);
+            Entry entry = newEntry(contextDef, superDef, params, args);
+            supers.push(entry);
+            def = superDef;
+            superDef = def.getSuperDefinition(this);
+            numPushes++;
+        }
+        for (int i = 0; i < numPushes; i++) {
+            push(supers.pop());
+        }
+        
+        return numPushes;
+    }
+    
     public int pushSupersAndAliases(Definition def, ArgumentList args, Definition childDef) throws Redirection {
         // track back through superdefinitions and aliases to push intermediate definitions
         if (childDef != null  /* && !isSpecialDefinition(childDef) */ ) {
@@ -2737,10 +2759,13 @@ if (definition.getName().equals("single_const_parent")) {
                     numPushes++;
                 }
 
+                // put in loop to push supers
+                
                 Definition superDef = def.getSuperDefinition(this);
-                while (def.isAliasInContext(this) && !def.isCollection()) {
-                    Instantiation aliasInstance = def.getAliasInstanceInContext(this);
-                    if (def.isParamAlias() && aliasInstance != null) {
+                Definition nextDef = def;
+                while (nextDef.isAliasInContext(this) && !nextDef.isCollection()) {
+                    Instantiation aliasInstance = nextDef.getAliasInstanceInContext(this);
+                    if (nextDef.isParamAlias() && aliasInstance != null) {
                         aliasInstance = aliasInstance.getUltimateInstance(this);
                     }
                     if (aliasInstance == null) {
@@ -2753,7 +2778,7 @@ if (definition.getName().equals("single_const_parent")) {
                     
                     ArgumentList aliasArgs = aliasInstance.getArguments();
                     List<Index> aliasIndexes = aliasInstance.getIndexes();
-                    Definition aliasDef = aliasInstance.getDefinition(this, def);
+                    Definition aliasDef = aliasInstance.getDefinition(this, def);  // def or nextDef?
                     if (aliasDef == null) {
                         break;
                     }
@@ -2763,7 +2788,7 @@ if (definition.getName().equals("single_const_parent")) {
                         break;
                     }
                     
-                    def = aliasDef;
+                    nextDef = aliasDef;
                     args = aliasArgs;
                     if ((args == null || !args.isDynamic()) && aliasIndexes == null) {
                         String nm = aliasInstance.getName();
@@ -2776,7 +2801,7 @@ if (definition.getName().equals("single_const_parent")) {
                             }
                         }
                         if (holder != null && holder.nominalDef != null && holder.nominalDef.getDurability() != Definition.DYNAMIC && !((BentoNode) holder.nominalDef).isDynamic()) {
-                            def = holder.nominalDef;
+                            nextDef = holder.nominalDef;
                             args = holder.nominalArgs;
                             if (generate && holder.data != null && holder.data instanceof BentoObjectWrapper) {
                                 BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
@@ -2790,9 +2815,17 @@ if (definition.getName().equals("single_const_parent")) {
                             }
                         }
                     }
-                    params = def.getParamsForArgs(args, this);
-                    push(def, params, args, false); //true);
+                    params = nextDef.getParamsForArgs(args, this);
+                    push(nextDef, params, args, false); //true);
                     numPushes++;
+                }
+                if (def != nextDef) {
+                    def = nextDef;
+                    superDef = def.getSuperDefinition(this);
+                }
+                
+                if (superDef != null) {
+                    numPushes += pushSupers(def, superDef);
                 }
             }
 
