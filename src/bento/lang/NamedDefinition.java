@@ -1560,15 +1560,21 @@ public class NamedDefinition extends AnonymousDefinition {
                     }
 
                     if (!foundSame) {
-                        ParameterList superParams = nd.getParamsForArgs(superArgs, context, false);
-                        context.push(instantiatedDef, nd, superParams, superArgs);
+                        boolean pushedSuper = false;
+                        if (!nd.equals(context.peek().superdef)) {
+                            ParameterList superParams = nd.getParamsForArgs(superArgs, context, false);
+                            context.push(instantiatedDef, nd, superParams, superArgs);
+                            pushedSuper = true;                            
+                        }
                         try {
                             Object child = nd.getChild(node, args, indexes, superArgs, context, generate, trySuper, parentObj, resolver);
                             if ((!generate && child != null) || (generate && child != UNDEFINED)) {
                                 return child;
                             }
                         } finally {
-                            context.pop();
+                            if (pushedSuper) {
+                                context.pop();
+                            }
                         }
                     }
                 }

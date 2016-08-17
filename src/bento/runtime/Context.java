@@ -2534,14 +2534,14 @@ if (definition.getName().equals("single_const_parent")) {
             ArgumentList args = st.getArguments(this);
             ParameterList params = superDef.getParamsForArgs(args, this);
             Entry entry = newEntry(contextDef, superDef, params, args);
-            supers.push(entry);
+            push(entry);
             def = superDef;
             superDef = def.getSuperDefinition(this);
             numPushes++;
         }
-        for (int i = 0; i < numPushes; i++) {
-            push(supers.pop());
-        }
+        //for (int i = 0; i < numPushes; i++) {
+        //    push(supers.pop());
+        //}
         
         return numPushes;
     }

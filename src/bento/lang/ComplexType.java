@@ -2,7 +2,7 @@
  *
  * $Id: ComplexType.java,v 1.47 2015/05/31 17:11:44 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -233,7 +233,20 @@ public class ComplexType extends AbstractType implements Initializable {
            }
        }
        if (args.size() >= 1 && args.get(0) instanceof Any) {
-           //return context.peek().args;
+           Context.Entry entry = context.peek();
+           Definition def = entry.superdef;
+           
+           // Don't resolve params to args if the supertype has already been pushed (this
+           // may happen as a result of a call to pushSupers).
+           //
+           // This works for defs with one supertype, so either the def being instantiated
+           // or the superdef is on top.  Not sure about cases where the superdef is
+           // sandwiched in the middle of a def hierarchy with 3 or more levels.  Need
+           // to test and find out.
+           
+           if (def != null && this.equals(def.getType())) {
+               return entry.args;   
+           }
            
            ParameterList params = context.peek().params;
            int len = (params == null ? 0 : params.size());

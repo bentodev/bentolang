@@ -5546,7 +5546,7 @@ ect [=
  if (iffed_expression(false) == 1) [| C |] else [| x |]
 =]
 
-    /-- test_case --/ children_of_parameterized_super_test [=
+    test_case children_of_parameterized_super_test [=
         int category = instantiations
         name = "Children of Parameterized Super Test"
         key = "parameterized_super_children"
