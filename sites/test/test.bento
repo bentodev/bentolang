@@ -3466,7 +3466,6 @@ srt [=
         
         q = "Q"
         bento_context my_context = this_domain.context
-        
 
         org.bentodev.test.ExternalTest.a;
         org.bentodev.test.ExternalTest.b;
@@ -3484,7 +3483,7 @@ srt [=
         external_caller(n);
         org.bentodev.test.ExternalTest.other("O").methodZ;
         aliased_method("P").methodZ;
-        my_context.construct("q");
+        my_context.construct("external_test.q");
     =]
 
 qtst [=
@@ -5529,8 +5528,8 @@ cot [=
 
         expected = "ABC"
     
-        int looped_expression = 1 + for int i = 2 to 5 [= i =]
-        int iffed_expression(boolean flag) = 1 + if (flag) [= 1 =]
+        dynamic int looped_expression = 1 + for int i = 2 to 5 [= i =]
+        dynamic int iffed_expression(boolean flag) = 1 + if (flag) [= 1 =]
         
         if (looped_expression == 10)      [| A |] else [| x |]
         if (iffed_expression(true) == 2)  [| B |] else [| x |]
