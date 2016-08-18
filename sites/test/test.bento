@@ -3492,6 +3492,14 @@ qtst [=
     my_context.construct("q");
 =]
 
+itst [=
+    external_interface [=
+        i [?]
+        show(x) [?]
+    =]
+    external_interface parameterized_builder(x) = org.bentodev.test.ExternalTest(x)
+    parameterized_builder("I").i;
+=]
     
     test_case cached_external_object_test [=
         int category = external_objects

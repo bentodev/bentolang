@@ -1788,7 +1788,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         } else if (reference instanceof NameNode) {
             NameNode nameNode = getReferenceName();
             String name = nameNode.getName();
-if (name.equals("aparent.a")) {
+if (name.equals("parameterized_builder.i")) {
  System.out.println(name + " at Inst 1767");    
 }
             if (localDef != null) {
