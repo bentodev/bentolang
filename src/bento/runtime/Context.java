@@ -2529,19 +2529,22 @@ if (definition.getName().equals("single_const_parent")) {
         Stack<Entry> supers = new Stack<Entry>();
         Definition contextDef = def;
         
+        supers.push(_pop());
         while (superDef != null) {
             Type st = def.getSuper(this); 
             ArgumentList args = st.getArguments(this);
             ParameterList params = superDef.getParamsForArgs(args, this);
             Entry entry = newEntry(contextDef, superDef, params, args);
-            push(entry);
+            supers.push(entry);
             def = superDef;
             superDef = def.getSuperDefinition(this);
             numPushes++;
         }
-        //for (int i = 0; i < numPushes; i++) {
-        //    push(supers.pop());
-        //}
+        for (int i = 0; i < numPushes; i++) {
+            push(supers.pop());
+        }
+        // put the original top back on
+        push(supers.pop());
         
         return numPushes;
     }
