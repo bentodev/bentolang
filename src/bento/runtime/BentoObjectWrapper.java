@@ -51,7 +51,10 @@ public class BentoObjectWrapper {
         def = def.getSubdefInContext(context);
         ResolvedInstance ri = new ResolvedInstance(def, context, args, indexes);
         construction = ri;
-        this.context = ri.getResolutionContext();
+        
+        Context resolutionContext = ri.getResolutionContext();
+        this.context = (resolutionContext == context ? context.clone(false) : resolutionContext);
+        
         this.def = def;
         type = def.getType();
     }
