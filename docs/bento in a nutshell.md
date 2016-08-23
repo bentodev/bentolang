@@ -573,16 +573,11 @@ The outermost scope of an application is the site level, created by a site defin
 ```
 
 Site definitions have special properties that set them apart from other definitions:
-
-    * They need not have a parent definition -- all other definitions must have a parent
- 
-    * They contain no constructions of their own, only child definitions
-
-    * They must be defined with a code block, not a data block
-
-    * They do not create a new type, so you cannot use the site name as the supertype in a typed definition
-
-    * They may be divided into multiple parts
+* They need not have a parent definition -- all other definitions must have a parent
+* They contain no constructions of their own, only child definitions
+* They must be defined with a code block, not a data block
+* They do not create a new type, so you cannot use the site name as the supertype in a typed definition
+* They may be divided into multiple parts
 
 The ability to divide a site into parts allows a site to be defined across multiple source files.  The Bento compiler concatenates together all the code blocks from site definitions of a given name, resulting in the equivalent of one big code block.
 
