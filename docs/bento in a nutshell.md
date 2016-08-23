@@ -1,7 +1,7 @@
 Bento in a Nutshell
 ===================
 
-1. The Big Picture
+##1. The Big Picture
 
 The essence of a programming language, what might be called its DNA equivalent, is the grammar that defines it.  Most of this document will describe aspects of Bento's grammar and explain how it can be used to achieve useful results.  But DNA is not the organism.  A living creature is the product of the complex interaction of its DNA with its environment.  So too, understanding programs written in a language requires understanding not just the grammar but the larger context within which the language operates -- a greater whole encompassing both the program and the user as well as the mechanisms by which they interact.
 
@@ -13,7 +13,7 @@ Bento is declarative, which is a natural paradigm for describing output.  But Be
 
 But Bento's primary goal is not to follow any particular paradigm or model.  It's to be expressive.  Programming languages are human languages, written by humans, for humans.  (Computers, on the other hand, prefer machine language, which is not readily comprehensible to humans.)  Bento, like any ambitious programming language, is intended to allow programmers to craft application architectures, data structures, and implementations of business logic that are clear, concise and communicative to themselves and their fellow programmers.
 
-2. Running Bento
+##2. Running Bento
 
 As described above, the runtime platform for Bento is a web server, specifically the Bento server, which is a standalone web server attached to a compiler and a runtime evaluation engine.  Alternatively, the Bento server can run as a servlet, which operates the same but piggybacks on an existing web server rather than providing its own web server.
 
@@ -21,13 +21,13 @@ The reference implementation of the Bento server is written in Java, so Bento al
 
 A Bento application consists of one or more text files containing code written in Bento.  This code defines responses.  When the Bento server is launched, it compiles the source files into an internal representation, then listens for requests.  When the server receives a request, it constructs an appropriate response by evaluating the Bento code that defines it.  
 
-2.1 Configuration
+###2.1 Configuration
 
 It's possible to configure Bento by means of parameters on the command line (if run as a standalone server) or in the web.xml file (if run as a servlet), but it's also possible and generally more convenient to configure Bento via a configuration file written in Bento (Bento happens to be a good configuration language).  At startup, Bento searches for a file called config.bento in the current directory.  If found, it looks in this file for configuration information such as the path to the source files for the application and the address and port to listen for requests on.      
 
-3. Blocks
+##3. Blocks
 
-3.1 Code and Data Blocks
+###3.1 Code and Data Blocks
 
 Bento code is composed of two kinds of things: data, and instructions for generating data.  Data comes in data blocks, instructions come in code blocks.
 
@@ -71,7 +71,7 @@ There is special notation for an empty block (an empty block is empty of both co
     [/]
 ```
 
-3.2 Comments
+###3.2 Comments
 
 Comments are blocks of text added for documentation or other purposes which are ignored by the Bento compiler.  Bento allows comments to be freely interspersed with Bento code.  
 
@@ -93,12 +93,9 @@ Comments may be nested as deeply as desired.  Documenting comments may be nested
 
 Bento also supports single-line comments, which start with // and end at the next end-of-line character.  Single-line comments are nondocumenting.
 
+##4. Constructions
 
-
-4. Constructions
-
-
-4.1 Basic Constructions
+###4.1 Basic Constructions
 
 Both data and code blocks do the same thing -- specify output.  A data block specifies output explictly.  A code block contains Bento statements that logically describe the output.  Such statements are called constructions.  One kind of construction consists of a name followed by a semicolon:
 ```
@@ -125,7 +122,7 @@ Expressions, like names and values, may be contsructed using the construction op
     (start_tag + "Hello, World" + end_tag);
 ```
 
-4.2 Logical Constructions
+###4.2 Logical Constructions
 
 Bento provides two kinds of special constructions for implementing logic, conditionals and loops.  The simplest conditional consists of a test and a code or data block, which is evaluated only if the test succeeds:
 ```
@@ -187,12 +184,9 @@ Loops may be nested; they may also be combined, using the "and" keyword:
 
 The above loop will repeat until either x_list or y_list runs out of members.
 
+##5. Definitions
 
-
-5. Definitions
-
-
-5.1 Simple Definitions
+###5.1 Simple Definitions
 
 When the construction operator is applied to a name, or to an expression which includes a name, Bento obtains the data associated with the name.  Such an association is called a definition.  A definition consists of a name and a scope, typically a code or data block, which contains the associated data, or code to generate the data.  Here is a simple definition using a data block:
 ```
@@ -213,7 +207,7 @@ Here is an empty definition, using an empty block:
     say_nothing [/]
 ```
 
-5.2 Instantiation of Definitions
+###5.2 Instantiation of Definitions
 
 When a definition is instantiated, Bento constructs output by concatenating the constructions and blocks it contains, in the order in which they appear. So, if we have the following definitions:
 ```
@@ -266,8 +260,7 @@ which is what we would expect from assigning a value to a variable and then outp
 
 Another way of describing this is to say that Bento is a lazy language -- nothing (ideally) is evaluated before it is needed.
 
-
-5.3 Child Definitions
+###5.3 Child Definitions
 
 A definition can contain another definition, referred to as a child definition.  The following definition of greetings contains a child definition called hello:
 ```
@@ -337,13 +330,11 @@ You can reference a child of a definition using the dot operator.  Continuing on
     |]
 ```
 
-
-6. Types
+##6. Types
 
 Bento has the notion of type, which is a named category of data.  But types are optional.  A definition may be either typed or untyped.  A typed definition asserts that the data resulting from its instantiation belongs to a particular category.  An untyped definition makes no such assertion.
 
-
-6.1 Primitive Types
+###6.1 Primitive Types
 
 The definitions shown up to now, consisting of a name and an implementation, are all untyped.  A typed definition has an additional component, a type name, which precedes the definition name:
 ```
@@ -385,8 +376,7 @@ As the final example above illustrates, the data in a typed definition does not 
 
 When Bento instantiates a definition that contains multiple constructions, constructions other than strings are converted to strings before they are concatenated to form output.  In this sense, the string type is the most fundamental.  In fact, it may generally be omitted since untyped definitions and strings both ultimately produce text.  In the end, everything is a string.
 
-
-6.2 User-Defined Types
+###6.2 User-Defined Types
 
 In addition to the built-in types, Bento supports user-defined types.  It is very easy to create a type in Bento.  In fact it is virtually impossible not to create a type, since every definition creates a new type, which may be referenced wherever a type is expected.  This is true even for definitions that are themselves empty or untyped or both -- an untyped definition does not use a type, but it creates one, which another defition can use.  For example:
 ```
@@ -406,8 +396,7 @@ A typed definition, of course, itself creates a new type  Such a sequence of typ
 
 The type created by a typed definition is referred to as a subtype of the original type.  The original type, in turn, is referred to as a supertype of the new type.  In the above example, hello is a subtype of message, and a supertype of french_hello.  Subtype and supertype relationships are transitive, so french_hello is a subtype of message as well as hello, and message is a supertype of french_hello in addition to hello.  
 
-
-6.3 Detecting Types
+###6.3 Detecting Types
 
 Bento provides the isa operator (pronounced "is a") to test whether an entity belongs to a type, i.e., was defined as being of that type or a subtype.  An entity is also considered to belong to its own type, i.e. the type created by its own definition.  Given the code in the preceding example, the following three expressions are all true:
 ```
@@ -465,12 +454,9 @@ produces
 
 because even though type is referenced in the definition of hello, the definition being instantiated is greeting, which is a subtype of hello.
 
+##7. Names and Scopes
 
-
-7. Names and Scopes
-
-
-7.1 Names
+###7.1 Names
 
 The important characteristics of names in Bento are the lexical rules they follow, the namespace they reside in and the rules for resolving them. 
 
@@ -482,8 +468,7 @@ One advantage of this approach is that a single Bento statement can operate on m
 
 Finally, the rules for resolving a name in Bento depend on the scope in which it is found.  Scoping rules in Bento are the subject of the next section.
 
-
-7.2 Scopes
+###7.2 Scopes
 
 Every definition creates a scope.  Nested definitions create nested scopes.  A name may only be defined once in an immediate scope (a scope not including its nested scopes).  Here again is an example from chapter 5:
 ```
@@ -566,18 +551,17 @@ Such access from a wider scope can be controlled using an access modifier -- a k
 
 then instantiating hello will still work, but instantiating good_night will fail, because name is no longer visible beyond hello.  
 
-7.3 Organization of Scopes
+###7.3 Organization of Scopes
 
 A scope is contains directives, definitions and constructions.
 
-7.4 Continuations
+###7.4 Continuations
 
 A scope always exists in a context.  This context is conceptually a stack, with each layer in the stack consisting of a scope, an argument-parameter mapping and a cache.  When Bento instantiates a definition, a new layer is pushed on to the stack.  When the instantiation is complete, the layer is popped off the stack.  In between, as instantiations nested within are evaluated, further layers are pushed and popped.  The values resulting from these instantiations, meanwhile, are cached in the current layer, as explained in the chapter below called Caching.
 
 These contexts have two properties that are relevant to a Bento application.  One is that they are threadsafe; that is, Bento can construct many responses simultaneously, each one with its own context.  The second is that a context encapsulates the entire application state for a thread.  This means that if you could save a copy of the current context, you could at some future point resume the application from its state at the moment you copied the context, a capabiltity generally known as continuations.  In fact, Bento has such a feature.  A special primitive type, @ (at sign), represents continuations; a special keyword, here, provides the mechanism for capturing a continuation; and another keyword, continue, resumes a continuation.
 
-
-7.5 Sites
+###7.5 Sites
 
 The outermost scope of an application is the site level, created by a site definition (a typed definition whose supertype is the built-in type "site").  Example:
 ```
@@ -604,12 +588,9 @@ The ability to divide a site into parts allows a site to be defined across multi
 
 Normally the outermost definition in a Bento source file is a site definition.  If the source file does not begin with an explicit site definition, its contents are presumed to belong to a special unnamed site called the default site.
 
- 
+##8. Parameters
 
-8. Parameters
-
-
-8.1 Basics of Parameters
+###8.1 Basics of Parameters
 
 A definition may have one or more parameters, which are specified in parentheses immediately following the definition's name and before the definition's implementation.  These parameters can be referenced inside the definition, as if they were definitions.  In fact, parameters are a special kind of definition, one in which only the name and optionally the type are provided with the definition, while the implementation is provided when the definition is instantiated.  Such an implementation is called an argument, and is typically a name, value or expression.  
 
@@ -689,8 +670,7 @@ Those arguments may include the subtype's parameters:
 
 The purpose of this will be discussed in the next chapter.
 
-
-8.2 Overloading
+##8.2 Overloading
   
 Bento supports overloading of definitions.  An overloaded definition is one that may be instantiated in more than one way, with differing numbers or types of parameters.  In other languages that support overloading of functions or operators, each overloaded version has its own distinct implementation.  In Bento, however, the different versions are defined using multiple parameter sets with a single implementation.
 
@@ -724,7 +704,7 @@ Example:
     =]
 ```
 
-9. Inheritance
+##9. Inheritance
 
 A typed definition in Bento may make use of the type's definition.  This is called subclassing or inheritance.  The type's definition is called the superdefinition; the definition that uses the type is called the subdefinition.
 
