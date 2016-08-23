@@ -427,7 +427,7 @@ The keyword type makes it possible to query the current type, or the type associ
     hello [=
         type;
     =]
-```
+
     hello;
 ```
 
