@@ -1,4 +1,5 @@
 Bento in a Nutshell
+===================
 
 1. The Big Picture
 
@@ -31,43 +32,44 @@ It's possible to configure Bento by means of parameters on the command line (if 
 Bento code is composed of two kinds of things: data, and instructions for generating data.  Data comes in data blocks, instructions come in code blocks.
 
 A data block starts with [| and ends with |].  Example:
-
+```
     [|
         <h1>Hello, world.</h1>
     |]
+```
 
 Leading and trailing white space is trimmed, so the above data block and the following data block are equivalent:
-
+```
     [| <h1>Hello, world.</h1> |]
-
+```
 
 A code block starts with [= and ends with =].  Example:
-
+```
     [=
         hello;
         goodbye;
     =]
-
+```
 
 Data can be embedded in code, and code can be embedded in data:
-
+```
     [=
         [|
             <h1>Hello, [= name; =].</h1>
         |]
     =]
-
+```
 
 A data block may be empty, as may a code block:
-
+```
     [| |]
     [= =]
-
+```
 
 There is special notation for an empty block (an empty block is empty of both code and data, so there is no need to distinguish beween the two):
-
+```
     [/]
-
+```
 
 3.2 Comments
 
@@ -76,14 +78,16 @@ Comments are blocks of text added for documentation or other purposes which are 
 There are two kinds of comments in Bento, documenting and nondocumenting.  Documenting comments are intended for usable commentary on the code that follows.  Automatic documentation generators should be able to construct documentation for Bento code by extracting the documenting comments.
 
 Documenting comments are delimited by /* and */:
-
+```
     /* This is a documenting comment. */
+```
 
 Nondocumenting comments are for text that is not suitable for documentation.  An example of such a comment would be one created by commenting out code -- a common programming practice that uses comments to hide code from the compiler without physically removing the code from the source file.  
 
 Nondocumenting comments are delimited by /-- and --/
-
+```
     /-- This is a nondocumenting comment. --/
+```
 
 Comments may be nested as deeply as desired.  Documenting comments may be nested inside of nondocumenting comments, and vice versa, but nondocumenting comments render all embedded comments as nondocumenting as well, regardless of their delimiters.
 
@@ -97,50 +101,50 @@ Bento also supports single-line comments, which start with // and end at the nex
 4.1 Basic Constructions
 
 Both data and code blocks do the same thing -- specify output.  A data block specifies output explictly.  A code block contains Bento statements that logically describe the output.  Such statements are called constructions.  One kind of construction consists of a name followed by a semicolon:
-
+```
         hello;
-
+```
 
 The semicolon is the construction operator.  It constructs whatever immediately precedes it.  This may be a name as above or an explicit value, such as a literal string (delimited by double quotes), character (delimited by single quotes), number or boolean value (true or false):
-
+```
     "Hello, World";
     'Z';
     23;
     true;
-
+```
 
 Names and values may be combined with various arithmetic, logical and string operators into expressions, delimited by parentheses:
-
+```
     (x + 1)
     (is_enabled && is_authorized)
     ("Hello, " + "World")
-
+```
 
 Expressions, like names and values, may be contsructed using the construction operator:
-
+```
     (start_tag + "Hello, World" + end_tag);
-
+```
 
 4.2 Logical Constructions
 
 Bento provides two kinds of special constructions for implementing logic, conditionals and loops.  The simplest conditional consists of a test and a code or data block, which is evaluated only if the test succeeds:
-
+```
     if (arriving) [= 
         hello;
     =]
-
+```
 
 A conditional may also provide an alternative block, which is evaluated if the test fails:
-
+```
     if (arriving) [= 
         hello;
     =] else [=
         "So...";
     =]
-
+```
 
 Multiple conditionals may be strung together:
-
+```
     if (arriving) [= 
         hello;
     =] else if (leaving) [=
@@ -148,38 +152,38 @@ Multiple conditionals may be strung together:
     =] else [=
         "So..."
     =]
-
+```
 
 Loops cause a code or data block to be evaluated some number of times.  The simplest kind of loop is used in conjuction with a collection, which is a Bento entity that groups together other entities (we will discuss exactly how collections are defined and what they can do in a later section):
-
+```
     for x in x_list [=
         x;
     =]
-
+```
 
 Another kind of loop steps through a sequence of values:
-
+```
     for int i from 0 to 3 [|
         <li>Line [= i; =]</li>
     |]
-
+```
 
 The body of the loop will be evaluated repeatedly with successive values of the loop parameter (i in the above example) until it reaches or exceeds the end value.  The loop body is not evaluated for the end value.  So the output from the above is
-
+```
     <li>Line 0</li><li>Line 1</li><li>Line 2</li>
-
+```
 
 The default increment for this kind of loop is 1, but may be set to any value via the by keyword:
-
+```
     for float x from 0 to 1.0 by 0.25
-
+```
 
 Loops may be nested; they may also be combined, using the "and" keyword:
-
+```
     for x in x_list and y in y_list and int i from 0 [|
         <li>Point [= i; =]: ([= x; =], [= y; =])</li>
     |]
-
+```
 
 The above loop will repeat until either x_list or y_list runs out of members.
 
@@ -191,28 +195,28 @@ The above loop will repeat until either x_list or y_list runs out of members.
 5.1 Simple Definitions
 
 When the construction operator is applied to a name, or to an expression which includes a name, Bento obtains the data associated with the name.  Such an association is called a definition.  A definition consists of a name and a scope, typically a code or data block, which contains the associated data, or code to generate the data.  Here is a simple definition using a data block:
-
+```
     hello [|
         Hello, world.
     |]
-
+```
 
 Here is another simple definition, this time using a code block:
-
+```
     greetings [=
         hello;
     =]
-
+```
 
 Here is an empty definition, using an empty block:
-
+```
     say_nothing [/]
-
+```
 
 5.2 Instantiation of Definitions
 
 When a definition is instantiated, Bento constructs output by concatenating the constructions and blocks it contains, in the order in which they appear. So, if we have the following definitions:
-
+```
     start_tag [| <h1> |]
 
     end_tag [| </h1> |]
@@ -222,40 +226,41 @@ When a definition is instantiated, Bento constructs output by concatenating the 
         [| Hello, world. |]
         end_tag;
     =]
-
+```
 
 then Bento handles the construction
-
+```
     hello;
-
+```
 
 by concatenating the output of start_tag, the data block [| Hello, world. |] and the output of end_tag.  The result:
-
+```
     <h1>Hello, world.</h1>
-
+```
 
 In Bento you always have more than one way to write an implementation, because you can always substitute code embedded in a data block for data emebedded in a code block (or vice versa).  Here is a code-in-data implementation of hello which achieves the exact same result as the data-in-code one above:
-
+```
     hello [|
         [= start_tag; =]Hello, world.[= end_tag; =]
     |]
-
+```
 
 There is yet another way of writing a definition.  In the special case of a definition that contains exactly one construction, the definition may consist of a name, the definition operator = (equals sign), and the construction.  Example:
-
+```
     start_tag = "<h1>"
-
+```
 
 This resembles the syntax for assignment in many languages.  And indeed it may appear to behave that way in many cases.  For example, consider the following bit of Bento code:
-
+```
     hello = "Hello, world."
 
     hello;
-
+```
 
 Evaluating this, we get this output:
-
+```
     Hello, world.
+```
 
 which is what we would expect from assigning a value to a variable and then outputting that variable.  But there is an important difference, not salient in this particular case but critical in many others.  A definition is not a construction, and doesn't do anything by its mere presence.  The statement that looks like an assignment is a definition, and the Bento server ignores it as it is constructing a response.  Until the Bento server gets to the following statement, which instantiates a hello, there is no variable called hello containing the value "Hello, world."
 
@@ -265,33 +270,33 @@ Another way of describing this is to say that Bento is a lazy language -- nothin
 5.3 Child Definitions
 
 A definition can contain another definition, referred to as a child definition.  The following definition of greetings contains a child definition called hello:
-
+```
     greetings [=
         hello [| <h1>Hello, world.</h1> |]
     =]
-
+```
 
 A child definition, though, is not a construction, and is ignored by Bento when the containing definition is instantiated.  So given the above definition, the construction
-
+```
         greetings;
-
+```
 
 would yield no output because the definition of greetings contains no constructions.  But a definition can contain both child definitions and constructions.  For example:
-
+```
     greetings [=
         hello [| <h1>Hello, world.</h1> |]
 
         hello;
     =]
-
+```
 
 In this case, when greetings in instantiated, you get
-
+```
     <h1>Hello, world.</h1>
-
+```
 
 A definition may have any number of child definitions, of any type, and there may be more child definitions nested within those.  Example:
-
+```
     building [=
         floor_1 [=
             apt_1A [=
@@ -310,10 +315,10 @@ A definition may have any number of child definitions, of any type, and there ma
             =]
         =]
     =]
-     
+```
 
 You can reference a child of a definition using the dot operator.  Continuing on the preceding example: 
-
+```
     show_bedrooms [|
         <h2>Bedrooms</h2>
         <p>Apt. 1A: [=
@@ -330,7 +335,7 @@ You can reference a child of a definition using the dot operator.  Continuing on
 
         =] </p>
     |]
-
+```
 
 
 6. Types
@@ -341,24 +346,24 @@ Bento has the notion of type, which is a named category of data.  But types are 
 6.1 Primitive Types
 
 The definitions shown up to now, consisting of a name and an implementation, are all untyped.  A typed definition has an additional component, a type name, which precedes the definition name:
-
+```
     string hello [|
         Hello, world.
     |]
-
+```
 
 This definition declares the type to be "string", which is a primitive type.  Primitive types are types that are built into the language and are not explicitly defined in any Bento code.  Primitive types include standard types commonly found in programming languages, with the meanings a programmer would expect:
-
+```
     boolean
     byte
     char
     float
     int
     string
-
+```
 
 These may be used in definitions of any format:
-
+```
     boolean flag1 = true
 
     boolean flag2 [= 
@@ -374,6 +379,7 @@ These may be used in definitions of any format:
     int fourteen = thirteen + 1
 
     float fourteen_point_zero = fourteen
+```
 
 As the final example above illustrates, the data in a typed definition does not have to itself be of the specified type.  If it is not, Bento will convert it to the specified type upon instantiation, and if it cannot be converted, Bento will output the null value for that type.  The null value for a string is an empty string; for a boolean, false; for a character, the NUL character; and for numeric types, zero.   
 
@@ -383,20 +389,20 @@ When Bento instantiates a definition that contains multiple constructions, const
 6.2 User-Defined Types
 
 In addition to the built-in types, Bento supports user-defined types.  It is very easy to create a type in Bento.  In fact it is virtually impossible not to create a type, since every definition creates a new type, which may be referenced wherever a type is expected.  This is true even for definitions that are themselves empty or untyped or both -- an untyped definition does not use a type, but it creates one, which another defition can use.  For example:
-
+```
     message [/]
 
     message hello [| Hello! |]
-
+```
 
 A typed definition, of course, itself creates a new type  Such a sequence of types and subtypes can continue indefinitely:
-
+```
     message [/]
 
     message hello [| Hello! |]
 
     hello french_hello [| Bonjour! |]
-
+```
 
 The type created by a typed definition is referred to as a subtype of the original type.  The original type, in turn, is referred to as a supertype of the new type.  In the above example, hello is a subtype of message, and a supertype of french_hello.  Subtype and supertype relationships are transitive, so french_hello is a subtype of message as well as hello, and message is a supertype of french_hello in addition to hello.  
 
@@ -404,44 +410,45 @@ The type created by a typed definition is referred to as a subtype of the origin
 6.3 Detecting Types
 
 Bento provides the isa operator (pronounced "is a") to test whether an entity belongs to a type, i.e., was defined as being of that type or a subtype.  An entity is also considered to belong to its own type, i.e. the type created by its own definition.  Given the code in the preceding example, the following three expressions are all true:
-
+```
     (hello isa message)
     (french_hello isa message)
     (hello isa hello)
+```
 
 But these two expressions are false:
-
+```
     (hello isa french_hello)
     (message isa int)
-
+```
 
 A definition may have multiple types, delimited by commas.  Example:
-
+```
     hello, french french_hello [| Bonjour! |]
-
+```
 
 Given this example, the following two expressions are true:
-
+```
     (french_hello isa hello)
     (french_hello isa french)
- 
+```
 
 The keyword type makes it possible to query the current type, or the type associated with a name.  In the simplest case, type returns the name of the definition being instantiated.  For example:
-
+```
     hello [=
         type;
     =]
-
+```
     hello;
-
+```
 
 produces this:
-
+```
     hello
-
+```
 
 But in some cases it may be a subtype:
-
+```
     hello [=
         type;
     =]
@@ -449,12 +456,12 @@ But in some cases it may be a subtype:
     hello greeting [/]
 
     greeting;
-
+```
 
 produces
-
+```
    greeting
-
+```
 
 because even though type is referenced in the definition of hello, the definition being instantiated is greeting, which is a subtype of hello.
 
@@ -479,7 +486,7 @@ Finally, the rules for resolving a name in Bento depend on the scope in which it
 7.2 Scopes
 
 Every definition creates a scope.  Nested definitions create nested scopes.  A name may only be defined once in an immediate scope (a scope not including its nested scopes).  Here again is an example from chapter 5:
-
+```
     building [=
         floor_1 [=
             apt_1A [=
@@ -498,14 +505,14 @@ Every definition creates a scope.  Nested definitions create nested scopes.  A n
             =]
         =]
     =]
-
+```
 
 Note that the name "baths" is defined three times, but each definition is in a separate scope.
 
 When Bento encounters a name and needs to find the corresponding definition, it searches its namespace by scope. It begins with the immediate scope and works its way up through the parent's scope, and the parent's parent's scope, until it runs out of scopes or a matching definition is found.
 
 Consider the following definition:
-
+```
     greetings [=
         name = "Moon"
 
@@ -521,17 +528,16 @@ Consider the following definition:
         
         hello;
         good_night;
-
     =]
-
+```
 
 When Bento instantiates hello, it looks in the scope of hello's definition for a definition of name and finds it, giving name the value "World".  But good_night has no definition for name in its immediate scope, so when Bento instantiates good_night it continues its search to the next scope outwards, the one created by the definition of greetings.  There it finds name, containing the value "Moon".  The result:
-
+```
     <p>Hello, World.</p><p>Good night, Moon.</p>
-
+```
 
 Using the child operator (dot), it's possible to instantiate a definition that is not in an accessible scope as long as it has an ancestor that is in scope.  For example, in the following code good_night accesses name, which is not directly accessible, by referencing it as the child of hello, which is accessible:
-
+```
     greetings [=
 
         hello [=
@@ -546,18 +552,17 @@ Using the child operator (dot), it's possible to instantiate a definition that i
         
         hello;
         good_night;
-
     =]
-
+```
 
 Such access from a wider scope can be controlled using an access modifier -- a keyword that precedes the definition and determines specifies its behavior in some regard.  One such modifier is "local", which specifies local access.  If a definition is declared to have local access, it is invisible to all wider scopes.  For example, if we change the definition of name in the preceding example to the following:
-
+```
         hello [=
             local name = "World"
  
             [| <p>Hello, [= name; =].</p> |]
         =]
-
+```
 
 then instantiating hello will still work, but instantiating good_night will fail, because name is no longer visible beyond hello.  
 
@@ -575,13 +580,13 @@ These contexts have two properties that are relevant to a Bento application.  On
 7.5 Sites
 
 The outermost scope of an application is the site level, created by a site definition (a typed definition whose supertype is the built-in type "site").  Example:
-
+```
     site hello_world_example [=
 
         hello [| Hello, world. |]
 
     =]
-
+```
 
 Site definitions have special properties that set them apart from other definitions:
 
@@ -609,14 +614,14 @@ Normally the outermost definition in a Bento source file is a site definition.  
 A definition may have one or more parameters, which are specified in parentheses immediately following the definition's name and before the definition's implementation.  These parameters can be referenced inside the definition, as if they were definitions.  In fact, parameters are a special kind of definition, one in which only the name and optionally the type are provided with the definition, while the implementation is provided when the definition is instantiated.  Such an implementation is called an argument, and is typically a name, value or expression.  
 
 Here is a definition with a single typed parameter:
-
+```
     htag(int level) [|
         <h[= level; =]>
     |]
-
+```
 
 The following example shows a definition with a single parameter and a corresponding instantiation with a single argument:
-
+```
     greetings [=
         hello(nm) [=
             [| <h1>Hello, [= nm; =]</h1> |]
@@ -624,10 +629,10 @@ The following example shows a definition with a single parameter and a correspon
 
         hello("World");
     =]
-
+```
 
 In the above, hello is defined with a single untyped parameter called nm.  Hello is then instantiated with the a single argument, the string "World".  When Bento encounters nm in the implementation of hello, it identifies nm as a parameter, and matches the parameter nm to the argument "World".  The result in this case is therefore the same as if we had written the following instead:
-
+```
     greetings [=
         hello [=
             nm = "World"
@@ -637,10 +642,10 @@ In the above, hello is defined with a single untyped parameter called nm.  Hello
 
         hello;
     =]
-
+```
 
 But this works only because in the initial version we instantiated hello just once.  The following variation would not be able to be rewritten quite so simply:
-
+```
     greetings [=
         hello(nm) [=
             [| <h1>Hello, [= nm; =]</h1> |]
@@ -649,10 +654,10 @@ But this works only because in the initial version we instantiated hello just on
         hello("World");
         hello("Moon");
     =]
-
+```
 
 Just like other definitions, the name of a parameter must be unique in the scope in which it is defined.  Also, just like other definitions, a parameter is visible to a scope beneath the one in which it is defined, as long as the same name has not been redefined in that scope (or an intervening scope, if it is more deeply nested).  So the following is valid:
-
+```
     greetings(nm) [=
         hello [=
             [| <h1>Hello, [= nm; =]</h1> |]
@@ -660,27 +665,27 @@ Just like other definitions, the name of a parameter must be unique in the scope
 
         hello;
     =]
-
+```
 
 Multiple parameters are allowed; they are specified in a list, separated by commas:
-
+```
     hello(nm, int level) [|
         <h[= level; =]>Hello, [= nm; =]</h[= level; =]>
     |] 
-
+```
 
 It is legal to omit some or all arguments from an instantiation.  In such a case, the parameter corresponding to the missing argument will evaluate as the null value for its base type (zero for a numeric type, false for a boolean, the NUL character (ASCII 0) for a char, or an empty string for a string or untyped parameter).
 
 
 Arguments may be supplied to supertypes if the supertype's own definition includes parameters:
-
+```
     hello("World", 1) hello_world [/]
-
+```
 
 Those arguments may include the subtype's parameters:
-
+```
     hello(nm, level) hello_someone(nm, int level) [/]
-
+```
 
 The purpose of this will be discussed in the next chapter.
 
@@ -690,7 +695,7 @@ The purpose of this will be discussed in the next chapter.
 Bento supports overloading of definitions.  An overloaded definition is one that may be instantiated in more than one way, with differing numbers or types of parameters.  In other languages that support overloading of functions or operators, each overloaded version has its own distinct implementation.  In Bento, however, the different versions are defined using multiple parameter sets with a single implementation.
 
 Overloaded parameter sets are specified in a list, separated by commas.  Each parameter set must differ from the others in either the number or the type of the parameters.  A parameter may appear in more than one parameter set, but it must have the same type in each.  For example:
-
+```
     hello(nm), (nm, int level) [=
          if (level > 0) [| <h[= level; =]> |]
          else           [| <p> |]
@@ -700,14 +705,14 @@ Overloaded parameter sets are specified in a list, separated by commas.  Each pa
          if (level > 0) [| </h[= level; =]> |]
          else           [| </p> |]
     |]
-
+```
 
 When an overloaded definition is instantiated, Bento selects the parameter set that most closely matches the arguments specified in the instantiation, and constructs the definition utilizing the arguments as the values for the selected parameter set.  Other parameters receive the null value for their base type.
 
 This presents a problem, however.  If a parameter that is not in every parameter list is null, it's impossible to tell why merely by examining its value  -- it might not be in the selected parameter set, or it might have been passed a null value.  So Bento provides the "with" statement, which is a special kind of conditional that tests whether a parameter is in the selected parameter set.
 
 Example: 
-
+```
     which_param(int x), (float y), (z) [=
         with (x) [|
             <p>Called with an int</p>
@@ -717,9 +722,7 @@ Example:
             <p>Called with something else</p>
         |]
     =]
-
-
-
+```
 
 9. Inheritance
 
@@ -727,52 +730,51 @@ A typed definition in Bento may make use of the type's definition.  This is call
 
 Bento supports three kinds of inheritance: implementation inheritance, interface inheritance, and override inheritance.
 
-
 9.1 Implementation Inheritance 
 
 With implementation inheritance, the subdefinition incorporates the superdefinition's constructions into its own implementation.
 
 The simplest case of implementation inheritance occurs when a typed definition does not provide its own implementation.  In such a case, the subdefinition simply assumes the superdefinition's implementation.  For example, given the following:
-
+```
     hello [| Hello, World. |]
 
     hello hello_world [/]
 
     hello_world;
-
+```
 
 the output would be
-
+```
     Hello, World.
-
+```
 
 Even without supplying its own implementation, a definition can customize the superdefinition's implementation by supplying the supertype with arguments:
-
+```
     hello(nm) [| Hello, [= nm; =]. |]
 
     hello("World") hello_world [/]
-
+```
 
 with the same output as the preceding example.
 
 Another simple case occurs when the subdefinition provides its own implementation in place of the superdefinition's implementation -- i.e., when the implementation is not inherited:
-
+```
     hello [| Hello, World. |]
 
     hello another_hello [| How are you, World? |]
 
     another_hello;
-
+```
 
 This time the output would be
-
+```
     How are you, World?
-   
+```
  
 The more complex cases occur when the subdefinition extends the superdefinition's implementation rather than replacing it.  There are two such cases, which may be called outside-in and inside-out inheritance.
 
 Outside-in inheritance is analogous to the approach followed by many object-oriented languages.  With this approach, the subdefinition explicitly references the superdefinition.  In Bento, this is accomplished via the built-in name "super".  Example:
-
+```
     hello [| Hello, World |]
 
     hello another_hello [|
@@ -780,15 +782,15 @@ Outside-in inheritance is analogous to the approach followed by many object-orie
     |]
 
     another_hello;
-
+```
 
 yielding the following output:
-
+```
     Hello, World.  How are you?
-
+```
 
 Unlike in some languages, super can occur anywhere in the subdefinition's implementation, even multiple times, or in a conditional or a loop:
-
+```
     hello [| Hello, World. |]
 
     hello two_worlds_meet [=
@@ -801,15 +803,15 @@ Unlike in some languages, super can occur anywhere in the subdefinition's implem
     =]
       
     two_worlds_meet;
-
+```
 
 The output of the above:
-
+```
     Two worlds meet on the street.  "Hello, World."  "Hello, World."  They continue on their way.
- 
+```
 
 This is called outside-in inheritance because the implementation of the definition being instantiated (the subdefinition) wraps the implementation of its superdefinition.  With inside-out inheritance, the superdefinition's implementation wraps the subdefinition's.  This is accomplished using the "sub" built-in name.  sub appears in the superdefinition, and indicates where within the superdefinition's implementation the implementation provided by the subdefinition appears.  Example:
-
+```
     message [=
         [| <h1> |]
         sub;
@@ -819,17 +821,17 @@ This is called outside-in inheritance because the implementation of the definiti
     message hello [| Hello, World |]
 
     hello;
-
+```
 
 Resulting output:
-
+```
     <h1>Hello, World</h1>
-
+```
 
 Inside-out inheritance turns out to be very useful because for many classes of data items, the unchanging parts are on the outside, while the parts that vary from item to item are on the inside.  For example, it is common for the web pages on a site to have the same header and footer but varying content between the two.  
 
 Both outside-in and inside-out inheritance may be extended any number of levels.  Example:
-
+```
     message [=
         sub;
     =]
@@ -847,14 +849,14 @@ Both outside-in and inside-out inheritance may be extended any number of levels.
     hello hello_world [| World |]
 
     hello_world;
-
+```
 
 with the same result as the previous example.
 
 Bento does not allow mixing inside-out and outside-in inheritance.  If a definition contains a reference to sub, its descendants (subdefinitions, subdefinitions of those subdefinitions, and so on) cannot contain a reference to super; and if a definition contains a reference to super, its ancestors (superdefinition, its superdefinition, ans so on) cannot contain a reference to sub.  It is always legal to have no reference to either.
 
 Neither sub nor super takes arguments.  But arguments may be passed to a superdefinition by adding them to the supertype, as described in the previous chapter.  Here is an example that also uses super:
-
+```
     hello(nm) [| Hello, [= nm; =]. |]
 
     hello("World") hello_world [=
@@ -864,12 +866,12 @@ Neither sub nor super takes arguments.  But arguments may be passed to a superde
     =]
         
     hello_world;
-
+```
 
 which outputs the following:
-
+```
     <h1>Hello, World.</h1>
-
+```
 
 9.2 Interface Inheritance
 
@@ -878,7 +880,7 @@ An interface is the set of all child definitions of a definition.  With interfac
 If a definition contains a child definition with the same name as a child definition in an ancestor, it takes precedence over the ancestor's child definition.  This is called overriding.  
 
 Example:
-
+```
     greetings [=
         hello = "Hello. "
         goodbye = "Bye."
@@ -890,18 +892,19 @@ Example:
     
     night_greetings.hello;
     night_greetings.goodbye;
+```
 
 The first definition creates a type called greetings, whose interface consists of two definitions, hello and goodbye.  The second definition is a subdefinition of greetings called night_greetings, which overrides just one of these, the definition for goodbye.  Because of interface inheritance, the non-overriden child definition in greetings (hello) is also effectively a child of night_greetings, making night_greetings.hello a valid reference.  The result of the two instantiations above is the following:
-
+```
     Hello. Good night.
-
+```
 
 9.3 Override Inheritance
 
 With override inheritance, a child definition may incorporate the implementation of the definition it overrides into its own implementation.  This is accomplished by the special supertype "this", which indicates that the supertype is the type being overridden, which in turn makes the overridden type available via the super keyword, just like any supertype.
 
 Example:
-
+```
     greetings [=
         hello = "Hello."
     =]
@@ -915,12 +918,12 @@ Example:
     =]
 
     bold_greetings.hello;
-
+```
 
 which produces:
-
+```
     <b>Hello.</b>
-
+```
 
 9.4 Multiple Inheritance
 
@@ -939,22 +942,22 @@ A collection is a definition which associates a name with multiple values which 
 10.1 Arrays
 
 In an array, the values exist in a sequence, and individual values are referenced using an integer index, indicating the zero-based position of the value in the sequence.  Arrays and array indexes are denoted by [ and ] (square brackets).  Example:
-
+```
     elements[] = [ "Earth", "Fire", "Wind" ]
 
     elements[0];
     elements[2];
     " and ";
     elements[1];
-
+```
 
 which yields the following:
-
+```
     Earth Wind and Fire
-
+```
 
 The values in an array may be any valid instantiation or expression.  Array indexes, as well, may be any valid instantiation or expression.  Example:
-
+```
     MINUTE = "minute"
     HOUR = "hour"
 
@@ -964,41 +967,41 @@ The values in an array may be any valid instantiation or expression.  Array inde
         time_units[2 - i];
         "... ";
     =]
-
+```
 
 Result:
-    
+``` 
     hour... half hour... minute...     
-
+```
 
 Arrays may be typed.  In such case the array indicator may go either with the type or the name.  The following two integer array definitions are equivalent:
-
+```
     int lengths[] = [ 60, 60, 24, 7 ]
 
     int[] lengths = [ 60, 60, 24, 7 ]
-
-
+```
 
 10.2 Tables
 
 In a table, the values exist as a set of key-value pairs, and individual values are referenced using a string index, also called a key.  In other languages, the equivalent of a Bento table is sometimes called an associative array, map or hashtable.  Tables and table indexes are denoted by { and } (curly braces).  Example:
-
+```
     heavenly_bodies{} = { "Earth": "planet", "Luna": "moon", "Sol": "star" }
 
     heavenly_bodies{"Sol"};
     "dust and ";
     heavenly_bodies{"Luna"};
     "beams";
+```
 
 which generates
-
+```
     stardust and moonbeams
-
+```
 
 Like arrays, tables may be typed, and the table indicator may go either with the type or the name.  In typed tables, the type applies only to the value part of the name-value pairs.  The keys are always strings.  Example:
-
+```
     int{} lengths = { "minute": 60, "hour": 60, "day": 24, "week": 7 }
-      
+```   
 
 10.3 Dynamically Generated Collections
 
@@ -1016,7 +1019,7 @@ Most computation requires modifying and reading state information, whether it be
 Traditional programming languages manage state using variables and assignment operators.  The model underlying the traditional approach is based on memory: variables represent chunks of memory, generally implemented as relative locations within a larger block (the heap or stack) but conceptually fixed; assignment operators represent the modification of the contents of such memory locations.
 
 Bento follows a different approach.  There are no variables or assignment operators.  Instead, Bento manages state by caching results in a controlled manner.  According to this model, when a definition is instantiated, by default the results are maintained for possible reuse by further constructions in the same scope that reference the same definition.  Example:
-
+```
     say_hello [=
         hello(nm) [| Hello, [= nm; =]. |]
 
@@ -1026,17 +1029,17 @@ Bento follows a different approach.  There are no variables or assignment operat
     =]
 
     say_hello;
-
+```
 
 resulting in 
-
+```
      Hello, world.  I repeat, Hello, world.
-
+```
 
 In the above example, hello is referenced by two constructions in the same scope.  When Bento encounters the first, it looks up the definition for hello and instantiates it.  It also saves the generated data in a local cache associated with the current scope.  When Bento encounters the second construction of hello, it retrieves the cached data rather than regenerating it.  In this way, child definitions can act in effect as local variables for the parent's implementation.
 
 However, this may not always be desirable.  For example, suppose the programmer in the above example wishes for hello to behave differently if no name is passed to it:
-
+```
     say_hello [=
         hello(nm) [=
             if (nm) [| Hello, [= nm; =]. |]
@@ -1049,10 +1052,10 @@ However, this may not always be desirable.  For example, suppose the programmer 
     =]
 
     say_hello;
-
+```
 
 This time caching may work contrary to the programmer's purpose.  If the programmer is expecting the second construction of hello to be handled by the new code, she will be disappointed, because the second construction will retrieve the cached result of the first construction.  Caching may be avoided, however, by adding a durability modifier to the definition.  The modifier in this case is "dynamic", and is used as follows:
-
+```
     say_hello [=
         dynamic hello(nm) [=
             if (nm) [| Hello, [= nm; =]. |]
@@ -1065,12 +1068,12 @@ This time caching may work contrary to the programmer's purpose.  If the program
     =]
 
     say_hello;
-
+```
 
 The dynamic modifier instructs Bento to regenerate the output every time, rather than looking for cached output.  So, with the modifier in place, the result will be:
-
+```
      Hello, world.  I repeat, Hello!
-
+```
 
 In general, if you want a definition to behave more like a traditional function, you should use the dynamic modifier, while if you want it to behave more like a local variable, you should avoid the dynamic modifier and allow Bento to cache the value.
 
@@ -1078,7 +1081,7 @@ In general, if you want a definition to behave more like a traditional function,
 11.2 Session Caching
 
 As explained in an earlier chapter, the outermost scope of an application is the site level scope, which is a scope created by a site definition.  Caching at this level has a special property: the cache persists through a session.  This means that if a top-level definition (i.e., one at the site level) is instantiated in a response, its value is available to subsequent responses.  Example:
-
+```
     site hello_world_example [=
 
         hello(nm) [| Hello, [= nm; =]. |]
@@ -1091,12 +1094,12 @@ As explained in an earlier chapter, the outermost scope of an application is the
             hello;
         =]
     =]
-
+```
     
 Because hello is a top-level definition, it is cached in the session.  Assume first_response is instantiated as part of the response to the user's first request, and second_response is instantiated as part of the response to the user's second request.  Then, because of session caching, instantiating hello in second_response will retrieve the cached value generated by the instantiation of hello(world) in first_response, namely:
-
+```
     Hello, world. 
-
+```
 
 Thus, definitions at the site level act like session variables.
 
@@ -1104,7 +1107,7 @@ Thus, definitions at the site level act like session variables.
 11.3 Dynamic Instantiations
 
 Bento also allows you to combine the two behaviors, specifying dynamic behavior only for selected instantiations of a definition.  This is accomplished by using (: and :) instead of ( and ) for the argument list.   In the following example, we have removed the dynamic modifier from hello, and instead used the dynamic instantiation form where we want dynamic behavior.
-
+```
     say_hello [=
         hello(nm) [=
             if (nm) [| Hello, [= nm; =]. |]
@@ -1121,15 +1124,15 @@ Bento also allows you to combine the two behaviors, specifying dynamic behavior 
     =]
 
     say_hello;
-  
+```
 
 resulting in:
-
+```
      Hello, world.  I repeat, Hello, world.  Let me add, Hello, moon.  In short, Hello!
-
+```
 
 By default, cached values are cleared when a scope is exited.  Consider the following:
-
+```
     say_hello [=
 
         hello(nm) [| Hello, [= nm; =]. |]
@@ -1142,12 +1145,12 @@ By default, cached values are cleared when a scope is exited.  Consider the foll
 
     say_hello;
     say_hello;
-
+```
 
 which yields:
-
+```
     Hello, world.  Hello, moon.  Hello, world.  Hello, moon.
-
+```
 
 Instantiating say_hello a second time returns the same output as the first time because there is no cached value of hello when the scope is re-entered.  If cached values were not cleared, then hello would still have the cached value "moon" on re-entry.
 
@@ -1155,7 +1158,7 @@ Instantiating say_hello a second time returns the same output as the first time 
 11.4 Static Definitions
 
 If you do want the cached value preserved beyond its scope, you can achieve this by adding the static modifier to the definition of hello.  This instructs Bento to construct the definition just once, then use that value for all references in all scopes, other than dynamic instantiations.  Here is the previous example, with hello modified to be static:
-
+```
     say_hello [=
 
         static hello(nm) [| Hello, [= nm; =]. |]
@@ -1168,12 +1171,12 @@ If you do want the cached value preserved beyond its scope, you can achieve this
 
     say_hello;
     say_hello;
-
+```
 
 This time the output is as follows:
-
+```
     Hello, world.  Hello, moon.  Hello, moon.  Hello, moon.
-
+```
 
 The static modifier makes a definition behave in effect as a global variable.  
 
@@ -1181,7 +1184,7 @@ The static modifier makes a definition behave in effect as a global variable.
 11.5 Keep expressions 
 
 The default caching behavior in Bento is sufficient for many tasks, but for some purposes it's too limiting.  A prime example of this occurs when programming in an object-oriented style.  In object-oriented programming, an object often encapsulates a number of properties.  This is naturally expressed in Bento through child definitions -- the parent definition represents the object, and the child definitions represent the properties.  For example:
-
+```
     greeting(nm, msg) [=
         message = msg
         name = nm
@@ -1191,6 +1194,7 @@ The default caching behavior in Bento is sufficient for many tasks, but for some
         name;
         "!";
     =]
+```
 
 This defines an object called greeting that has two properties, message and name.  But message and name are definitions, not values.   
 
@@ -1198,9 +1202,8 @@ Bento supports this via keep expressions.  A keep expression is an optional pref
 
 The simplest form is just the keyword "keep".
 
-
-  When prefixed to a definition, Bento will cache the instantiated value whenever and wherever the parent is cached.  For example:
-    
+When prefixed to a definition, Bento will cache the instantiated value whenever and wherever the parent is cached.  For example:
+```    
     hello(nm, lang) [=
         keep: name = nm 
         keep: language = lang
@@ -1220,13 +1223,14 @@ The simplest form is just the keyword "keep".
     h.name;
     "<br>Language: ";
     h.language;
+```
 
 which yields the following output:
-
+```
     Bonjour, Jacques!
     Name: Jacques
     Language: French
-
+```
 
     -- A "keep as" directive specifies the name by which a definition's results are cached (cache aliasing)
 
@@ -1240,7 +1244,7 @@ Exposing and controlling Bento's caching mechanism in this way forms the basis o
 11.6 Managing State
 
 Bento's caching system makes it possible to do virtually anything in Bento that can be done with mutable variables in other languages.  Indeed, mutable variables are such a natural fit to certain kinds of operations that mimicking them in Bento is a reasonable thing to do.  Consider the problem of counting the members of a set with some testable property.  A natural solution is to employ a loop, a test and a counting variable:
-
+```
     int count_with_some_property [=
         int num(int n) = n
 
@@ -1252,20 +1256,16 @@ Bento's caching system makes it possible to do virtually anything in Bento that 
 
         num;
     =]
-        
+```     
 
 The example above illustrates a common Bento pattern for storing values, the identity definition pattern, which may be written more generally as follows:
-
+```
     vartype varname(vartype x) = x
-
+```
 
 This code mimics a variable named varname of type vartype.  Like a variable, an identity definition associates a name with a value.  But unlike variables as usually implemented, this definition does not allocate any memory.  Rather, it associates a name with a passed value.  Because of caching, this association may persist through a scope or session.    
-
-
-
 
 12. Core Definitions
 
 13. External Definitions
 
-14. Dynamic Code
