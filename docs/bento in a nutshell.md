@@ -19,11 +19,11 @@ As described above, the runtime platform for Bento is a web server, specifically
 
 The reference implementation of the Bento server is written in Java, so Bento also requires a standard Java runtime environment (JRE) to run.
 
-A Bento application consists of one or more text files containing code written in Bento.  This code defines responses.  When the Bento server is launched, it compiles the source files into an internal representation, then listens for requests.  When the server receives a request, it constructs an appropriate response by evaluating the Bento code that defines it.  
+A Bento application consists of one or more text files containing code written in Bento.  This code defines responses.  When the Bento server is launched, it compiles the source files into an internal representation, then listens for requests.  When the server receives a request, it constructs an appropriate response by evaluating the Bento code that defines it.
 
 ###2.1 Configuration
 
-It's possible to configure Bento by means of parameters on the command line (if run as a standalone server) or in the web.xml file (if run as a servlet), but it's also possible and generally more convenient to configure Bento via a configuration file written in Bento (Bento happens to be a good configuration language).  At startup, Bento searches for a file called config.bento in the current directory.  If found, it looks in this file for configuration information such as the path to the source files for the application and the address and port to listen for requests on.      
+It's possible to configure Bento by means of parameters on the command line (if run as a standalone server) or in the web.xml file (if run as a servlet), but it's also possible and generally more convenient to configure Bento via a configuration file written in Bento (Bento happens to be a good configuration language).  At startup, Bento searches for a file called config.bento in the current directory.  If found, it looks in this file for configuration information such as the path to the source files for the application and the address and port to listen for requests on.
 
 ##3. Blocks
 
@@ -31,7 +31,7 @@ It's possible to configure Bento by means of parameters on the command line (if 
 
 Bento code is composed of two kinds of things: data, and instructions for generating data.  Data comes in data blocks, instructions come in code blocks.
 
-A data block starts with [| and ends with |].  Example:
+A data block starts with ```[|``` and ends with ```|]```.  Example:
 ```
     [|
         <h1>Hello, world.</h1>
@@ -43,7 +43,7 @@ Leading and trailing white space is trimmed, so the above data block and the fol
     [| <h1>Hello, world.</h1> |]
 ```
 
-A code block starts with [= and ends with =].  Example:
+A code block starts with ```[=``` and ends with ```=]```.  Example:
 ```
     [=
         hello;
@@ -73,25 +73,25 @@ There is special notation for an empty block (an empty block is empty of both co
 
 ###3.2 Comments
 
-Comments are blocks of text added for documentation or other purposes which are ignored by the Bento compiler.  Bento allows comments to be freely interspersed with Bento code.  
+Comments are blocks of text added for documentation or other purposes which are ignored by the Bento compiler.  Bento allows comments to be freely interspersed with Bento code.
 
 There are two kinds of comments in Bento, documenting and nondocumenting.  Documenting comments are intended for usable commentary on the code that follows.  Automatic documentation generators should be able to construct documentation for Bento code by extracting the documenting comments.
 
-Documenting comments are delimited by /* and */:
+Documenting comments are delimited by ```/*``` and ```*/```:
 ```
     /* This is a documenting comment. */
 ```
 
-Nondocumenting comments are for text that is not suitable for documentation.  An example of such a comment would be one created by commenting out code -- a common programming practice that uses comments to hide code from the compiler without physically removing the code from the source file.  
+Nondocumenting comments are for text that is not suitable for documentation.  An example of such a comment would be one created by commenting out code -- a common programming practice that uses comments to hide code from the compiler without physically removing the code from the source file.
 
-Nondocumenting comments are delimited by /-- and --/
+Nondocumenting comments are delimited by ```/--``` and ```--/```
 ```
     /-- This is a nondocumenting comment. --/
 ```
 
 Comments may be nested as deeply as desired.  Documenting comments may be nested inside of nondocumenting comments, and vice versa, but nondocumenting comments render all embedded comments as nondocumenting as well, regardless of their delimiters.
 
-Bento also supports single-line comments, which start with // and end at the next end-of-line character.  Single-line comments are nondocumenting.
+Bento also supports single-line comments, which start with ```//``` and end at the next end-of-line character.  Single-line comments are nondocumenting.
 
 ##4. Constructions
 
@@ -227,7 +227,7 @@ then Bento handles the construction
     hello;
 ```
 
-by concatenating the output of start_tag, the data block [| Hello, world. |] and the output of end_tag.  The result:
+by concatenating the output of ```start_tag```, the data block ```[| Hello, world. |]``` and the output of ```end_tag```.  The result:
 ```
     <h1>Hello, world.</h1>
 ```
@@ -239,7 +239,7 @@ In Bento you always have more than one way to write an implementation, because y
     |]
 ```
 
-There is yet another way of writing a definition.  In the special case of a definition that contains exactly one construction, the definition may consist of a name, the definition operator = (equals sign), and the construction.  Example:
+There is yet another way of writing a definition.  In the special case of a definition that contains exactly one construction, the definition may consist of a name, the definition operator ```=``` (equals sign), and the construction.  Example:
 ```
     start_tag = "<h1>"
 ```
@@ -372,7 +372,7 @@ These may be used in definitions of any format:
     float fourteen_point_zero = fourteen
 ```
 
-As the final example above illustrates, the data in a typed definition does not have to itself be of the specified type.  If it is not, Bento will convert it to the specified type upon instantiation, and if it cannot be converted, Bento will output the null value for that type.  The null value for a string is an empty string; for a boolean, false; for a character, the NUL character; and for numeric types, zero.   
+As the final example above illustrates, the data in a typed definition does not have to itself be of the specified type.  If it is not, Bento will convert it to the specified type upon instantiation, and if it cannot be converted, Bento will output the null value for that type.  The null value for a string is an empty string; for a boolean, false; for a character, the NUL character; and for numeric types, zero.
 
 When Bento instantiates a definition that contains multiple constructions, constructions other than strings are converted to strings before they are concatenated to form output.  In this sense, the string type is the most fundamental.  In fact, it may generally be omitted since untyped definitions and strings both ultimately produce text.  In the end, everything is a string.
 
@@ -394,11 +394,11 @@ A typed definition, of course, itself creates a new type  Such a sequence of typ
     hello french_hello [| Bonjour! |]
 ```
 
-The type created by a typed definition is referred to as a subtype of the original type.  The original type, in turn, is referred to as a supertype of the new type.  In the above example, hello is a subtype of message, and a supertype of french_hello.  Subtype and supertype relationships are transitive, so french_hello is a subtype of message as well as hello, and message is a supertype of french_hello in addition to hello.  
+The type created by a typed definition is referred to as a subtype of the original type.  The original type, in turn, is referred to as a supertype of the new type.  In the above example, ```hello``` is a subtype of ```message```, and a supertype of ```french_hello```.  Subtype and supertype relationships are transitive, so ```french_hello``` is a subtype of ```message``` as well as ```hello```, and ```message``` is a supertype of ```french_hello``` in addition to ```hello```.
 
 ###6.3 Detecting Types
 
-Bento provides the isa operator (pronounced "is a") to test whether an entity belongs to a type, i.e., was defined as being of that type or a subtype.  An entity is also considered to belong to its own type, i.e. the type created by its own definition.  Given the code in the preceding example, the following three expressions are all true:
+Bento provides the ```isa``` operator (pronounced "is a") to test whether an entity belongs to a type, i.e., was defined as being of that type or a subtype.  An entity is also considered to belong to its own type, i.e. the type created by its own definition.  Given the code in the preceding example, the following three expressions are all true:
 ```
     (hello isa message)
     (french_hello isa message)
@@ -422,7 +422,7 @@ Given this example, the following two expressions are true:
     (french_hello isa french)
 ```
 
-The keyword type makes it possible to query the current type, or the type associated with a name.  In the simplest case, type returns the name of the definition being instantiated.  For example:
+The keyword ```type``` makes it possible to query the current type, or the type associated with a name.  In the simplest case, type returns the name of the definition being instantiated.  For example:
 ```
     hello [=
         type;
@@ -452,7 +452,7 @@ produces
    greeting
 ```
 
-because even though type is referenced in the definition of hello, the definition being instantiated is greeting, which is a subtype of hello.
+because even though ```type``` is referenced in the definition of ```hello```, the definition being instantiated is ```greeting```, which is a subtype of ```hello```.
 
 ##7. Names and Scopes
 
@@ -460,9 +460,9 @@ because even though type is referenced in the definition of hello, the definitio
 
 The important characteristics of names in Bento are the lexical rules they follow, the namespace they reside in and the rules for resolving them. 
 
-The lexical rules for names in Bento are fairly standard: names are case sensitive; they may include letters, digits, underscores and dollar signs; they may not start with a digit.  Keywords in the language such as for and if may not be used as names.  But built-in definition names such as type or count may be reused.  
+The lexical rules for names in Bento are fairly standard: names are case sensitive; they may include letters, digits, underscores and dollar signs; they may not start with a digit.  Keywords in the language such as for and if may not be used as names.  But built-in definition names such as type or count may be reused.
 
-Bento's namespace is somewhat unusual.  Programming languages typically have different namespaces for different categories of entities such as types, classes, functions, objects and variables.  In Bento, however, the boundaries between the categories are not so distinct.  A single entity may span multiple categories, acting as a type in some cases, a function in others and a variable in yet others, even though the entity is defined in only one place.  So Bento has just one namespace for all entities.  
+Bento's namespace is somewhat unusual.  Programming languages typically have different namespaces for different categories of entities such as types, classes, functions, objects and variables.  In Bento, however, the boundaries between the categories are not so distinct.  A single entity may span multiple categories, acting as a type in some cases, a function in others and a variable in yet others, even though the entity is defined in only one place.  So Bento has just one namespace for all entities.
 
 One advantage of this approach is that a single Bento statement can operate on multiple levels simultaneously, or operate on different levels in different circumstances.  An example of the former is the way every definition is also a type declaration.  An example of the latter is the way some constructions can generate new data in some circurmstances and retrieve stored data in others (see the chapter on State below).
 
@@ -492,7 +492,7 @@ Every definition creates a scope.  Nested definitions create nested scopes.  A n
     =]
 ```
 
-Note that the name "baths" is defined three times, but each definition is in a separate scope.
+Note that the name ```baths``` is defined three times, but each definition is in a separate scope.
 
 When Bento encounters a name and needs to find the corresponding definition, it searches its namespace by scope. It begins with the immediate scope and works its way up through the parent's scope, and the parent's parent's scope, until it runs out of scopes or a matching definition is found.
 
@@ -516,12 +516,12 @@ Consider the following definition:
     =]
 ```
 
-When Bento instantiates hello, it looks in the scope of hello's definition for a definition of name and finds it, giving name the value "World".  But good_night has no definition for name in its immediate scope, so when Bento instantiates good_night it continues its search to the next scope outwards, the one created by the definition of greetings.  There it finds name, containing the value "Moon".  The result:
+When Bento instantiates ```hello```, it looks in the scope of ```hello```'s definition for a definition of ```name``` and finds it, giving ```name``` the value "World".  But ```good_night``` has no definition for ```name``` in its immediate scope, so when Bento instantiates ```good_night``` it continues its search to the next scope outwards, the one created by the definition of ```greetings```.  There it finds ```name```, containing the value "Moon".  The result:
 ```
     <p>Hello, World.</p><p>Good night, Moon.</p>
 ```
 
-Using the child operator (dot), it's possible to instantiate a definition that is not in an accessible scope as long as it has an ancestor that is in scope.  For example, in the following code good_night accesses name, which is not directly accessible, by referencing it as the child of hello, which is accessible:
+Using the child operator (dot), it's possible to instantiate a definition that is not in an accessible scope as long as it has an ancestor that is in scope.  For example, in the following code ```good_night``` accesses ```name```, which is not directly accessible, by referencing it as the child of ```hello```, which is accessible:
 ```
     greetings [=
 
@@ -540,7 +540,7 @@ Using the child operator (dot), it's possible to instantiate a definition that i
     =]
 ```
 
-Such access from a wider scope can be controlled using an access modifier -- a keyword that precedes the definition and determines specifies its behavior in some regard.  One such modifier is "local", which specifies local access.  If a definition is declared to have local access, it is invisible to all wider scopes.  For example, if we change the definition of name in the preceding example to the following:
+Such access from a wider scope can be controlled using an access modifier -- a keyword that precedes the definition and determines specifies its behavior in some regard.  One such modifier is ```local```, which specifies local access.  If a definition is declared to have local access, it is invisible to all wider scopes.  For example, if we change the definition of name in the preceding example to the following:
 ```
         hello [=
             local name = "World"
@@ -549,7 +549,7 @@ Such access from a wider scope can be controlled using an access modifier -- a k
         =]
 ```
 
-then instantiating hello will still work, but instantiating good_night will fail, because name is no longer visible beyond hello.  
+then instantiating ```hello``` will still work, but instantiating ```good_night``` will fail, because ```name``` is no longer visible beyond ```hello```.
 
 ###7.3 Organization of Scopes
 
