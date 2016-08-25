@@ -970,6 +970,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                                         }
                                         ParameterList nominalParams = holder.nominalDef.getParamsForArgs(holder.nominalArgs, context);
                                         context.push(holder.nominalDef, nominalParams, holder.nominalArgs, true);
+                                        //ParameterList params = holder.def.getParamsForArgs(holder.args, context);
+                                        //context.push(holder.def, params, holder.args, true);
                                         numPushes++;
                                     }
                                     break;
