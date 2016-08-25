@@ -170,7 +170,7 @@ The body of the loop will be evaluated repeatedly with successive values of the 
     <li>Line 0</li><li>Line 1</li><li>Line 2</li>
 ```
 
-The default increment for this kind of loop is 1, but may be set to any value via the by keyword:
+The default increment for this kind of loop is 1, but may be set to any value via the ```by``` keyword:
 ```
     for float x from 0 to 1.0 by 0.25
 ```
@@ -182,7 +182,7 @@ Loops may be nested; they may also be combined, using the "and" keyword:
     |]
 ```
 
-The above loop will repeat until either x_list or y_list runs out of members.
+The above loop will repeat until either ```x_list``` or ```y_list``` runs out of members.
 
 ##5. Definitions
 
@@ -232,7 +232,7 @@ by concatenating the output of ```start_tag```, the data block ```[| Hello, worl
     <h1>Hello, world.</h1>
 ```
 
-In Bento you always have more than one way to write an implementation, because you can always substitute code embedded in a data block for data emebedded in a code block (or vice versa).  Here is a code-in-data implementation of hello which achieves the exact same result as the data-in-code one above:
+In Bento you always have more than one way to write an implementation, because you can always substitute code embedded in a data block for data emebedded in a code block (or vice versa).  Here is a code-in-data implementation of ```hello``` which achieves the exact same result as the data-in-code one above:
 ```
     hello [|
         [= start_tag; =]Hello, world.[= end_tag; =]
@@ -256,13 +256,13 @@ Evaluating this, we get this output:
     Hello, world.
 ```
 
-which is what we would expect from assigning a value to a variable and then outputting that variable.  But there is an important difference, not salient in this particular case but critical in many others.  A definition is not a construction, and doesn't do anything by its mere presence.  The statement that looks like an assignment is a definition, and the Bento server ignores it as it is constructing a response.  Until the Bento server gets to the following statement, which instantiates a hello, there is no variable called hello containing the value "Hello, world."
+which is what we would expect from assigning a value to a variable and then outputting that variable.  But there is an important difference, not salient in this particular case but critical in many others.  A definition is not a construction, and doesn't do anything by its mere presence.  The statement that looks like an assignment is a definition, and the Bento server ignores it as it is constructing a response.  Until the Bento server gets to the following statement, which instantiates a ```hello```, there is no variable called ```hello``` containing the value "Hello, world."
 
 Another way of describing this is to say that Bento is a lazy language -- nothing (ideally) is evaluated before it is needed.
 
 ###5.3 Child Definitions
 
-A definition can contain another definition, referred to as a child definition.  The following definition of greetings contains a child definition called hello:
+A definition can contain another definition, referred to as a child definition.  The following definition of greetings contains a child definition called ```hello```:
 ```
     greetings [=
         hello [| <h1>Hello, world.</h1> |]
@@ -283,7 +283,7 @@ would yield no output because the definition of greetings contains no constructi
     =]
 ```
 
-In this case, when greetings in instantiated, you get
+In this case, when ```greetings``` is instantiated, you get
 ```
     <h1>Hello, world.</h1>
 ```
@@ -343,7 +343,7 @@ The definitions shown up to now, consisting of a name and an implementation, are
     |]
 ```
 
-This definition declares the type to be "string", which is a primitive type.  Primitive types are types that are built into the language and are not explicitly defined in any Bento code.  Primitive types include standard types commonly found in programming languages, with the meanings a programmer would expect:
+This definition declares the type to be ```string```, which is a primitive type.  Primitive types are types that are built into the language and are not explicitly defined in any Bento code.  Primitive types include standard types commonly found in programming languages, with the meanings a programmer would expect:
 ```
     boolean
     byte
@@ -563,7 +563,7 @@ These contexts have two properties that are relevant to a Bento application.  On
 
 ###7.5 Sites
 
-The outermost scope of an application is the site level, created by a site definition (a typed definition whose supertype is the built-in type "site").  Example:
+The outermost scope of an application is the site level, created by a site definition (a typed definition whose supertype is the built-in type ```site```).  Example:
 ```
     site hello_world_example [=
 
@@ -587,7 +587,7 @@ Normally the outermost definition in a Bento source file is a site definition.  
 
 ###8.1 Basics of Parameters
 
-A definition may have one or more parameters, which are specified in parentheses immediately following the definition's name and before the definition's implementation.  These parameters can be referenced inside the definition, as if they were definitions.  In fact, parameters are a special kind of definition, one in which only the name and optionally the type are provided with the definition, while the implementation is provided when the definition is instantiated.  Such an implementation is called an argument, and is typically a name, value or expression.  
+A definition may have one or more parameters, which are specified in parentheses immediately following the definition's name and before the definition's implementation.  These parameters can be referenced inside the definition, as if they were definitions.  In fact, parameters are a special kind of definition, one in which only the name and optionally the type are provided with the definition, while the implementation is provided when the definition is instantiated.  Such an implementation is called an argument, and is typically a name, value or expression.
 
 Here is a definition with a single typed parameter:
 ```
@@ -607,7 +607,7 @@ The following example shows a definition with a single parameter and a correspon
     =]
 ```
 
-In the above, hello is defined with a single untyped parameter called nm.  Hello is then instantiated with the a single argument, the string "World".  When Bento encounters nm in the implementation of hello, it identifies nm as a parameter, and matches the parameter nm to the argument "World".  The result in this case is therefore the same as if we had written the following instead:
+In the above, ```hello``` is defined with a single untyped parameter called ```nm```.  ```hello``` is then instantiated with the a single argument, the string "World".  When Bento encounters ```nm``` in the implementation of ```hello```, it identifies ```nm``` as a parameter, and matches the parameter ```nm``` to the argument "World".  The result in this case is therefore the same as if we had written the following instead:
 ```
     greetings [=
         hello [=
@@ -620,7 +620,7 @@ In the above, hello is defined with a single untyped parameter called nm.  Hello
     =]
 ```
 
-But this works only because in the initial version we instantiated hello just once.  The following variation would not be able to be rewritten quite so simply:
+But this works only because in the initial version we instantiated ```hello``` just once.  The following variation would not be able to be rewritten quite so simply:
 ```
     greetings [=
         hello(nm) [=
@@ -684,7 +684,7 @@ Overloaded parameter sets are specified in a list, separated by commas.  Each pa
 
 When an overloaded definition is instantiated, Bento selects the parameter set that most closely matches the arguments specified in the instantiation, and constructs the definition utilizing the arguments as the values for the selected parameter set.  Other parameters receive the null value for their base type.
 
-This presents a problem, however.  If a parameter that is not in every parameter list is null, it's impossible to tell why merely by examining its value  -- it might not be in the selected parameter set, or it might have been passed a null value.  So Bento provides the "with" statement, which is a special kind of conditional that tests whether a parameter is in the selected parameter set.
+This presents a problem, however.  If a parameter that is not in every parameter list is null, it's impossible to tell why merely by examining its value  -- it might not be in the selected parameter set, or it might have been passed a null value.  So Bento provides the ```with``` statement, which is a special kind of conditional that tests whether a parameter is in the selected parameter set.
 
 Example: 
 ```
