@@ -703,7 +703,7 @@ Example:
 
 A typed definition in Bento may make use of the type's definition.  This is called subclassing or inheritance.  The type's definition is called the superdefinition; the definition that uses the type is called the subdefinition.
 
-Bento supports three kinds of inheritance: implementation inheritance, interface inheritance, and override inheritance.
+Bento supports four kinds of inheritance: implementation inheritance, interface inheritance, override inheritance and lateral inheritance.
 
 9.1 Implementation Inheritance 
 
@@ -748,7 +748,7 @@ This time the output would be
  
 The more complex cases occur when the subdefinition extends the superdefinition's implementation rather than replacing it.  There are two such cases, which may be called outside-in and inside-out inheritance.
 
-Outside-in inheritance is analogous to the approach followed by many object-oriented languages.  With this approach, the subdefinition explicitly references the superdefinition.  In Bento, this is accomplished via the built-in name "super".  Example:
+Outside-in inheritance is analogous to the approach followed by many object-oriented languages.  With this approach, the subdefinition explicitly references the superdefinition.  In Bento, this is accomplished via the built-in name ```super```.  Example:
 ```
     hello [| Hello, World |]
 
@@ -785,7 +785,7 @@ The output of the above:
     Two worlds meet on the street.  "Hello, World."  "Hello, World."  They continue on their way.
 ```
 
-This is called outside-in inheritance because the implementation of the definition being instantiated (the subdefinition) wraps the implementation of its superdefinition.  With inside-out inheritance, the superdefinition's implementation wraps the subdefinition's.  This is accomplished using the "sub" built-in name.  sub appears in the superdefinition, and indicates where within the superdefinition's implementation the implementation provided by the subdefinition appears.  Example:
+This is called outside-in inheritance because the implementation of the definition being instantiated (the subdefinition) wraps the implementation of its superdefinition.  With inside-out inheritance, the superdefinition's implementation wraps the subdefinition's.  This is accomplished using the ```sub``` built-in name.  ```sub``` appears in the superdefinition, and indicates where within the superdefinition's implementation the implementation provided by the subdefinition appears.  Example:
 ```
     message [=
         [| <h1> |]
@@ -803,7 +803,7 @@ Resulting output:
     <h1>Hello, World</h1>
 ```
 
-Inside-out inheritance turns out to be very useful because for many classes of data items, the unchanging parts are on the outside, while the parts that vary from item to item are on the inside.  For example, it is common for the web pages on a site to have the same header and footer but varying content between the two.  
+Inside-out inheritance turns out to be very useful because for many classes of data items, the unchanging parts are on the outside, while the parts that vary from item to item are on the inside.  For example, it is common for the web pages on a site to have the same header and footer but varying content between the two.
 
 Both outside-in and inside-out inheritance may be extended any number of levels.  Example:
 ```
@@ -828,9 +828,9 @@ Both outside-in and inside-out inheritance may be extended any number of levels.
 
 with the same result as the previous example.
 
-Bento does not allow mixing inside-out and outside-in inheritance.  If a definition contains a reference to sub, its descendants (subdefinitions, subdefinitions of those subdefinitions, and so on) cannot contain a reference to super; and if a definition contains a reference to super, its ancestors (superdefinition, its superdefinition, ans so on) cannot contain a reference to sub.  It is always legal to have no reference to either.
+Bento does not allow mixing inside-out and outside-in inheritance.  If a definition contains a reference to ```sub```, its descendants (subdefinitions, subdefinitions of those subdefinitions, and so on) cannot contain a reference to ```super```; and if a definition contains a reference to ```super```, its ancestors (superdefinition, its superdefinition, ans so on) cannot contain a reference to ```sub```.  It is always legal to have no reference to either.
 
-Neither sub nor super takes arguments.  But arguments may be passed to a superdefinition by adding them to the supertype, as described in the previous chapter.  Here is an example that also uses super:
+Neither ```sub``` nor ```super``` takes arguments.  But arguments may be passed to a superdefinition by adding them to the supertype, as described in the previous chapter.  Here is an example that also uses ```super```:
 ```
     hello(nm) [| Hello, [= nm; =]. |]
 
@@ -850,9 +850,9 @@ which outputs the following:
 
 9.2 Interface Inheritance
 
-An interface is the set of all child definitions of a definition.  With interface inheritance, a definition implicitly includes all the child definitions of all its ancestors.  
+An interface is the set of all child definitions of a definition.  With interface inheritance, a definition implicitly includes all the child definitions of all its ancestors.
 
-If a definition contains a child definition with the same name as a child definition in an ancestor, it takes precedence over the ancestor's child definition.  This is called overriding.  
+If a definition contains a child definition with the same name as a child definition in an ancestor, it takes precedence over the ancestor's child definition.  This is called overriding.
 
 Example:
 ```
@@ -869,14 +869,14 @@ Example:
     night_greetings.goodbye;
 ```
 
-The first definition creates a type called greetings, whose interface consists of two definitions, hello and goodbye.  The second definition is a subdefinition of greetings called night_greetings, which overrides just one of these, the definition for goodbye.  Because of interface inheritance, the non-overriden child definition in greetings (hello) is also effectively a child of night_greetings, making night_greetings.hello a valid reference.  The result of the two instantiations above is the following:
+The first definition creates a type called ```greetings```, whose interface consists of two definitions, ```hello``` and ```goodbye```.  The second definition is a subdefinition of ```greetings``` called ```night_greetings```, which overrides just one of these, the definition for ```goodbye```.  Because of interface inheritance, the non-overriden child definition in ```greetings``` (```hello```) is also effectively a child of ```night_greetings```, making ```night_greetings.hello``` a valid reference.  The result of the two instantiations above is the following:
 ```
     Hello. Good night.
 ```
 
 9.3 Override Inheritance
 
-With override inheritance, a child definition may incorporate the implementation of the definition it overrides into its own implementation.  This is accomplished by the special supertype "this", which indicates that the supertype is the type being overridden, which in turn makes the overridden type available via the super keyword, just like any supertype.
+With override inheritance, a child definition may incorporate the implementation of the definition it overrides into its own implementation.  This is accomplished by the special supertype ```this```, which indicates that the supertype is the type being overridden, which in turn makes the overridden type available via the ```super``` keyword, just like any supertype.
 
 Example:
 ```
@@ -904,10 +904,12 @@ which produces:
 
 Bento supports multiple inheritance, that is, a definition may have multiple superdefinitions.  But the effect of multiple inheritance varies with the kind of inheritance.
 
-For implementation inheritance and override inheritance, only one superdefinition is used in any given instance, called the effective superdefinition.  This superdefinition is selected at runtime based on two factors, order and parameter matching: the first superdefinition with a parameter list that matches the arguments supplied at runtime is the effective superdefinition.
-
 For interface inheritance, all child definitions of all superdefinitions are available.  When resolving a reference to a child in a superdefinition, Bento looks first at the effective superdefinition; if it has a child of the given name, it is selected.  If it does not, then Bento searches the superdefinitions in the order they are listed.
 
+For implementation inheritance, the system selects the first elegible definition in the list of superdefinitions to be the superdefinition for implementation purposes.  A definition is elegible if it has a parameter list that matches the arguments supplied at runtime, and has an inheritance keyword that is compatible with the definition being instantiated.
+
+
+9.5 Lateral Inheritance
 
 10. Collections
 
@@ -916,7 +918,7 @@ A collection is a definition which associates a name with multiple values which 
 
 10.1 Arrays
 
-In an array, the values exist in a sequence, and individual values are referenced using an integer index, indicating the zero-based position of the value in the sequence.  Arrays and array indexes are denoted by [ and ] (square brackets).  Example:
+In an array, the values exist in a sequence, and individual values are referenced using an integer index, indicating the zero-based position of the value in the sequence.  Arrays and array indexes are denoted by ```[``` and ```]``` (square brackets).  Example:
 ```
     elements[] = [ "Earth", "Fire", "Wind" ]
 
@@ -958,7 +960,7 @@ Arrays may be typed.  In such case the array indicator may go either with the ty
 
 10.2 Tables
 
-In a table, the values exist as a set of key-value pairs, and individual values are referenced using a string index, also called a key.  In other languages, the equivalent of a Bento table is sometimes called an associative array, map or hashtable.  Tables and table indexes are denoted by { and } (curly braces).  Example:
+In a table, the values exist as a set of key-value pairs, and individual values are referenced using a string index, also called a key.  In other languages, the equivalent of a Bento table is sometimes called an associative array, map or hashtable.  Tables and table indexes are denoted by ```{``` and ```}``` (curly braces).  Example:
 ```
     heavenly_bodies{} = { "Earth": "planet", "Luna": "moon", "Sol": "star" }
 
@@ -976,11 +978,11 @@ which generates
 Like arrays, tables may be typed, and the table indicator may go either with the type or the name.  In typed tables, the type applies only to the value part of the name-value pairs.  The keys are always strings.  Example:
 ```
     int{} lengths = { "minute": 60, "hour": 60, "day": 24, "week": 7 }
-```   
+```
 
 10.3 Dynamically Generated Collections
 
-Bento allows collections to be wholly or partially generated by logic rather than having to separately specify each element.  This ability, called array comprehension in some languages, is accomplished via special forms of logical constructions.  
+Bento allows collections to be wholly or partially generated by logic rather than having to separately specify each element.  This ability, called array comprehension in some languages, is accomplished via special forms of logical constructions.
 
 
 
@@ -1011,9 +1013,9 @@ resulting in
      Hello, world.  I repeat, Hello, world.
 ```
 
-In the above example, hello is referenced by two constructions in the same scope.  When Bento encounters the first, it looks up the definition for hello and instantiates it.  It also saves the generated data in a local cache associated with the current scope.  When Bento encounters the second construction of hello, it retrieves the cached data rather than regenerating it.  In this way, child definitions can act in effect as local variables for the parent's implementation.
+In the above example, ```hello``` is referenced by two constructions in the same scope.  When Bento encounters the first, it looks up the definition for ```hello`` and instantiates it.  It also saves the generated data in a local cache associated with the current scope.  When Bento encounters the second construction of ```hello```, it retrieves the cached data rather than regenerating it.  In this way, child definitions can act in effect as local variables for the parent's implementation.
 
-However, this may not always be desirable.  For example, suppose the programmer in the above example wishes for hello to behave differently if no name is passed to it:
+However, this may not always be desirable.  For example, suppose the programmer in the above example wishes for ```hello``` to behave differently if no name is passed to it:
 ```
     say_hello [=
         hello(nm) [=
@@ -1029,7 +1031,7 @@ However, this may not always be desirable.  For example, suppose the programmer 
     say_hello;
 ```
 
-This time caching may work contrary to the programmer's purpose.  If the programmer is expecting the second construction of hello to be handled by the new code, she will be disappointed, because the second construction will retrieve the cached result of the first construction.  Caching may be avoided, however, by adding a durability modifier to the definition.  The modifier in this case is "dynamic", and is used as follows:
+This time caching may work contrary to the programmer's purpose.  If the programmer is expecting the second construction of hello to be handled by the new code, she will be disappointed, because the second construction will retrieve the cached result of the first construction.  Caching may be avoided, however, by adding a durability modifier to the definition.  The modifier in this case is ```dynamic```, and is used as follows:
 ```
     say_hello [=
         dynamic hello(nm) [=
@@ -1045,12 +1047,12 @@ This time caching may work contrary to the programmer's purpose.  If the program
     say_hello;
 ```
 
-The dynamic modifier instructs Bento to regenerate the output every time, rather than looking for cached output.  So, with the modifier in place, the result will be:
+The ```dynamic``` modifier instructs Bento to regenerate the output every time, rather than looking for cached output.  So, with the modifier in place, the result will be:
 ```
      Hello, world.  I repeat, Hello!
 ```
 
-In general, if you want a definition to behave more like a traditional function, you should use the dynamic modifier, while if you want it to behave more like a local variable, you should avoid the dynamic modifier and allow Bento to cache the value.
+In general, if you want a definition to behave more like a traditional function, you should use the ```dynamic``` modifier, while if you want it to behave more like a variable, you should avoid the ```dynamic``` modifier and allow Bento to cache the value.
 
 
 11.2 Session Caching
@@ -1071,7 +1073,7 @@ As explained in an earlier chapter, the outermost scope of an application is the
     =]
 ```
     
-Because hello is a top-level definition, it is cached in the session.  Assume first_response is instantiated as part of the response to the user's first request, and second_response is instantiated as part of the response to the user's second request.  Then, because of session caching, instantiating hello in second_response will retrieve the cached value generated by the instantiation of hello(world) in first_response, namely:
+Because ```hello``` is a top-level definition, it is cached in the session.  Assume ```first_response``` is instantiated as part of the response to the user's first request, and ```second_response``` is instantiated as part of the response to the user's second request.  Then, because of session caching, instantiating ```hello``` in ```second_response``` will retrieve the cached value generated by the instantiation of ```hello(world)``` in ```first_response```, namely:
 ```
     Hello, world. 
 ```
@@ -1081,7 +1083,7 @@ Thus, definitions at the site level act like session variables.
 
 11.3 Dynamic Instantiations
 
-Bento also allows you to combine the two behaviors, specifying dynamic behavior only for selected instantiations of a definition.  This is accomplished by using (: and :) instead of ( and ) for the argument list.   In the following example, we have removed the dynamic modifier from hello, and instead used the dynamic instantiation form where we want dynamic behavior.
+Bento also allows you to combine the two behaviors, specifying dynamic behavior only for selected instantiations of a definition.  This is accomplished by using (: and :) instead of ( and ) for the argument list.   In the following example, we have removed the dynamic modifier from ```hello```, and instead used the dynamic instantiation form where we want dynamic behavior.
 ```
     say_hello [=
         hello(nm) [=
@@ -1093,7 +1095,7 @@ Bento also allows you to combine the two behaviors, specifying dynamic behavior 
         "  I repeat, ";
         hello;
         "  Let me add, ";
-        hello(:"moon":);
+        hello(: "moon" :);
         "  In short, ";
         hello(::);
     =]
@@ -1127,12 +1129,12 @@ which yields:
     Hello, world.  Hello, moon.  Hello, world.  Hello, moon.
 ```
 
-Instantiating say_hello a second time returns the same output as the first time because there is no cached value of hello when the scope is re-entered.  If cached values were not cleared, then hello would still have the cached value "moon" on re-entry.
+Instantiating ```say_hello``` a second time returns the same output as the first time because there is no cached value of ```hello``` when the scope is re-entered.  If cached values were not cleared, then ```hello``` would still have the cached value "moon" on re-entry.
 
 
 11.4 Static Definitions
 
-If you do want the cached value preserved beyond its scope, you can achieve this by adding the static modifier to the definition of hello.  This instructs Bento to construct the definition just once, then use that value for all references in all scopes, other than dynamic instantiations.  Here is the previous example, with hello modified to be static:
+If you do want the cached value preserved beyond its scope, you can achieve this by adding the ```static``` modifier to the definition.  This instructs Bento to construct the definition just once, then use that value for all references in all scopes.  Here is the previous example, with hello modified to be static:
 ```
     say_hello [=
 
@@ -1153,10 +1155,10 @@ This time the output is as follows:
     Hello, world.  Hello, moon.  Hello, moon.  Hello, moon.
 ```
 
-The static modifier makes a definition behave in effect as a global variable.  
+The ```static``` modifier makes a definition behave in effect as a global variable.
 
 
-11.5 Keep expressions 
+11.5 Object Caching 
 
 The default caching behavior in Bento is sufficient for many tasks, but for some purposes it's too limiting.  A prime example of this occurs when programming in an object-oriented style.  In object-oriented programming, an object often encapsulates a number of properties.  This is naturally expressed in Bento through child definitions -- the parent definition represents the object, and the child definitions represent the properties.  For example:
 ```
@@ -1171,14 +1173,12 @@ The default caching behavior in Bento is sufficient for many tasks, but for some
     =]
 ```
 
-This defines an object called greeting that has two properties, message and name.  But message and name are definitions, not values.   
+This defines an object called ```greeting``` that has two properties, ```message``` and ```name```.  But ```message``` and ```name``` are definitions, not values.
 
-Bento supports this via keep expressions.  A keep expression is an optional prefix to a definition that begins with the keep keyword.
+Bento supports caching of child definitions this via keep expressions.  A keep expression is an optional prefix to a definition that begins with the ```keep``` keyword.
 
-The simplest form is just the keyword "keep".
-
-When prefixed to a definition, Bento will cache the instantiated value whenever and wherever the parent is cached.  For example:
-```    
+The simplest form is just the keyword ```keep``` by itself.  When prefixed to a definition, Bento will cache the instantiated value whenever and wherever the parent is cached.  For example:
+```
     hello(nm, lang) [=
         keep: name = nm 
         keep: language = lang
@@ -1213,7 +1213,7 @@ which yields the following output:
 
     -- A "keep in" directive specifies the table in which a definitions's results are cached (cache exposure)
 
-Exposing and controlling Bento's caching mechanism in this way forms the basis of a number of advanced techniques for managing state.  It also carries the potential of seamlessly integrating Bento's caching with external persistence mechanisms such as databases.  
+Exposing and controlling Bento's caching mechanism in this way forms the basis of a number of advanced techniques for managing state.  It also carries the potential of seamlessly integrating Bento's caching with external persistence mechanisms such as databases.
 
 
 11.6 Managing State
@@ -1231,14 +1231,14 @@ Bento's caching system makes it possible to do virtually anything in Bento that 
 
         num;
     =]
-```     
+``` 
 
 The example above illustrates a common Bento pattern for storing values, the identity definition pattern, which may be written more generally as follows:
 ```
     vartype varname(vartype x) = x
 ```
 
-This code mimics a variable named varname of type vartype.  Like a variable, an identity definition associates a name with a value.  But unlike variables as usually implemented, this definition does not allocate any memory.  Rather, it associates a name with a passed value.  Because of caching, this association may persist through a scope or session.    
+This code mimics a variable named ```varname``` of type ```vartype```.  Like a variable, an identity definition associates a name with a value.  But unlike variables as usually implemented, this definition does not allocate any memory.  Rather, it associates a name with a passed value, and depends on caching, this association may persist through a scope or session.
 
 12. Core Definitions
 
