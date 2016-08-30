@@ -25,6 +25,10 @@ A Bento application consists of one or more text files containing code written i
 
 It's possible to configure Bento by means of parameters on the command line (if run as a standalone server) or in the web.xml file (if run as a servlet), but it's also possible and generally more convenient to configure Bento via a configuration file written in Bento (Bento happens to be a good configuration language).  At startup, Bento searches for a file called config.bento in the current directory.  If found, it looks in this file for configuration information such as the path to the source files for the application and the address and port to listen for requests on.
 
+###2.2 Bento as a Service
+
+
+
 ##3. Blocks
 
 ###3.1 Code and Data Blocks
@@ -260,7 +264,27 @@ which is what we would expect from assigning a value to a variable and then outp
 
 Another way of describing this is to say that Bento is a lazy language -- nothing (ideally) is evaluated before it is needed.
 
-###5.3 Child Definitions
+###5.3 Instantiation Without Output
+
+As noted earlier, a Bento program describes output, and computation is a side effect.  If computation is the purpose of a definition, however, the output may be superfluous or even inconvenient.  To accommodate such cases, Bento provides a built-in function, ```eval```, which instantiates its argument but throws away the output.
+
+Example:
+```
+    a [| A |]
+    b [| B |]
+    c [| C |]
+
+    a;
+    eval(b);
+    c;
+```
+
+which yields:
+```
+    AC
+```
+
+###5.4 Child Definitions
 
 A definition can contain another definition, referred to as a child definition.  The following definition of greetings contains a child definition called ```hello```:
 ```
@@ -330,137 +354,13 @@ You can reference a child of a definition using the dot operator.  Continuing on
     |]
 ```
 
-##6. Types
-
-Bento has the notion of type, which is a named category of data.  But types are optional.  A definition may be either typed or untyped.  A typed definition asserts that the data resulting from its instantiation belongs to a particular category.  An untyped definition makes no such assertion.
-
-###6.1 Primitive Types
-
-The definitions shown up to now, consisting of a name and an implementation, are all untyped.  A typed definition has an additional component, a type name, which precedes the definition name:
-```
-    string hello [|
-        Hello, world.
-    |]
-```
-
-This definition declares the type to be ```string```, which is a primitive type.  Primitive types are types that are built into the language and are not explicitly defined in any Bento code.  Primitive types include standard types commonly found in programming languages, with the meanings a programmer would expect:
-```
-    boolean
-    byte
-    char
-    float
-    int
-    string
-```
-
-These may be used in definitions of any format:
-```
-    boolean flag1 = true
-
-    boolean flag2 [= 
-        false;
-    =]
-
-    char a = 'A'
-
-    char b [| B |]
-
-    int thirteen = 13
-
-    int fourteen = thirteen + 1
-
-    float fourteen_point_zero = fourteen
-```
-
-As the final example above illustrates, the data in a typed definition does not have to itself be of the specified type.  If it is not, Bento will convert it to the specified type upon instantiation, and if it cannot be converted, Bento will output the null value for that type.  The null value for a string is an empty string; for a boolean, false; for a character, the NUL character; and for numeric types, zero.
-
-When Bento instantiates a definition that contains multiple constructions, constructions other than strings are converted to strings before they are concatenated to form output.  In this sense, the string type is the most fundamental.  In fact, it may generally be omitted since untyped definitions and strings both ultimately produce text.  In the end, everything is a string.
-
-###6.2 User-Defined Types
-
-In addition to the built-in types, Bento supports user-defined types.  It is very easy to create a type in Bento.  In fact it is virtually impossible not to create a type, since every definition creates a new type, which may be referenced wherever a type is expected.  This is true even for definitions that are themselves empty or untyped or both -- an untyped definition does not use a type, but it creates one, which another defition can use.  For example:
-```
-    message [/]
-
-    message hello [| Hello! |]
-```
-
-A typed definition, of course, itself creates a new type  Such a sequence of types and subtypes can continue indefinitely:
-```
-    message [/]
-
-    message hello [| Hello! |]
-
-    hello french_hello [| Bonjour! |]
-```
-
-The type created by a typed definition is referred to as a subtype of the original type.  The original type, in turn, is referred to as a supertype of the new type.  In the above example, ```hello``` is a subtype of ```message```, and a supertype of ```french_hello```.  Subtype and supertype relationships are transitive, so ```french_hello``` is a subtype of ```message``` as well as ```hello```, and ```message``` is a supertype of ```french_hello``` in addition to ```hello```.
-
-###6.3 Detecting Types
-
-Bento provides the ```isa``` operator (pronounced "is a") to test whether an entity belongs to a type, i.e., was defined as being of that type or a subtype.  An entity is also considered to belong to its own type, i.e. the type created by its own definition.  Given the code in the preceding example, the following three expressions are all true:
-```
-    (hello isa message)
-    (french_hello isa message)
-    (hello isa hello)
-```
-
-But these two expressions are false:
-```
-    (hello isa french_hello)
-    (message isa int)
-```
-
-A definition may have multiple types, delimited by commas.  Example:
-```
-    hello, french french_hello [| Bonjour! |]
-```
-
-Given this example, the following two expressions are true:
-```
-    (french_hello isa hello)
-    (french_hello isa french)
-```
-
-The keyword ```type``` makes it possible to query the current type, or the type associated with a name.  In the simplest case, type returns the name of the definition being instantiated.  For example:
-```
-    hello [=
-        type;
-    =]
-
-    hello;
-```
-
-produces this:
-```
-    hello
-```
-
-But in some cases it may be a subtype:
-```
-    hello [=
-        type;
-    =]
-
-    hello greeting [/]
-
-    greeting;
-```
-
-produces
-```
-   greeting
-```
-
-because even though ```type``` is referenced in the definition of ```hello```, the definition being instantiated is ```greeting```, which is a subtype of ```hello```.
-
 ##7. Names and Scopes
 
 ###7.1 Names
 
 The important characteristics of names in Bento are the lexical rules they follow, the namespace they reside in and the rules for resolving them. 
 
-The lexical rules for names in Bento are fairly standard: names are case sensitive; they may include letters, digits, underscores and dollar signs; they may not start with a digit.  Keywords in the language such as for and if may not be used as names.  But built-in definition names such as type or count may be reused.
+The lexical rules for names in Bento are fairly standard: names are case sensitive; they may include letters, digits, underscores and dollar signs; they may not start with a digit.  Keywords in the language such as ```for``` and ```if``` may not be used as names.
 
 Bento's namespace is somewhat unusual.  Programming languages typically have different namespaces for different categories of entities such as types, classes, functions, objects and variables.  In Bento, however, the boundaries between the categories are not so distinct.  A single entity may span multiple categories, acting as a type in some cases, a function in others and a variable in yet others, even though the entity is defined in only one place.  So Bento has just one namespace for all entities.
 
@@ -551,17 +451,7 @@ Such access from a wider scope can be controlled using an access modifier -- a k
 
 then instantiating ```hello``` will still work, but instantiating ```good_night``` will fail, because ```name``` is no longer visible beyond ```hello```.
 
-###7.3 Organization of Scopes
-
-A scope is contains directives, definitions and constructions.
-
-###7.4 Continuations
-
-A scope always exists in a context.  This context is conceptually a stack, with each layer in the stack consisting of a scope, an argument-parameter mapping and a cache.  When Bento instantiates a definition, a new layer is pushed on to the stack.  When the instantiation is complete, the layer is popped off the stack.  In between, as instantiations nested within are evaluated, further layers are pushed and popped.  The values resulting from these instantiations, meanwhile, are cached in the current layer, as explained in the chapter below called Caching.
-
-These contexts have two properties that are relevant to a Bento application.  One is that they are threadsafe; that is, Bento can construct many responses simultaneously, each one with its own context.  The second is that a context encapsulates the entire application state for a thread.  This means that if you could save a copy of the current context, you could at some future point resume the application from its state at the moment you copied the context, a capabiltity generally known as continuations.  In fact, Bento has such a feature.  A special primitive type, @ (at sign), represents continuations; a special keyword, here, provides the mechanism for capturing a continuation; and another keyword, continue, resumes a continuation.
-
-###7.5 Sites
+###7.3 Sites
 
 The outermost scope of an application is the site level, created by a site definition (a typed definition whose supertype is the built-in type ```site```).  Example:
 ```
@@ -583,11 +473,140 @@ The ability to divide a site into parts allows a site to be defined across multi
 
 Normally the outermost definition in a Bento source file is a site definition.  If the source file does not begin with an explicit site definition, its contents are presumed to belong to a special unnamed site called the default site.
 
+##7. Types
+
+Bento has the notion of type, which is a named category of data.  But types are optional.  A definition may be either typed or untyped.  A typed definition asserts that the data resulting from its instantiation belongs to a particular category.  An untyped definition makes no such assertion.
+
+###7.1 Primitive Types
+
+The definitions shown up to now, consisting of a name and an implementation, are all untyped.  A typed definition has an additional component, a type name, which precedes the definition name:
+```
+    string hello [|
+        Hello, world.
+    |]
+```
+
+This definition declares the type to be ```string```, which is a primitive type.  Primitive types are types that are built into the language and are not explicitly defined in any Bento code.  Primitive types include standard types commonly found in programming languages, with the meanings a programmer would expect:
+```
+    boolean
+    byte
+    char
+    float
+    int
+    string
+```
+
+These may be used in definitions of any format:
+```
+    boolean flag1 = true
+
+    boolean flag2 [= 
+        false;
+    =]
+
+    char a = 'A'
+
+    char b [| B |]
+
+    int thirteen = 13
+
+    int fourteen = thirteen + 1
+
+    float fourteen_point_zero = fourteen
+```
+
+As the final example above illustrates, the data in a typed definition does not have to itself be of the specified type.  If it is not, Bento will convert it to the specified type upon instantiation, and if it cannot be converted, Bento will output the null value for that type.  The null value for a string is an empty string; for a boolean, false; for a character, the NUL character; and for numeric types, zero.
+
+When Bento instantiates a definition that contains multiple constructions, constructions other than strings are converted to strings before they are concatenated to form output.  In this sense, the string type is the most fundamental.  In fact, it may generally be omitted since untyped definitions and strings both ultimately produce text.  In the end, everything is a string.
+
+###7.2 User-Defined Types
+
+In addition to the built-in types, Bento supports user-defined types.  It is very easy to create a type in Bento.  In fact it is virtually impossible not to create a type, since every definition creates a new type, which may be referenced wherever a type is expected.  This is true even for definitions that are themselves empty or untyped or both -- an untyped definition does not use a type, but it creates one, which another defition can use.  For example:
+```
+    message [/]
+
+    message hello [| Hello! |]
+```
+
+A typed definition, of course, itself creates a new type  Such a sequence of types and subtypes can continue indefinitely:
+```
+    message [/]
+
+    message hello [| Hello! |]
+
+    hello french_hello [| Bonjour! |]
+```
+
+The type created by a typed definition is referred to as a subtype of the original type.  The original type, in turn, is referred to as a supertype of the new type.  In the above example, ```hello``` is a subtype of ```message```, and a supertype of ```french_hello```.  Subtype and supertype relationships are transitive, so ```french_hello``` is a subtype of ```message``` as well as ```hello```, and ```message``` is a supertype of ```french_hello``` in addition to ```hello```.
+
+###7.3 Detecting Types
+
+Bento provides the ```isa``` operator (pronounced "is a") to test whether an entity belongs to a type, i.e., was defined as being of that type or a subtype.  An entity is also considered to belong to its own type, i.e. the type created by its own definition.  Given the code in the preceding example, the following three expressions are all true:
+```
+    (hello isa message)
+    (french_hello isa message)
+    (hello isa hello)
+```
+
+But these two expressions are false:
+```
+    (hello isa french_hello)
+    (message isa int)
+```
+
+The keyword ```type``` makes it possible to query the current type, or the type associated with a name.  In the simplest case, type returns the name of the definition being instantiated.  For example:
+```
+    hello [=
+        type;
+    =]
+
+    hello;
+```
+
+produces this:
+```
+    hello
+```
+
+But in some cases it may be a subtype:
+```
+    hello [=
+        type;
+    =]
+
+    hello greeting [/]
+
+    greeting;
+```
+
+produces
+```
+   greeting
+```
+
+because even though ```type``` is referenced in the definition of ```hello```, the definition being instantiated is ```greeting```, which is a subtype of ```hello```.
+
+###7.4 Multiple Supertypes
+
+A definition may have multiple supertypes, delimited by commas.  Example:
+```
+    hello, french french_hello [| Bonjour! |]
+```
+
+In this example, french_hello is a subtype of both hello and french.  Therefore, both of the following expressions are true:
+```
+    (french_hello isa hello)
+    (french_hello isa french)
+```
+
+
 ##8. Parameters
+
+A definition can be made more general by allowing some of the information it uses to vary from instantiation to instantiation.  Bento supports this through parameters. 
 
 ###8.1 Basics of Parameters
 
-A definition may have one or more parameters, which are specified in parentheses immediately following the definition's name and before the definition's implementation.  These parameters can be referenced inside the definition, as if they were definitions.  In fact, parameters are a special kind of definition, one in which only the name and optionally the type are provided with the definition, while the implementation is provided when the definition is instantiated.  Such an implementation is called an argument, and is typically a name, value or expression.
+A definition may have zero or more parameters.  Parameters are specified in parentheses immediately following the definition's name and before the definition's implementation.  Any of these parameters can be referenced inside the definition, as if they were definitions.  In fact, parameters are a special kind of definition, one in which only the name and optionally the type are provided with the definition, while the implementation is provided when the definition is instantiated.  Such an implementation is called an argument, and is typically a name, value or expression.
 
 Here is a definition with a single typed parameter:
 ```
@@ -628,7 +647,6 @@ But this works only because in the initial version we instantiated ```hello``` j
         =]
 
         hello("World");
-        hello("Moon");
     =]
 ```
 
@@ -705,7 +723,7 @@ A typed definition in Bento may make use of the type's definition.  This is call
 
 Bento supports four kinds of inheritance: implementation inheritance, interface inheritance, override inheritance and lateral inheritance.
 
-9.1 Implementation Inheritance 
+###9.1 Implementation Inheritance 
 
 With implementation inheritance, the subdefinition incorporates the superdefinition's constructions into its own implementation.
 
@@ -848,7 +866,7 @@ which outputs the following:
     <h1>Hello, World.</h1>
 ```
 
-9.2 Interface Inheritance
+###9.2 Interface Inheritance
 
 An interface is the set of all child definitions of a definition.  With interface inheritance, a definition implicitly includes all the child definitions of all its ancestors.
 
@@ -874,7 +892,7 @@ The first definition creates a type called ```greetings```, whose interface cons
     Hello. Good night.
 ```
 
-9.3 Override Inheritance
+###9.3 Override Inheritance
 
 With override inheritance, a child definition may incorporate the implementation of the definition it overrides into its own implementation.  This is accomplished by the special supertype ```this```, which indicates that the supertype is the type being overridden, which in turn makes the overridden type available via the ```super``` keyword, just like any supertype.
 
@@ -900,23 +918,30 @@ which produces:
     <b>Hello.</b>
 ```
 
-9.4 Multiple Inheritance
+###9.5 Lateral Inheritance
 
-Bento supports multiple inheritance, that is, a definition may have multiple superdefinitions.  But the effect of multiple inheritance varies with the kind of inheritance.
+Bento supports a kind of inheritance which works outside the standard implementation inheritance chain defined by the ```super``` or ```sub``` keywords.
 
-For interface inheritance, all child definitions of all superdefinitions are available.  When resolving a reference to a child in a superdefinition, Bento looks first at the effective superdefinition; if it has a child of the given name, it is selected.  If it does not, then Bento searches the superdefinitions in the order they are listed.
+
+###9.4 Multiple Inheritance
+
+As noted earlier, a definition may have multiple supertypes.  In such a case a definition may inherit from more than one supertype, which is commonly known as multiple inheritance.  But whether and exactly how this works depends on the kind of inheritance.
 
 For implementation inheritance, the system selects the first elegible definition in the list of superdefinitions to be the superdefinition for implementation purposes.  A definition is elegible if it has a parameter list that matches the arguments supplied at runtime, and has an inheritance keyword that is compatible with the definition being instantiated.
 
+For interface inheritance, all child definitions of all superdefinitions are available.  When resolving a reference to a child in a superdefinition, Bento looks first at the implementation superdefinition (the one selected by the logic for implementation inheritance); if it has a child of the given name, it is selected.  If it does not, then Bento searches the superdefinitions in the order they are listed.
 
-9.5 Lateral Inheritance
+In the case of lateral inheritance, all lateral superdefinitions (ones containing the ```next``` keyword) are implemented, in the order they appear.
 
-10. Collections
+The single exception to multiple inheritance is override inheritance, which allows only a single superdefinition, the keyword ```this```.
+
+
+##10. Collections
 
 A collection is a definition which associates a name with multiple values which may be referenced individually using an index.  Bento supports two kinds of collections, arrays and tables.
 
 
-10.1 Arrays
+###10.1 Arrays
 
 In an array, the values exist in a sequence, and individual values are referenced using an integer index, indicating the zero-based position of the value in the sequence.  Arrays and array indexes are denoted by ```[``` and ```]``` (square brackets).  Example:
 ```
@@ -948,7 +973,7 @@ The values in an array may be any valid instantiation or expression.  Array inde
 
 Result:
 ``` 
-    hour... half hour... minute...     
+    hour... half hour... minute...
 ```
 
 Arrays may be typed.  In such case the array indicator may go either with the type or the name.  The following two integer array definitions are equivalent:
@@ -958,7 +983,7 @@ Arrays may be typed.  In such case the array indicator may go either with the ty
     int[] lengths = [ 60, 60, 24, 7 ]
 ```
 
-10.2 Tables
+###10.2 Tables
 
 In a table, the values exist as a set of key-value pairs, and individual values are referenced using a string index, also called a key.  In other languages, the equivalent of a Bento table is sometimes called an associative array, map or hashtable.  Tables and table indexes are denoted by ```{``` and ```}``` (curly braces).  Example:
 ```
@@ -980,18 +1005,18 @@ Like arrays, tables may be typed, and the table indicator may go either with the
     int{} lengths = { "minute": 60, "hour": 60, "day": 24, "week": 7 }
 ```
 
-10.3 Dynamically Generated Collections
+###10.3 Dynamically Generated Collections
 
 Bento allows collections to be wholly or partially generated by logic rather than having to separately specify each element.  This ability, called array comprehension in some languages, is accomplished via special forms of logical constructions.
 
 
 
-11. State
+##11. State
 
 Most computation requires modifying and reading state information, whether it be intermediate results, user input, retrieved data, loop indexes, flags, etc.  Bento supports the handling of state information, but in a unique way.
 
 
-11.1 Caching
+###11.1 Caching
 
 Traditional programming languages manage state using variables and assignment operators.  The model underlying the traditional approach is based on memory: variables represent chunks of memory, generally implemented as relative locations within a larger block (the heap or stack) but conceptually fixed; assignment operators represent the modification of the contents of such memory locations.
 
@@ -1054,36 +1079,9 @@ The ```dynamic``` modifier instructs Bento to regenerate the output every time, 
 
 In general, if you want a definition to behave more like a traditional function, you should use the ```dynamic``` modifier, while if you want it to behave more like a variable, you should avoid the ```dynamic``` modifier and allow Bento to cache the value.
 
+###11.2 Dynamic Instantiation
 
-11.2 Session Caching
-
-As explained in an earlier chapter, the outermost scope of an application is the site level scope, which is a scope created by a site definition.  Caching at this level has a special property: the cache persists through a session.  This means that if a top-level definition (i.e., one at the site level) is instantiated in a response, its value is available to subsequent responses.  Example:
-```
-    site hello_world_example [=
-
-        hello(nm) [| Hello, [= nm; =]. |]
-
-        first_response [=
-            hello(world);
-        =] 
-
-        second_response [=
-            hello;
-        =]
-    =]
-```
-    
-Because ```hello``` is a top-level definition, it is cached in the session.  Assume ```first_response``` is instantiated as part of the response to the user's first request, and ```second_response``` is instantiated as part of the response to the user's second request.  Then, because of session caching, instantiating ```hello``` in ```second_response``` will retrieve the cached value generated by the instantiation of ```hello(world)``` in ```first_response```, namely:
-```
-    Hello, world. 
-```
-
-Thus, definitions at the site level act like session variables.
-
-
-11.3 Dynamic Instantiations
-
-Bento also allows you to combine the two behaviors, specifying dynamic behavior only for selected instantiations of a definition.  This is accomplished by using (: and :) instead of ( and ) for the argument list.   In the following example, we have removed the dynamic modifier from ```hello```, and instead used the dynamic instantiation form where we want dynamic behavior.
+Bento allows you to combine caching and dynamic behaviors, specifying dynamic behavior only for selected instantiations of a definition.  This is accomplished by using ```(:``` and ```:)``` instead of ```(``` and ```)``` for the argument list.   In the following example, we have removed the dynamic modifier from ```hello```, and instead used the dynamic instantiation form where we want dynamic behavior.
 ```
     say_hello [=
         hello(nm) [=
@@ -1131,14 +1129,62 @@ which yields:
 
 Instantiating ```say_hello``` a second time returns the same output as the first time because there is no cached value of ```hello``` when the scope is re-entered.  If cached values were not cleared, then ```hello``` would still have the cached value "moon" on re-entry.
 
+###11.3 The Identity Pattern
 
-11.4 Static Definitions
+Bento's caching system makes it possible to do virtually anything in Bento that can be done with mutable variables in other languages.  Indeed, mutable variables are such a natural fit to certain kinds of operations that mimicking them in Bento is a reasonable thing to do.  Consider the problem of counting the members of a set with some testable property.  A natural solution is to employ a loop, a test and a counting variable:
+```
+    int count_with_some_property [=
+        int num(int n) = n
 
-If you do want the cached value preserved beyond its scope, you can achieve this by adding the ```static``` modifier to the definition.  This instructs Bento to construct the definition just once, then use that value for all references in all scopes.  Here is the previous example, with hello modified to be static:
+        for x in some_array [=
+            if (some_test(x)) [=
+                eval(num(: num + 1 :));
+             =]
+        =]
+
+        num;
+    =]
+``` 
+
+The example above illustrates a common Bento pattern for storing values, the identity definition pattern, which may be written more generally as follows:
+```
+    vartype varname(vartype x) = x
+```
+
+This code mimics a variable named ```varname``` of type ```vartype```.  Like a variable, an identity definition associates a name with a value.  But unlike variables as usually implemented, this definition does not allocate any memory.  Rather, it associates a name with a passed value, and depends on caching to store the value.
+
+###11.4 Session Caching
+
+As explained in an earlier chapter, the outermost scope of an application is the site level scope, which is a scope created by a site definition.  Caching at this level has a special property: the cache persists through a session.  This means that if a top-level definition (i.e., one at the site level) is instantiated in a response, its value is available to subsequent responses.  Example:
+```
+    site hello_world_example [=
+
+        hello(nm) [| Hello, [= nm; =]. |]
+
+        first_response [=
+            hello(world);
+        =] 
+
+        second_response [=
+            hello;
+        =]
+    =]
+```
+    
+Because ```hello``` is a top-level definition, it is cached in the session.  Assume ```first_response``` is instantiated as part of the response to the user's first request, and ```second_response``` is instantiated as part of the response to the user's second request.  Then, because of session caching, instantiating ```hello``` in ```second_response``` will retrieve the cached value generated by the instantiation of ```hello(world)``` in ```first_response```, namely:
+```
+    Hello, world. 
+```
+
+Thus, definitions at the site level act like session variables.
+
+###11.5 Static and Global Definitions
+
+If you do want the cached value preserved beyond its scope, you can achieve this by adding the ```static``` or ```global``` modifier to the definition.  ```global``` instructs Bento to use the cached value for all references in all scopes.  Here is the previous example, with hello modified to be global:
 ```
     say_hello [=
 
-        static hello(nm) [| Hello, [= nm; =]. |]
+        global hello(nm) [| Hello, [= nm; =]. |]
 
         hello("world");
         "  ";
@@ -1155,10 +1201,12 @@ This time the output is as follows:
     Hello, world.  Hello, moon.  Hello, moon.  Hello, moon.
 ```
 
-The ```static``` modifier makes a definition behave in effect as a global variable.
+Like ```global```, the ```static``` modifier makes the cached value available in all scopes.  In addition, ```static``` makes a definition immutable; Bento constructs the definition just once, and attempts to cache a different value for the definition via dynamic instantiation are ignored.
 
 
-11.5 Object Caching 
+##12 Advanced State Management
+
+###12.1 Object Caching
 
 The default caching behavior in Bento is sufficient for many tasks, but for some purposes it's too limiting.  A prime example of this occurs when programming in an object-oriented style.  In object-oriented programming, an object often encapsulates a number of properties.  This is naturally expressed in Bento through child definitions -- the parent definition represents the object, and the child definitions represent the properties.  For example:
 ```
@@ -1175,7 +1223,7 @@ The default caching behavior in Bento is sufficient for many tasks, but for some
 
 This defines an object called ```greeting``` that has two properties, ```message``` and ```name```.  But ```message``` and ```name``` are definitions, not values.
 
-Bento supports caching of child definitions this via keep expressions.  A keep expression is an optional prefix to a definition that begins with the ```keep``` keyword.
+Bento supports caching of child definitions this via keep directives.  A keep directive is an optional prefix to a definition that begins with the ```keep``` keyword.
 
 The simplest form is just the keyword ```keep``` by itself.  When prefixed to a definition, Bento will cache the instantiated value whenever and wherever the parent is cached.  For example:
 ```
@@ -1207,40 +1255,34 @@ which yields the following output:
     Language: French
 ```
 
-    -- A "keep as" directive specifies the name by which a definition's results are cached (cache aliasing)
+The ```keep``` keyword supports various options to further customize and control caching; these are described in the following sections.
 
-    -- A "keep by" directive specifies how to dynamically generate the name by which a definition's results are cached (cache by key)
+###12.2 Cache Exposure
 
-    -- A "keep in" directive specifies the table in which a definitions's results are cached (cache exposure)
+
+
+###12.3 Cache Aliasing
+
+Bento allows a program to explicitly specify the name with which a definition's results are cached.  , a f  ```keep as``` specifies the name by which a definition's results are cached (cache aliasing).  This allows
+
+```keep by``` makes it possible to dynamically generate the name by which a definition's results are cached (cache by key).
+
+Finally, ```keep in``` allows the programmer to specify the table in which a definitions's results are cached (cache exposure).
 
 Exposing and controlling Bento's caching mechanism in this way forms the basis of a number of advanced techniques for managing state.  It also carries the potential of seamlessly integrating Bento's caching with external persistence mechanisms such as databases.
 
 
-11.6 Managing State
+###11.8 Context
 
-Bento's caching system makes it possible to do virtually anything in Bento that can be done with mutable variables in other languages.  Indeed, mutable variables are such a natural fit to certain kinds of operations that mimicking them in Bento is a reasonable thing to do.  Consider the problem of counting the members of a set with some testable property.  A natural solution is to employ a loop, a test and a counting variable:
-```
-    int count_with_some_property [=
-        int num(int n) = n
+A scope always exists in a context.  This context is conceptually a stack, with each layer in the stack consisting of a scope, an argument-parameter mapping and a cache.  When Bento instantiates a definition, a new layer is pushed on to the stack.  When the instantiation is complete, the layer is popped off the stack.  In between, as instantiations nested within are evaluated, further layers are pushed and popped.  The values resulting from these instantiations are cached in the current layer, as explained above.
 
-        for x in some_array [=
-            if (some_test(x)) [=
-                eval(num(: num + 1 :));
-             =]
-        =]
+These contexts have two properties that are relevant to a Bento application.  One is that they are threadsafe; that is, Bento can construct many responses simultaneously, each one with its own context.  The second is that a context encapsulates the entire application state for a thread.
 
-        num;
-    =]
-``` 
+Bento supports direct access to provides a special keyword, ```here```, provides the mechanism for capturing a continuation; and another keyword, continue, resumes a continuation.
 
-The example above illustrates a common Bento pattern for storing values, the identity definition pattern, which may be written more generally as follows:
-```
-    vartype varname(vartype x) = x
-```
 
-This code mimics a variable named ```varname``` of type ```vartype```.  Like a variable, an identity definition associates a name with a value.  But unlike variables as usually implemented, this definition does not allocate any memory.  Rather, it associates a name with a passed value, and depends on caching, this association may persist through a scope or session.
 
-12. Core Definitions
+##12. Core Definitions
 
-13. External Definitions
+##13. External Definitions
 
