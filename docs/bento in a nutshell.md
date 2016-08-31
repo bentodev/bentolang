@@ -31,9 +31,9 @@ It's possible to configure Bento by means of parameters on the command line (if 
 
 ##3. Blocks
 
-###3.1 Code and Data Blocks
-
 Bento code is composed of two kinds of things: data, and instructions for generating data.  Data comes in data blocks, instructions come in code blocks.
+
+###3.1 Data Blocks
 
 A data block starts with ```[|``` and ends with ```|]```.  Example:
 ```
@@ -47,6 +47,8 @@ Leading and trailing white space is trimmed, so the above data block and the fol
     [| <h1>Hello, world.</h1> |]
 ```
 
+###3.2 Code Blocks
+
 A code block starts with ```[=``` and ends with ```=]```.  Example:
 ```
     [=
@@ -54,6 +56,8 @@ A code block starts with ```[=``` and ends with ```=]```.  Example:
         goodbye;
     =]
 ```
+
+###3.3 Nesting
 
 Data can be embedded in code, and code can be embedded in data:
 ```
@@ -75,7 +79,7 @@ There is special notation for an empty block (an empty block is empty of both co
     [/]
 ```
 
-###3.2 Comments
+###3.4 Comments
 
 Comments are blocks of text added for documentation or other purposes which are ignored by the Bento compiler.  Bento allows comments to be freely interspersed with Bento code.
 
@@ -99,9 +103,11 @@ Bento also supports single-line comments, which start with ```//``` and end at t
 
 ##4. Constructions
 
+Both data and code blocks do the same thing -- specify output.  A data block specifies output explictly.  A code block contains Bento statements that logically describe the output.  Such statements are called constructions.
+
 ###4.1 Basic Constructions
 
-Both data and code blocks do the same thing -- specify output.  A data block specifies output explictly.  A code block contains Bento statements that logically describe the output.  Such statements are called constructions.  One kind of construction consists of a name followed by a semicolon:
+The simplest kind of construction consists of a name followed by a semicolon:
 ```
         hello;
 ```
@@ -128,7 +134,7 @@ Expressions, like names and values, may be contsructed using the construction op
 
 ###4.2 Logical Constructions
 
-Bento provides two kinds of special constructions for implementing logic, conditionals and loops.  The simplest conditional consists of a test and a code or data block, which is evaluated only if the test succeeds:
+Bento provides two kinds of special constructions for implementing logic, conditionals and loops.  The simplest conditional consists of an expression and a code or data block, which is evaluated only if the value of the expression, interpreted as a boolean value, is true:
 ```
     if (arriving) [= 
         hello;
@@ -354,22 +360,22 @@ You can reference a child of a definition using the dot operator.  Continuing on
     |]
 ```
 
-##7. Names and Scopes
-
-###7.1 Names
-
-The important characteristics of names in Bento are the lexical rules they follow, the namespace they reside in and the rules for resolving them. 
-
-The lexical rules for names in Bento are fairly standard: names are case sensitive; they may include letters, digits, underscores and dollar signs; they may not start with a digit.  Keywords in the language such as ```for``` and ```if``` may not be used as names.
+##7. Namespace
 
 Bento's namespace is somewhat unusual.  Programming languages typically have different namespaces for different categories of entities such as types, classes, functions, objects and variables.  In Bento, however, the boundaries between the categories are not so distinct.  A single entity may span multiple categories, acting as a type in some cases, a function in others and a variable in yet others, even though the entity is defined in only one place.  So Bento has just one namespace for all entities.
 
 One advantage of this approach is that a single Bento statement can operate on multiple levels simultaneously, or operate on different levels in different circumstances.  An example of the former is the way every definition is also a type declaration.  An example of the latter is the way some constructions can generate new data in some circurmstances and retrieve stored data in others (see the chapter on State below).
 
-Finally, the rules for resolving a name in Bento depend on the scope in which it is found.  Scoping rules in Bento are the subject of the next section.
+Besides the namespace they reside in, the important characteristics of names in Bento are the lexical rules they follow and the rules for resolving them, which depends on the scope they are in. 
+
+###7.1 Names
+
+The lexical rules for names in Bento are fairly standard: names are case sensitive; they may include letters, digits, underscores and dollar signs; they may not start with a digit.  Keywords in the language such as ```for``` and ```if``` may not be used as names.
 
 ###7.2 Scopes
 
+Every name must resolve to a definition.  The resolution process depends on the scope in which the name occurs.
+ 
 Every definition creates a scope.  Nested definitions create nested scopes.  A name may only be defined once in an immediate scope (a scope not including its nested scopes).  Here again is an example from chapter 5:
 ```
     building [=
@@ -392,7 +398,7 @@ Every definition creates a scope.  Nested definitions create nested scopes.  A n
     =]
 ```
 
-Note that the name ```baths``` is defined three times, but each definition is in a separate scope.
+Note that the name ```baths``` is defined three times, but each definition is in a separate scope.  If ```baths``` had appeared twice in the same scope, a compile-time error would occur.
 
 When Bento encounters a name and needs to find the corresponding definition, it searches its namespace by scope. It begins with the immediate scope and works its way up through the parent's scope, and the parent's parent's scope, until it runs out of scopes or a matching definition is found.
 
