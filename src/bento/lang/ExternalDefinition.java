@@ -1472,6 +1472,9 @@ class MethodConstruction extends ExternalConstruction {
             // dereference resolved collections
             } else if (arg instanceof ResolvedCollection) {
                 argObjects[i] = ((ResolvedCollection) arg).getCollectionObject();
+                
+            } else if (arg instanceof BentoObjectWrapper) {
+                argObjects[i] = ((BentoObjectWrapper) arg).getData();
  
             } else {
                 argObjects[i] = arg;

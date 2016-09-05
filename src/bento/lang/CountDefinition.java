@@ -2,7 +2,7 @@
  *
  * $Id: CountDefinition.java,v 1.24 2015/06/30 19:46:33 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2016 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -29,7 +29,8 @@ public class CountDefinition extends NamedDefinition implements DynamicObject {
 
     private static Type countType = PrimitiveType.INT;
     public Definition def;
-    private int count;
+    //private int count;
+    private ResolvedInstance ri = null;
     private ArgumentList args;
     private List<Index> indexes;
 
@@ -40,16 +41,8 @@ public class CountDefinition extends NamedDefinition implements DynamicObject {
         
         args = null;
         indexes = null;
-
-        if (def instanceof CollectionDefinition) {
-            count = ((CollectionDefinition) def).getSize();
-            
-        } else if (def instanceof ExternalDefinition) {
-            count = ((ExternalDefinition) def).getObjectSize();
-            
-        } else {
-            count = 1;
-        }
+        ri = null;
+        
         
         setDurability(DYNAMIC);
     }
@@ -69,27 +62,56 @@ public class CountDefinition extends NamedDefinition implements DynamicObject {
         this.def = def;
         this.args = args;
         this.indexes = indexes;
-
-        CollectionDefinition collectionDef = def.getCollectionDefinition(context, args);
-        if (collectionDef != null) {
-            count = collectionDef.getSize(context, args, indexes);
-
+        if (def instanceof CollectionDefinition) {
+            if (((CollectionDefinition)def).isArray()) {
+                this.ri = new ResolvedArray(def, context, args, indexes);
+            } else {
+                this.ri = new ResolvedTable(def, context, args, indexes);
+            }
         } else {
-            Instantiation instance;
+            this.ri = new ResolvedInstance(def, context, args, indexes);
+        }
+
+        
+        setDurability(DYNAMIC);
+    }
+
+    private int getCount() {
+        int count = 0;
+        if (ri == null) {
+            if (def instanceof CollectionDefinition) {
+                count = ((CollectionDefinition) def).getSize();
+            } else if (def instanceof ExternalDefinition) {
+                count = ((ExternalDefinition) def).getObjectSize();
+            } else {
+                count = 1;
+            }
+        } else {
+            Context context = ri.getResolutionContext();
             boolean unpushed = false;
+
             try {
-                if (def.equals(context.peek().def) && context.size() > 1) {
-                    ArgumentList instanceArgs = context.getArguments();
-                    context.unpush();
-                    unpushed = true;
-                    instance = new Instantiation(def, instanceArgs, null);
+                CollectionDefinition collectionDef = def.getCollectionDefinition(context, args);
+                if (collectionDef != null) {
+                    count = collectionDef.getSize(context, args, indexes);
+
                 } else {
-                    instance = new Instantiation(def, this);
+                    Instantiation instance;
+                    if (def.equals(context.peek().def) && context.size() > 1) {
+                        ArgumentList instanceArgs = context.getArguments();
+                        context.unpush();
+                        unpushed = true;
+                        instance = new Instantiation(def, instanceArgs, null);
+                    } else {
+                        instance = new Instantiation(def, this);
+                    }
+                    Object data = instance.getData(context);
+                    
+                    count = getCountForObject(data);
+                        
                 }
-                Object data = instance.getData(context);
-                
-                count = getCountForObject(data);
-                
+            } catch (Redirection r) {
+                ;                
             } finally {
                 if (unpushed) {
                     context.repush();
@@ -97,8 +119,9 @@ public class CountDefinition extends NamedDefinition implements DynamicObject {
             }
         }
         
-        setDurability(DYNAMIC);
+        return count;
     }
+    
     
     static public int getCountForObject(Object data) {
         int count = 0;
@@ -124,7 +147,7 @@ public class CountDefinition extends NamedDefinition implements DynamicObject {
     
 
     public AbstractNode getContents() {
-        return new PrimitiveValue(count);
+        return new PrimitiveValue(getCount());
     }
 
     /** Returns <code>false</code>.
