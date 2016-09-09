@@ -1471,7 +1471,14 @@ public class NamedDefinition extends AnonymousDefinition {
                                 contentDef = contentType.getDefinition();
                             }
                         }
-                        if (contentDef != null && contentDef.getNameNode() != null && (!contentDef.isIdentity() || !contentDef.getNameNode().equals(name) || !contents.equals(construction)) && !contentDef.getName().equals(Name.THIS) && !context.contains(contentDef)) { // && !contentDef.equals(resolver)) {
+                        if (contentDef != null && contentDef.getNameNode() != null
+                                && !contentDef.isIdentity()
+                                && !contentDef.getNameNode().equals(name)
+                                && !contents.equals(construction)
+                                && !contentDef.getName().equals(Name.THIS)
+                                && !context.contains(contentDef)
+                                && !contentDef.getOwner().equalsOrExtends(this)) { // && !contentDef.equals(resolver)) {
+
                             ArgumentList contentArgs = instance.getArguments(); // contentType.getArguments(context);
 
                             // make sure the value we are resolving is not one of the arguments
