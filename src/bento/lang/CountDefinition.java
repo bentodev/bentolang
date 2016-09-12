@@ -31,6 +31,7 @@ public class CountDefinition extends NamedDefinition implements DynamicObject {
     public Definition def;
     //private int count;
     private ResolvedInstance ri = null;
+    private PrimitiveValue value = null;
     private ArgumentList args;
     private List<Index> indexes;
 
@@ -41,9 +42,8 @@ public class CountDefinition extends NamedDefinition implements DynamicObject {
         
         args = null;
         indexes = null;
+        value = null;
         ri = null;
-        
-        
         setDurability(DYNAMIC);
     }
 
@@ -62,6 +62,7 @@ public class CountDefinition extends NamedDefinition implements DynamicObject {
         this.def = def;
         this.args = args;
         this.indexes = indexes;
+        this.ri = null;
         if (def instanceof CollectionDefinition) {
             if (((CollectionDefinition)def).isArray()) {
                 this.ri = new ResolvedArray(def, context, args, indexes);
@@ -146,8 +147,16 @@ public class CountDefinition extends NamedDefinition implements DynamicObject {
     }
     
 
+    // override to avoid call to getContents
+    public Block getCatchBlock() {
+        return null;
+    }
+        
     public AbstractNode getContents() {
-        return new PrimitiveValue(getCount());
+        if (value == null) {
+            value = new PrimitiveValue(getCount()); 
+        }
+        return value; 
     }
 
     /** Returns <code>false</code>.
