@@ -63,16 +63,7 @@ public class CountDefinition extends NamedDefinition implements DynamicObject {
         this.args = args;
         this.indexes = indexes;
         this.ri = null;
-        if (def instanceof CollectionDefinition) {
-            if (((CollectionDefinition)def).isArray()) {
-                this.ri = new ResolvedArray(def, context, args, indexes);
-            } else {
-                this.ri = new ResolvedTable(def, context, args, indexes);
-            }
-        } else {
-            this.ri = new ResolvedInstance(def, context, args, indexes);
-        }
-
+        this.ri = new ResolvedInstance(def, context, args, indexes);
         
         setDurability(DYNAMIC);
     }

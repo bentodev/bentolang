@@ -1178,7 +1178,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                     numUnpushes++;
                     context.unpush();
                     Definition nextdef = context.peek().def;
-                    if (defclass.equals(nextdef) || defclass.isSubDefinition((NamedDefinition) nextdef)) {
+                    if (nextdef.equalsOrExtends(defclass)) {
                         if (nextdef instanceof ComplexDefinition) {
                             defclass = (NamedDefinition) nextdef;
                         }
