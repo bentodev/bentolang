@@ -579,11 +579,11 @@ core [=
     db_impl(driver, url, user, password) database(driver, url, user, password) [=
 
         /--- initialize the database ---/
-        if (init) [|
-            <p>Database initialized.</p>
-        |] else [|
-            <p>Unable to initialize database.</p>
-        |]
+        if (init) [=
+            log("Database at " + url + " initialized for user " + user + ".");
+        =] else [=
+            log("Unable to initialize database at " + url + " for user " + user + ".");
+        =]
     =]
 
 
