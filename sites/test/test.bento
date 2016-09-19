@@ -1295,6 +1295,26 @@ ott [=
         
     =]
 
+at [=
+    test_super [=
+        test_child [?]
+    
+        [| A |] catch [| x |]
+    =]
+    
+    test_super test_sub_1 [=
+        [| B |] catch [| x |]
+    =]
+    
+    test_super test_sub_2 [=
+        [=
+            test_child;
+            [| x |]
+        =] catch [| C |]
+    =]
+    test_sub_2;
+=]
+
 
     test_case return_type_test [=
         int category = types
@@ -2009,16 +2029,6 @@ tpt [=
         sub_array[0];
     =]
 
-at [=
-        index_calc_array[3] = [ "K", "L", "M" ]
-        int n = 1
-/---
-        index_calc_array[n - 1];
-        index_calc_array[n];
-----/
-        index_calc_array[index_calc_array.count - n];
-
-=]
 
     test_case multidimensional_array_test [=
         int category = collections

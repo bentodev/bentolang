@@ -1464,7 +1464,7 @@ public class NamedDefinition extends AnonymousDefinition {
                     Instantiation instance = (Instantiation) construction;
                     NameNode name = instance.getReferenceName();
                     // avoid regression
-                    if (!node.equals(name) && !hasChildDefinition(name.getName()) && (resolver == null || !resolver.getNameNode().equals(name))) {
+                    if (name != null && !node.equals(name) && !hasChildDefinition(name.getName()) && (resolver == null || !resolver.getNameNode().equals(name))) {
                         Definition contentDef = instance.getDefinition(context, this);
                         if (contentDef == null || contentDef == this) {
                             Type contentType = instance.getType(context, generate);
