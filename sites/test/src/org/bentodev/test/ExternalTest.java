@@ -70,6 +70,10 @@ public class ExternalTest {
         return "K";
     }
 
+    public String r() {
+        return str;
+    }
+    
     public String show(String x) {
         return x;
     }

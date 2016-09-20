@@ -3467,7 +3467,7 @@ srt [=
         name = "External Object Test"
         key = "external"
 
-        expected = "ABCDEFGHIJKLMNOPQ"
+        expected = "ABCDEFGHIJKLMNOPQR"
 
         external_interface [=
             g [?]
@@ -3475,6 +3475,7 @@ srt [=
             i [?]
             j [/]
             k = "x"
+            r = "x"
             show(x) [?]
         =]
 
@@ -3502,6 +3503,11 @@ srt [=
         q = "Q"
         bento_context my_context = this_domain.context
 
+        external_interface external_alias(a) = org.bentodev.test.ExternalTest(a);
+        external_alias("R") external_sub [=
+            rr = r
+        =]
+
         org.bentodev.test.ExternalTest.a;
         org.bentodev.test.ExternalTest.b;
         org.bentodev.test.ExternalTest.c;
@@ -3519,6 +3525,7 @@ srt [=
         org.bentodev.test.ExternalTest.other("O").methodZ;
         aliased_method("P").methodZ;
         my_context.construct("external_test.q");
+        external_sub.rr;
     =]
 
 qtst [=
@@ -3534,6 +3541,22 @@ itst [=
     =]
     external_interface parameterized_builder(x) = org.bentodev.test.ExternalTest(x)
     parameterized_builder("I").i;
+=]
+
+rtst [=
+    external_interface [=
+        r [| x |]
+        show(x) [?]
+    =]
+
+    external_interface external_alias(a) = org.bentodev.test.ExternalTest(a);
+
+    
+    external_alias("R") external_sub [=
+        rr = r
+    =]
+    
+    external_sub.rr;
 =]
     
     test_case cached_external_object_test [=
