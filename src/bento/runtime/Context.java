@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("blx")) {
+if (definition.getName().equals("is_enabled")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -5475,7 +5475,8 @@ if (calcSize != size) {
             if (def.equals(this.def) || def.equals(superdef)) {
                 return true;
             } else {
-                return def.equalsOrExtends(this.def.getSuperDefinition());
+            	Definition sdef = this.def.getSuperDefinition();
+                return sdef == null ? false : def.equalsOrExtends(sdef);
             }
         }
         
