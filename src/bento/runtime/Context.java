@@ -3869,6 +3869,14 @@ if (unpushedEntries == null) {
         return topEntry;
     }
 
+    public Entry doublePeek() {
+        if (topEntry != null) {
+        	return topEntry.link;
+        } else {
+        	return null;
+        }
+    }
+
     public Definition getDefiningDef() {
         return definingDef;
     }

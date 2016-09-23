@@ -556,9 +556,10 @@ core [=
         url [/]
         user_name [/]
         password [/]
-        /** The initialization function **/
-        boolean init [/]
-        boolean enabled = false
+        
+        /------- initialization -------/
+        boolean init [?]
+        boolean enabled [?]
         
         /------- Bento/database table mapping --------/
         string{} table(record, key) = {}        

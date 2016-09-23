@@ -1458,7 +1458,7 @@ public class NamedDefinition extends AnonymousDefinition {
 
             // not an alias; see if it is a construction that defines the child
             AbstractNode contents = getContents();
-            if (!isAlias() && !isIdentity() && contents instanceof Construction && !((Construction) contents).isPrimitive()) {
+            if (!isAlias() && !isIdentity() && !(contents instanceof ConstructionGenerator) && contents instanceof Construction && !((Construction) contents).isPrimitive()) {
                 Construction construction = ((Construction) contents).getUltimateConstruction(context);
                 if (construction instanceof Instantiation && !((Instantiation) construction).isParameterKind()) {
                     Instantiation instance = (Instantiation) construction;
@@ -1511,24 +1511,24 @@ public class NamedDefinition extends AnonymousDefinition {
                             }
                         }
                     }
-                } else if (!this.equals(resolver)) {
-                    Type type = construction.getType(context, generate);
-                    if (type != null && type != DefaultType.TYPE && !type.isPrimitive() && !type.equals(getType())) {
-                        Definition runtimeDef = type.getDefinition();
-                        if (runtimeDef != null && runtimeDef.getName() != Name.THIS && runtimeDef.canHaveChildDefinitions()) {
-                            ArgumentList typeArgs = type.getArguments(context);
-                            ParameterList typeParams = runtimeDef.getParamsForArgs(typeArgs, context, false);
-                            try {
-                                context.push(runtimeDef, typeParams, typeArgs, false);
-                                Object child = runtimeDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
-                                if ((generate && child != UNDEFINED) || (!generate && child != null)) {
-                                    return child;
-                                }
-                            } finally {
-                                context.pop();
-                            }
-                        }
-                    }
+//                } else if (!this.equals(resolver)) {
+//                    Type type = construction.getType(context, generate);
+//                    if (type != null && type != DefaultType.TYPE && !type.isPrimitive() && !type.equals(getType())) {
+//                        Definition runtimeDef = type.getDefinition();
+//                        if (runtimeDef != null && runtimeDef.getName() != Name.THIS && runtimeDef.canHaveChildDefinitions()) {
+//                            ArgumentList typeArgs = type.getArguments(context);
+//                            ParameterList typeParams = runtimeDef.getParamsForArgs(typeArgs, context, false);
+//                            try {
+//                                context.push(runtimeDef, typeParams, typeArgs, false);
+//                                Object child = runtimeDef.getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
+//                                if ((generate && child != UNDEFINED) || (!generate && child != null)) {
+//                                    return child;
+//                                }
+//                            } finally {
+//                                context.pop();
+//                            }
+//                        }
+//                    }
                 }
             }
             
@@ -1568,11 +1568,18 @@ public class NamedDefinition extends AnonymousDefinition {
                     }
 
                     if (!foundSame) {
+                        boolean unpushedSuper = false;
                         boolean pushedSuper = false;
                         if (!nd.equals(context.peek().superdef)) {
-                            ParameterList superParams = nd.getParamsForArgs(superArgs, context, false);
-                            context.push(instantiatedDef, nd, superParams, superArgs);
-                            pushedSuper = true;                            
+                        	Context.Entry entry = context.doublePeek();
+                        	if (entry != null && nd.equals(entry.superdef)) {
+                        		context.unpush();
+                        		unpushedSuper = true;
+                        	} else {
+                                ParameterList superParams = nd.getParamsForArgs(superArgs, context, false);
+                                context.push(instantiatedDef, nd, superParams, superArgs);
+                                pushedSuper = true;                            
+                        	}
                         }
                         try {
                             Object child = nd.getChild(node, args, indexes, superArgs, context, generate, trySuper, parentObj, resolver);
@@ -1580,9 +1587,11 @@ public class NamedDefinition extends AnonymousDefinition {
                                 return child;
                             }
                         } finally {
-                            if (pushedSuper) {
+                            if (unpushedSuper) {
+                                context.repush();
+                            } else if (pushedSuper) {
                                 context.pop();
-                            }
+                            }  
                         }
                     }
                 }
