@@ -670,8 +670,8 @@ core [=
         =]
 
         [| <input type="submit" name="[= name;=]" value="[= value; =]" id="[= name; =]_button" [=
-        with (req_id)             [| onclick='[= submit_script(req_id); =]' |]
-        else with (req_component) [| onclick='[= submit_script(req_component.id); =]' |]
+        with (req_id)             [| onclick='[= submit_script(req_id); =]' [= log("req_id " + req_id); =] |]
+        else with (req_component) [| onclick='[= submit_script(req_component.id); =]' [= log("req_component.id " + req_component.id); =] |]
         =]/> |]
     =]
     
@@ -694,7 +694,7 @@ core [=
     dynamic standard_control radiobutton(groupname, label, boolean checked, value),
                                         (groupname, label, boolean checked, value, onclick_script) [|
         <input type="radio" name="[= groupname; =]" value="[= value; =]"[=
-            if (value) [/ id="[= groupname; =]_[= value; =]_radiobutton" |]
+            if (value) [/ id="[= groupname; =]_[= value; =]_radiobutton" class="[= groupname; =]_radiobutton" |]
             if (checked) [/ checked |]
             with (onclick_script) [/ onclick='[= onclick_script; =]' |]
         =] >[= label; =]</input>
