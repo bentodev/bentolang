@@ -550,11 +550,13 @@ core [=
 
     dynamic standard_control textedit(name, value, int size, int maxlength, req_id),
                                      (name, value, int size, int maxlength),
+                                     (name, value, int size, boolean disabled),
                                      (name, value, int size),
                                      (name, value) [|
         <input type="text" id="[= (id ? id : name); =]" name="[= name; =]" value="[= value; =]" [=
             with (size) [| size="[= size; =]" |] with (maxlength) [/ maxlength="[= maxlength; =]" |]
             with (req_id) [/ onchange='requestComponent("[= req_id; =]", this.name, this.value)' |]
+            if (disabled) [/ disabled |]
         =]>
     |]
 
@@ -702,9 +704,11 @@ core [=
     
     dynamic standard_control dropdown(id, name, option[] options, onchange_script),
                                      (name, option[] options, onchange_script),
+                                     (name, option[] options, boolean disabled),
                                      (name, option[] options) [|
         <select name="[= name; =]" id="[= (id ? id : name + "_dropdown"); =]"[=
             with (onchange_script) [/ onchange='[= onchange_script; =]' |] 
+            if (disabled) [/ disabled |] 
             [| > |]
             for option o in options [=
                 o;

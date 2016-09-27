@@ -2708,7 +2708,7 @@ aecat [=
         name = "Table Element Type Test"
         key = "table_element_type"
 
-        expected = "ABCDEFGHIJKL"
+        expected = "ABCDEFGHIJKLM"
 
         gum(xx) [=
             x = xx
@@ -2745,18 +2745,21 @@ aecat [=
 
         gum("J") gum_j [/]
         gum("K") gum_k [/]
+        gum("M") gum_m [/]
 
         gum{} gum_table_1 = { "3": gum_c, "4": gum_d,
                               "1": gum_a, "2": gum_b,
                               five: gum_e, six: gum_f,
                               seven: gum_g, gum_h_index.x: gum_h,
-                              "9": gum_gum("I") }
+                              "9": gum_gum("I"),
+                              (ten): gum_m  }
         gum{} gum_table_2 = { "j": gum_j, "k": gum_k }
         
         gum{} gum_table_3 = { "x": gum("L") } 
         
         fv = "five"
         six [/]
+        ten = "10"
         
         
         for int n from 1 through 6 [=
@@ -2776,6 +2779,8 @@ aecat [=
         for gum g in gum_table_3 [=
             g.x;
         =]
+        
+        gum_table_1{"10"};
     =]
 
 te [=
