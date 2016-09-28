@@ -2526,26 +2526,18 @@ if (definition.getName().equals("is_enabled")) {
 
     public int pushSupers(Definition def, Definition superDef) throws Redirection {
         int numPushes = 0;
-        Stack<Entry> supers = new Stack<Entry>();
         Definition contextDef = def;
         
-        supers.push(peek());
         while (superDef != null) {
             Type st = def.getSuper(this); 
             ArgumentList args = st.getArguments(this);
             ParameterList params = superDef.getParamsForArgs(args, this);
             Entry entry = newEntry(contextDef, superDef, params, args);
-            supers.push(entry);
+            push(entry);
             numPushes++;
             def = superDef;
             superDef = def.getSuperDefinition(this);
         }
-        for (int i = 0; i < numPushes; i++) {
-            push(supers.pop());
-        }
-        // put the original top back on
-        push(supers.pop());
-        numPushes++;
         
         return numPushes;
     }

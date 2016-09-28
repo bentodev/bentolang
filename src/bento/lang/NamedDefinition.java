@@ -1573,8 +1573,8 @@ public class NamedDefinition extends AnonymousDefinition {
                         if (!nd.equals(context.peek().superdef)) {
                         	Context.Entry entry = context.doublePeek();
                         	if (entry != null && nd.equals(entry.superdef)) {
-                        		//context.unpush();
-                        		//unpushedSuper = true;
+                        		context.unpush();
+                        		unpushedSuper = true;
                         	} else {
                                 ParameterList superParams = nd.getParamsForArgs(superArgs, context, false);
                                 context.push(instantiatedDef, nd, superParams, superArgs);
