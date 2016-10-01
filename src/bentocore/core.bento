@@ -579,6 +579,8 @@ core [=
      */
     db_impl(driver, url, user, password) database(driver, url, user, password) [=
 
+        super;
+
         /--- initialize the database ---/
         if (init) [=
             log("Database at " + url + " initialized for user " + user + ".");
