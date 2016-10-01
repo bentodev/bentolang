@@ -1475,8 +1475,8 @@ public class NamedDefinition extends AnonymousDefinition {
                         if (contentDef != null && contentDef.getNameNode() != null
                                 && !contentDef.isIdentity()
                                 && !contentDef.getNameNode().equals(name)
+                                && !contentDef.getNameNode().isSpecial()
                                 && !contents.equals(construction)
-                                && !contentDef.getName().equals(Name.THIS)
                                 && !context.contains(contentDef)
                                 && !contentDef.getOwner().equalsOrExtends(this)) { // && !contentDef.equals(resolver)) {
 
