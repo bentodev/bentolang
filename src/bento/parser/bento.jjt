@@ -442,6 +442,7 @@ TOKEN :
     | < THPPPT_DING: "!" >
     | < TILDE: "~" >
     | < QMARK: "?" >
+    | < QQMARK: "??" >
     | < COLON: ":" >
     | < ISA_OP: "|>" >
     | < EQ: "==" >
@@ -2515,7 +2516,11 @@ AbstractNode ValueExpression() #ValueExpression(>1):
 void ChoiceExpression() #ChoiceExpression(>1):
 {}
 {
-    LogicalOrExpression() [ "?" ValueExpression() ":" ValueExpression() ]
+    (
+      LOOKAHEAD(WithPredicate() "??")      WithPredicate() "??" ValueExpression() ":" ValueExpression()
+    | 
+      LogicalOrExpression() [ "?" ValueExpression() ":" ValueExpression() ]
+    )
 }
 
 void LogicalOrExpression() #BinaryExpression(>1):

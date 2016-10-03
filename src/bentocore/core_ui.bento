@@ -20,6 +20,7 @@ core [=
      
     =]
 
+
     /----------- components --------------/
 
     component [=
@@ -77,6 +78,7 @@ core [=
         sub; 
         [| </[= outer_tag; =]> |]   
     =]
+
     
     component, draggable drag_handle [=
         int left = 0
@@ -329,6 +331,7 @@ core [=
         =]
     =]
 
+
     dynamic layout border_layout(c), (n, c, s), (n, w, c, e, s), (x[]), (comp_table{}) [=
 
         dynamic center_if_not_aligned(p), (component c) [=
@@ -401,6 +404,7 @@ core [=
         =]
     =]
 
+
     dynamic border_layout(n, w, c, e, s) compass_layout(nw, n, ne, w, c, e, sw, s, se), (comp_table{}) [=
         dynamic northwest(panel) [=
             [| <table> |]
@@ -438,6 +442,7 @@ core [=
             southeast(se);
         =]
     =]
+
 
     dynamic layout stage_layout(c), (w, c, e), (w, n, c, s, e), (x[]), (comp_table{}) [=
         dynamic west(panel) [|
@@ -498,6 +503,7 @@ core [=
         [| </tr></table> |]
     =]
 
+
     dynamic border_layout(*) css_border_layout(c), (n, c, s), (n, w, c, e, s), (x[]), (comp_table{}) [=
 
         dynamic north(panel) [|
@@ -527,15 +533,18 @@ core [=
         |]
     =]
 
+
     /--------------- components --------------/
 
     standard_control [=
         dynamic id [/]
     =]
 
+
     dynamic standard_control hidden(name, value) [|
         <input type="hidden" id="[= (id ? id : name); =]" name="[= name; =]" value="[= value; =]" />
     |]
+
 
     dynamic standard_control textarea(name, value, int cols, int rows, req_id),
                                      (name, value, int cols, int rows),
@@ -547,6 +556,7 @@ core [=
             with (req_id) [| onchange='requestComponent("[= req_id; =]", this.name, this.value)' |]
         =]>[= value; =]</textarea>
     |]
+
 
     dynamic standard_control textedit(name, value, int size, int maxlength, req_id),
                                      (name, value, int size, int maxlength),
@@ -560,6 +570,7 @@ core [=
         =]>
     |]
 
+
     dynamic standard_control autosubmit_textedit(form_name, name, value, int size, int maxlength),
                                                 (form_name, name, value, int size),
                                                 (form_name, name, value) [|
@@ -567,6 +578,7 @@ core [=
             with (size) [| size="[= size; =]" |] with (maxlength) [/ maxlength="[= maxlength; =]" |]
         =] onchange="document.forms['[= form_name; =]'].submit()" />
     |]
+
 
     dynamic standard_control scripted_textedit(name, value, int size, int maxlength, onchange_script),
                                               (name, value, int size, int maxlength, onchange_script),
@@ -576,6 +588,7 @@ core [=
             with (size) [| size="[= size; =]" |] with (maxlength) [/ maxlength="[= maxlength; =]" |]
         =] onchange="[= onchange_script; =]">
     |]
+
 
     dynamic standard_control request_textedit(name, value, int size, req_id),
                                              (name, value, int size, component req_component),
@@ -588,12 +601,15 @@ core [=
         else with (req_component) [/ onchange="requestComponent('[= req_component.id; =]', this.name, this.value)" |]
         [| /> |]
     =]
+
+
     dynamic standard_control passwordedit(name, value, int size, int maxlength),
                                          (name, value, int size) [|
         <input type="password" id="[= (id ? id : name); =]" name="[= name; =]" value="[= value; =]" [=
             with (size) [| size="[= size; =]" |] with (maxlength) [| maxlength="[= maxlength; =]" |]
         =]>
     |]
+
 
     dynamic standard_control autosubmit_passwordedit(form_name, name, value, int size, int maxlength),
                                                     (form_name, name, value, int size),
@@ -603,12 +619,13 @@ core [=
         =] onchange="document.forms['[= form_name; =]'].submit()" />
     |]
 
+
     dynamic standard_control button(name, value, component req_component, onclick_script),
                                    (name, value, req_id, onclick_script),
                                    (name, value, component req_component),
                                    (name, value, req_id),
                                    (name, value) [=
-   
+
         [| <input name="[= name; =]" value="[= value; =]" id="[= name; =]_button" |]
         with (onclick_script)     [/ type="button" onclick='[= onclick_script; =]' |]
         else with (req_id)        [/ type="button" onclick="refreshComponent('[= req_id; =]')" |]
@@ -617,11 +634,12 @@ core [=
         [| /> |]
     =]
 
+
     dynamic standard_control request_button(name, value, onclick_script),
                                            (name, value, req_id, param, paramval),
                                            (name, value, component req_component, param, paramval),
                                            (name, value, element_id, component req_component, param, paramval) [=
-   
+
         [| <input type="button" name="[= name; =]" value="[= value; =]" id="[= name; =]_button" |]
         with (onclick_script) [/ onclick='[= onclick_script; =]' |]
         else with (element_id) [/ onclick="requestComponentByName('[= element_id; =]', '[= req_component.name; =]', '[= param; =]', '[= paramval; =]')" |]
@@ -630,11 +648,16 @@ core [=
         [| /> |]
     =]
 
-    dynamic standard_control query_button(name, value, element_id, component req_component, params{}) [=
-        [| <input type='button' name='[= name; =]' value='[= value; =]' id='[= name; =]_button' 
-                  onclick='queryComponentByName("[= element_id; =]", "[= req_component.name; =]", [= params; =])'/>
-        |]
+
+    dynamic standard_control query_button(name, value, element_id, component req_component, params{}),
+                                         (name, value, element_id, req_id, params{}) [=
+
+        [| <input type='button' name='[= name; =]' value='[= value; =]' id='[= name; =]_button' onclick=' |]
+
+        with (req_component) [| queryComponentByName("[= element_id; =]", "[= req_component.name; =]", [= params; =])'/> |]
+        else                 [| queryComponentByName("[= element_id; =]", "[= req_id; =]", [= params; =])'/> |]
     =]
+
 
     dynamic standard_control submit_button(name, value, component req_component, field_ids[], params{}),
                                           (name, value, req_id, field_ids[], params{}),
@@ -647,7 +670,7 @@ core [=
 
         submit_script(id) [=
             query_params{} = params
-            
+
             if (field_id) [|
                 requestComponent("[= id; =]", "[= field_id; =]", document.getElementById("[= field_id; =]").value);
             |] else with (field_ids) [|
@@ -676,12 +699,12 @@ core [=
         else with (req_component) [| onclick='[= submit_script(req_component.id); =]' [= log("req_component.id " + req_component.id); =] |]
         =]/> |]
     =]
-    
-  
+
 
     dynamic standard_control disabled_button(name, value) [|
         <input type="submit" name="[= name; =]" value="[= value; =]" id="[= name; =]_button" disabled />
     |]
+
 
     dynamic standard_control checkbox(name, label, boolean checked),
                                      (name, label, boolean checked, value),
@@ -692,7 +715,8 @@ core [=
             with (onclick_script) [/ onclick='[= onclick_script; =]' |]
         =] >[= label; =]</input>
     |]
-    
+
+
     dynamic standard_control radiobutton(groupname, label, boolean checked, value),
                                         (groupname, label, boolean checked, value, onclick_script) [|
         <input type="radio" name="[= groupname; =]" value="[= value; =]"[=
@@ -701,7 +725,8 @@ core [=
             with (onclick_script) [/ onclick='[= onclick_script; =]' |]
         =] >[= label; =]</input>
     |]
-    
+
+
     dynamic standard_control dropdown(id, name, option[] options, onchange_script),
                                      (name, option[] options, onchange_script),
                                      (name, option[] options, boolean disabled),
@@ -715,10 +740,12 @@ core [=
             =]
         =]</select>
     |]
-    
+
+
     dynamic option(name, value, boolean selected) [|
         <option value="[= value; =]" [= if (selected) [| selected="selected" |] =]>[= name; =]</option>    
     |]
+
 
     dynamic form(action),(page action_page) [=
         /** The onsubmit event occurs when a form is submitted. It only applies to the FORM element. **/
