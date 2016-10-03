@@ -2742,7 +2742,7 @@ if (definition.getName().equals("set_player")) {
                     args = holder.nominalArgs;
                     if (generate && def.isIdentity() && holder.data != null && holder.data instanceof BentoObjectWrapper && numNameParts == 1) {
                         BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
-                        return obj.getChildData(childName);
+                        return obj.getChildData(resolveArgsIndexes(childName));
                     }
                 }
             }
@@ -2802,7 +2802,7 @@ if (definition.getName().equals("set_player")) {
                             if (generate && holder.data != null && holder.data instanceof BentoObjectWrapper) {
                                 BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
                                 if (numNameParts == 1) {
-                                    return obj.getChildData(childName);
+                                    return obj.getChildData(resolveArgsIndexes(childName));
                                 } else {
                                     Definition objDef = obj.getDefinition();
                                     Context resolutionContext = obj.getResolutionContext();
@@ -2853,7 +2853,7 @@ if (definition.getName().equals("set_player")) {
                                     return holder.data;
                                 } else if (holder.data instanceof BentoObjectWrapper) {
                                     BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
-                                    return obj.getChildData(restOfName);
+                                    return obj.getChildData(resolveArgsIndexes(restOfName));
                                 }
                             } else if (holder.resolvedInstance != null) {
                                 ResolvedInstance ri = holder.resolvedInstance;
@@ -2876,7 +2876,7 @@ if (definition.getName().equals("set_player")) {
             // if parentObj is a BentoObjectWrapper and we are generating data, delegate to the object
             if (generate && childDef.getDurability() != Definition.DYNAMIC && !dynamicChild && numNameParts == 1 && parentObj != null && parentObj instanceof BentoObjectWrapper) {
                 BentoObjectWrapper obj = (BentoObjectWrapper) parentObj;
-                return obj.getChildData(name);
+                return obj.getChildData(resolveArgsIndexes(name));
             }
             
             
@@ -2923,7 +2923,22 @@ if (definition.getName().equals("set_player")) {
         }
     }
             
-
+    private NameNode resolveArgsIndexes(NameNode name) throws Redirection {
+    	ArgumentList args = name.getArguments();
+    	List<Index> indexes = name.getIndexes();
+    	
+    	if ((args != null && args.size() > 0) || (indexes != null && indexes.size() < 0)) {
+            if (args != null && args.size() > 0) {
+            	args = ResolvedInstance.resolveArguments(args, this);
+            }
+    		if (indexes != null && indexes.size() < 0) {
+    		    indexes = resolveIndexes(indexes);
+    		}
+    		name = new NameWithIndexes(name.getName(), args, indexes);
+    	}
+    	return name;
+    }
+    
     public Definition dereference(Definition def, ArgumentList args, List<Index> indexes) throws Redirection {
         if (indexes != null) {
             CollectionDefinition collectionDef = null;

@@ -97,7 +97,7 @@ public class BentoObjectWrapper {
     }
 
     public Object getChildData(String name) {
-        return getChildData(name, null, null);
+        return getChildData(name, null, getArguments());
     }
 
     public Object getChildData(String name, Type type, ArgumentList args) {
@@ -110,7 +110,7 @@ public class BentoObjectWrapper {
 
     public Object getChildData(NameNode name) {
         try {
-            return def.getChildData(name, null, context, name.getArguments());
+            return def.getChildData(name, null, context, getArguments());
         } catch (Redirection r) {
             return null;
         }
