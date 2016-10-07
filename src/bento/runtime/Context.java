@@ -2924,19 +2924,19 @@ if (definition.getName().equals("set_player")) {
     }
             
     private NameNode resolveArgsIndexes(NameNode name) throws Redirection {
-    	ArgumentList args = name.getArguments();
-    	List<Index> indexes = name.getIndexes();
-    	
-    	if ((args != null && args.size() > 0) || (indexes != null && indexes.size() < 0)) {
+        ArgumentList args = name.getArguments();
+        List<Index> indexes = name.getIndexes();
+        
+        if ((args != null && args.size() > 0) || (indexes != null && indexes.size() < 0)) {
             if (args != null && args.size() > 0) {
-            	args = ResolvedInstance.resolveArguments(args, this);
+                args = ResolvedInstance.resolveArguments(args, this);
             }
-    		if (indexes != null && indexes.size() < 0) {
-    		    indexes = resolveIndexes(indexes);
-    		}
-    		name = new NameWithIndexes(name.getName(), args, indexes);
-    	}
-    	return name;
+            if (indexes != null && indexes.size() < 0) {
+                indexes = resolveIndexes(indexes);
+            }
+            name = new NameWithIndexes(name.getName(), args, indexes);
+        }
+        return name;
     }
     
     public Definition dereference(Definition def, ArgumentList args, List<Index> indexes) throws Redirection {
@@ -3878,9 +3878,9 @@ if (unpushedEntries == null) {
 
     public Entry doublePeek() {
         if (topEntry != null) {
-        	return topEntry.link;
+            return topEntry.link;
         } else {
-        	return null;
+            return null;
         }
     }
 
@@ -5210,6 +5210,11 @@ if (calcSize != size) {
             Pointer p = null;
             Object oldData = cache.get(key);
 
+if ("phase".equals(key)) {
+     System.out.println("caching " + key + " in entry " + this.toString() + ", value: " + ((holder == null || holder.data == null) ? "(null)" : holder.data.toString()));     
+}
+
+
             // if this is the first entry, set up any required pointers for keep tables
             // and modifiers, save the data and return
             if (oldData == null || (oldData instanceof Holder && (((Holder) oldData).data == AbstractNode.UNINSTANTIATED || ((Holder) oldData).data == null))) {
@@ -5490,7 +5495,7 @@ if (calcSize != size) {
             if (def.equals(this.def) || def.equals(superdef)) {
                 return true;
             } else {
-            	Definition sdef = this.def.getSuperDefinition();
+                Definition sdef = this.def.getSuperDefinition();
                 return sdef == null ? false : def.equalsOrExtends(sdef);
             }
         }
