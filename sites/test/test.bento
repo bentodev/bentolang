@@ -3146,8 +3146,8 @@ cu [=
         name = "Object Child Test"
         key = "object_child"
 
-        expected = "ABCDEFGHI"
-   
+        expected = "ABCDEFGHIJ"
+
         obj [=
             a [| x |]
             b [| x |]
@@ -3160,7 +3160,7 @@ cu [=
 
             this;
         =]
-    
+
         obj sub_1 [=
             a [| A |]
             b [| B |]
@@ -3189,28 +3189,41 @@ cu [=
             eval(hi(: "H" :));
             this;
         =]
-        
+
         dynamic obj sub_6 [=
             eval(hi(: "I" :));
             this;
         =]
-        
+
+        obj sub_7 [=
+            keep: j(x) = x
+            dynamic set_j [=
+                eval(j(: "J" :));
+            =]
+            this;
+        =]
+
         obj cobj(obj o) = o
 
         parent_obj [=
             keep: obj ccobj(obj o) = o
-            
+
             dynamic set_ccobj(obj oo) [=
                 eval(ccobj(: oo :));
             =]
+
+            dynamic set_ccobj_j [=
+                ccobj.set_j;
+            =]
+
             set_ccobj(sub_5);            
         =]
 
-        
+
         sub_1.a;
         eval(cobj(: sub_1 :));
         cobj.b;
-        
+
         sub_2.c;   
         eval(cobj(: sub_2 :));
         cobj.d;
@@ -3218,15 +3231,20 @@ cu [=
         sub_3.e;
         eval(cobj(: sub_3 :));
         cobj.f;
-        
+
         eval(cobj(: sub_4 :));
         cobj.g;
-        
+
         parent_obj;
         parent_obj.ccobj.hi;
-        
+
         parent_obj.set_ccobj(sub_6);
         parent_obj.ccobj.hi;
+
+        parent_obj.set_ccobj(sub_7);
+        eval(sub_7.j("x"));
+        parent_obj.set_ccobj_j;
+        sub_7.j;
     =]
 
 oct [=
@@ -3245,7 +3263,7 @@ oct [=
   =]
   parent_obj [=
     keep: obj ccobj(obj o) = o
-    
+
     dynamic set_ccobj(obj oo) [=
         eval(ccobj(: oo :));
     =]
@@ -3260,12 +3278,12 @@ oct [=
     eval(hi(: "I" :));
      this;
   =]
-  
+
   //eval(sub_3);
   //sub_3.g;
   parent_obj;
   parent_obj.ccobj.hi;
- 
+
   parent_obj.set_ccobj(sub_6);
   parent_obj.ccobj.hi;
   
