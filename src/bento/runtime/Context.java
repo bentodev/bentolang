@@ -2263,6 +2263,8 @@ if (definition.getName().equals("set_phase")) {
 
         Context fallbackContext = this;
         Definition argDef = null;
+        ArgumentList args = null;
+        List<Index> argIndexes = null;
 
         numUnpushes = Math.max((size > 1 && !param.isInFor() ? 1 : 0), numUnpushes);
 
@@ -2319,7 +2321,7 @@ if (definition.getName().equals("set_phase")) {
                             }
                         }
                         
-                        ArgumentList args = entry.args;
+                        args = entry.args;
                         int numArgs = args.size();
                         ParameterList params = entry.params;
                         int numParams = params.size();
@@ -2416,6 +2418,28 @@ if (definition.getName().equals("set_phase")) {
                 return data;
             } 
 
+            if (argDef != null) {
+                args = (instance != null ? instance.getArguments() : null);
+                argIndexes = (instance != null ? instance.getIndexes() : null);
+                if (argDef.isIdentity() && (instance == null || !(instance instanceof ResolvedInstance))) {
+                    Holder holder = getDefHolder(argDef.getName(), argDef.getFullNameInContext(this), args, argIndexes, false);
+                    if (holder != null) {
+                        if (holder.data instanceof BentoObjectWrapper) {
+                            BentoObjectWrapper wrapper = (BentoObjectWrapper) holder.data;
+                            data = wrapper.getChildData(childName);
+                            if (indexes != null) {
+                                data = dereference(data, indexes);
+                            }
+                            return data;
+                            
+                        } else if (holder.def != null && !holder.def.isIdentity()) {
+                            argDef = holder.def;
+                            args = holder.args;
+                        }
+                    }
+                }
+            }
+            
         } finally {
             // un-unpush if necessary
             for (int i = 0; i < numUnpushes; i++) {
@@ -2424,17 +2448,6 @@ if (definition.getName().equals("set_phase")) {
         }
 
         if (argDef != null) {
-            ArgumentList args = (instance != null ? instance.getArguments() : null);
-            List<Index> argIndexes = (instance != null ? instance.getIndexes() : null);
-            if (argDef.isIdentity() && (instance == null || !(instance instanceof ResolvedInstance))) {
-                Holder holder = getDefHolder(argDef.getName(), argDef.getFullNameInContext(this), args, argIndexes, false);
-                if (holder != null && holder.def != null && !holder.def.isIdentity()) {
-                    argDef = holder.def;
-                    args = holder.args;
-                }
-            }
-
-            
             argDef = initDef(argDef, args, indexes);
 
 //            
