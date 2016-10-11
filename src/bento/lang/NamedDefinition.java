@@ -435,7 +435,7 @@ public class NamedDefinition extends AnonymousDefinition {
         }
         
         if (inserted) {
-        	st = new InsertedType(st, supertype);
+            st = new InsertedType(st, supertype);
         }
 
         return st;
@@ -454,10 +454,10 @@ public class NamedDefinition extends AnonymousDefinition {
             return null;
 
         } else if (st instanceof TypeList) {
-       	    Iterator<Type> it = ((TypeList) st).iterator();
-       	    // first check if one of these types is the one
+               Iterator<Type> it = ((TypeList) st).iterator();
+               // first check if one of these types is the one
             while (it.hasNext()) {
-       	        Type nextType = it.next();
+                   Type nextType = it.next();
                 NamedDefinition sd = (NamedDefinition) nextType.getDefinition();
                 if (sd == null) {
                     if (context.getErrorThreshhold() <= Context.IGNORABLE_ERRORS) {
@@ -489,8 +489,8 @@ public class NamedDefinition extends AnonymousDefinition {
                 if (t != null) {
                     return nextType;
                 }
-       	    }
-       	    
+               }
+               
             // not found
             return null;
 
@@ -541,7 +541,7 @@ public class NamedDefinition extends AnonymousDefinition {
         if (hasNext(context)) {
             LinkedList<Definition> nextList = new LinkedList<Definition>();
             nextList.add(this);
-        	return nextList;
+            return nextList;
         } else {
             return null;
         }
@@ -1474,7 +1474,7 @@ public class NamedDefinition extends AnonymousDefinition {
                         }
                         if (contentDef != null && contentDef.getNameNode() != null
                                 && !contentDef.isIdentity()
-                                && !contentDef.getNameNode().equals(name)
+                                //&& !contentDef.getNameNode().equals(name)
                                 && !contentDef.getNameNode().isSpecial()
                                 && !contents.equals(construction)
                                 && !context.contains(contentDef)
@@ -1571,15 +1571,15 @@ public class NamedDefinition extends AnonymousDefinition {
                         boolean unpushedSuper = false;
                         boolean pushedSuper = false;
                         if (!nd.equals(context.peek().superdef)) {
-                        	Context.Entry entry = context.doublePeek();
-                        	if (entry != null && nd.equals(entry.superdef)) {
-                        		context.unpush();
-                        		unpushedSuper = true;
-                        	} else {
+                            Context.Entry entry = context.doublePeek();
+                            if (entry != null && nd.equals(entry.superdef)) {
+                                context.unpush();
+                                unpushedSuper = true;
+                            } else {
                                 ParameterList superParams = nd.getParamsForArgs(superArgs, context, false);
                                 context.push(instantiatedDef, nd, superParams, superArgs);
                                 pushedSuper = true;                            
-                        	}
+                            }
                         }
                         try {
                             Object child = nd.getChild(node, args, indexes, superArgs, context, generate, trySuper, parentObj, resolver);
@@ -2195,7 +2195,7 @@ public class NamedDefinition extends AnonymousDefinition {
                 if (insertsAndSuperInserts != null) {
                     insertsAndSuperInserts.addAll(superInserts);
                 } else {
-                	insertsAndSuperInserts = Context.newArrayList(superInserts);
+                    insertsAndSuperInserts = Context.newArrayList(superInserts);
                 }
             }
         }
