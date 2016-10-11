@@ -422,7 +422,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                             parentHolder = context.getDefHolder(parentNameNode.getName(), null, parentNameNode.getArguments(), parentNameNode.getIndexes(), false);
                             if (parentHolder != null && parentHolder.data instanceof BentoObjectWrapper) {
                                 BentoObjectWrapper parentObj = (BentoObjectWrapper) parentHolder.data;
-                                data = parentObj.getChildData(nameNode.getLastPart().getName()); 
+                                data = parentObj.getChildData(nameNode.getLastPart()); 
                             }
                         }
 

@@ -79,7 +79,7 @@ public class ElementDefinition extends AnonymousDefinition {
     }
 
     public Object getElement() {
-    	return getElement(null);
+        return getElement(null);
     }
     
     public Object getElement(Context context) {
@@ -90,10 +90,10 @@ public class ElementDefinition extends AnonymousDefinition {
 
         } else if (contents instanceof Instantiation && !(contents instanceof ResolvedInstance)) {
             if (context == null) {
-            	context = getResolutionContext();
-            	if (context != null) {
-            	    return new ResolvedInstance((Instantiation) contents, context, true);
-            	}
+                context = getResolutionContext();
+                if (context != null) {
+                    return new ResolvedInstance((Instantiation) contents, context, true);
+                }
             }
             if (context != null) {
                 contents = new ResolvedInstance((Instantiation) contents, context, false);
@@ -131,7 +131,7 @@ public class ElementDefinition extends AnonymousDefinition {
 //            try {
 //                context = new Context(node.getOwner());
 //            } catch (Redirection r) {
-//            	throw new IllegalStateException("Unable to create context for child definition " + name.getName() + ": " + r.getMessage());
+//                throw new IllegalStateException("Unable to create context for child definition " + name.getName() + ": " + r.getMessage());
 //                //context = new Context();
 //            }
         }
@@ -202,16 +202,16 @@ public class ElementDefinition extends AnonymousDefinition {
                     return countDef.getDefInstance(null, null);
                 }
             } else {
-            	Object obj = ((Value) element).getValue();
-            	if (obj instanceof BentoObjectWrapper) {
-            		BentoObjectWrapper wrapper = (BentoObjectWrapper) obj;
-            		if (generate) {
-            			return wrapper.getChildData(name.getName(), null, args);
-            		} else {
-            			Definition def = wrapper.getDefinition();
-            			return def.getDefInstance(args, indexes);
-            		}
-            	}
+                Object obj = ((Value) element).getValue();
+                if (obj instanceof BentoObjectWrapper) {
+                    BentoObjectWrapper wrapper = (BentoObjectWrapper) obj;
+                    if (generate) {
+                        return wrapper.getChildData(name.getName(), null, args);
+                    } else {
+                        Definition def = wrapper.getDefinition();
+                        return def.getDefInstance(args, indexes);
+                    }
+                }
             }
         } else if (element instanceof ValueMap) {
             ValueMap map = (ValueMap) element;
@@ -248,12 +248,12 @@ public class ElementDefinition extends AnonymousDefinition {
             }
         } else if (element instanceof Value) {
             String name = childName.getName();
-        	
+            
             // TODO: need to handle collection values here...
             if (name == Name.COUNT) {
                 data = new PrimitiveValue(1);
             } else if (name == Name.TYPE) {
-            	data = getType().getName();
+                data = getType().getName();
             }
 
         } else if (element instanceof ValueMap) {

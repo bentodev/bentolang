@@ -2297,7 +2297,7 @@ if (definition.getName().equals("set_phase")) {
             } else if (arg instanceof BentoObjectWrapper) {
                 BentoObjectWrapper wrapper = (BentoObjectWrapper) arg;
                 // TODO: this doesn't handle children of children
-                data = wrapper.getChildData(childName.getName());
+                data = wrapper.getChildData(childName);
                 
             } else {
                 if (instance != null && instance.isParameterKind()) {
