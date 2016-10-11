@@ -163,7 +163,9 @@ public class ElementDefinition extends AnonymousDefinition {
                 ArgumentList childArgs = args;
                 if (instance instanceof ResolvedInstance) {
                     resolutionContext = ((ResolvedInstance) instance).getResolutionContext();
-                    childArgs = ResolvedInstance.resolveArguments(args, context);
+                    if (args != null) {
+                        childArgs = ResolvedInstance.resolveArguments(args, context);
+                    }
                 }
                 indexes = context.resolveIndexes(indexes);
                 ArgumentList elementArgs = instance.getArguments();
