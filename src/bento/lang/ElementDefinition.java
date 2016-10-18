@@ -208,7 +208,7 @@ public class ElementDefinition extends AnonymousDefinition {
                 if (obj instanceof BentoObjectWrapper) {
                     BentoObjectWrapper wrapper = (BentoObjectWrapper) obj;
                     if (generate) {
-                        return wrapper.getChildData(name.getName(), null, args);
+                        return wrapper.getChildData(name, null, args);
                     } else {
                         Definition def = wrapper.getDefinition();
                         return def.getDefInstance(args, indexes);

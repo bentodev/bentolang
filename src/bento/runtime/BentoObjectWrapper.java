@@ -96,13 +96,9 @@ public class BentoObjectWrapper {
         }
     }
 
-    public Object getChildData(String name) {
-        return getChildData(name, null, getArguments());
-    }
-
-    public Object getChildData(String name, Type type, ArgumentList args) {
+    public Object getChildData(NameNode name, Type type, ArgumentList args) {
         try {
-            return def.getChildData(new NameNode(name), type, context, args);
+            return def.getChildData(name, type, context, args);
         } catch (Redirection r) {
             return null;
         }
@@ -126,7 +122,7 @@ public class BentoObjectWrapper {
 
     public String getChildText(String name) {
         try {
-            return PrimitiveValue.getStringFor(def.getChildData(new NameNode(name), null, context, null));
+            return PrimitiveValue.getStringFor(def.getChildData(new NameNode(name), null, context, getArguments()));
         } catch (Redirection r) {
             return null;
         }

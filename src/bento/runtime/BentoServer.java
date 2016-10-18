@@ -1296,7 +1296,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         
         /** The base directory for file-based resources. **/
         public String filepath() {
-            return site_config.getChildData("filepath").toString();
+            return site_config.getChildText("filepath");
         }
 
         /** The files first setting.  If true, the server should look for files 
