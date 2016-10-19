@@ -1571,15 +1571,15 @@ public class NamedDefinition extends AnonymousDefinition {
                         boolean unpushedSuper = false;
                         boolean pushedSuper = false;
                         if (!nd.equals(context.peek().superdef)) {
-                            Context.Entry entry = context.doublePeek();
-                            if (entry != null && nd.equals(entry.superdef)) {
-                                context.unpush();
-                                unpushedSuper = true;
-                            } else {
+                            //Context.Entry entry = context.doublePeek();
+                            //if (entry != null && nd.equals(entry.superdef)) {
+                            //    context.unpush();
+                            //    unpushedSuper = true;
+                            //} else {
                                 ParameterList superParams = nd.getParamsForArgs(superArgs, context, false);
                                 context.push(instantiatedDef, nd, superParams, superArgs);
                                 pushedSuper = true;                            
-                            }
+                            //}
                         }
                         try {
                             Object child = nd.getChild(node, args, indexes, superArgs, context, generate, trySuper, parentObj, resolver);

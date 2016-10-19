@@ -2401,19 +2401,31 @@ if (definition.getName().equals("set_phase")) {
         }
     }
 
+    /** Push superdefinitions of the passed definition on the stack, from most super to least super with
+     *  the passed definition remaining on top.  This is designed to accommodate instantiation of children
+     *  which reference parameters. 
+     */
     public int pushSupers(Definition def, Definition superDef) throws Redirection {
         int numPushes = 0;
         Definition contextDef = def;
-        
+        Stack<Entry> supers = new Stack<Entry>();        
         while (superDef != null) {
             Type st = def.getSuper(this); 
             ArgumentList args = st.getArguments(this);
             ParameterList params = superDef.getParamsForArgs(args, this);
             Entry entry = newEntry(contextDef, superDef, params, args);
-            push(entry);
+            supers.push(entry);
             numPushes++;
             def = superDef;
             superDef = def.getSuperDefinition(this);
+        }
+        
+        if (numPushes > 0) {
+            unpush();
+            for (int i = 0; i < numPushes; i++) {
+                push(supers.pop());
+            }
+            repush();
         }
         
         return numPushes;
