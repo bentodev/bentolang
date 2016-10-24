@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("set_phase")) {
+if (definition.getName().equals("set_ccobj")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -2408,25 +2408,34 @@ if (definition.getName().equals("set_phase")) {
     public int pushSupers(Definition def, Definition superDef) throws Redirection {
         int numPushes = 0;
         Definition contextDef = def;
-        Stack<Entry> supers = new Stack<Entry>();        
+        
+        // get the link from the top entry before we do all the pushing
+        Entry nextLink = topEntry.link;
+        
         while (superDef != null) {
             Type st = def.getSuper(this); 
             ArgumentList args = st.getArguments(this);
             ParameterList params = superDef.getParamsForArgs(args, this);
             Entry entry = newEntry(contextDef, superDef, params, args);
-            supers.push(entry);
+            push(entry);
             numPushes++;
             def = superDef;
             superDef = def.getSuperDefinition(this);
         }
         
-        if (numPushes > 0) {
-            unpush();
-            for (int i = 0; i < numPushes; i++) {
-                push(supers.pop());
-            }
-            repush();
+        // get the top entery after all the pushing (not the same as before)
+        Entry top = topEntry;
+
+        for (int i = 0; i < numPushes; i++) {
+            // now reverse the order of the top numPushes entries
+            Entry nextTop = top.link;
+            top.link = nextLink;
+            nextLink = top;
+            top = nextTop;
         }
+        
+        top.link = nextLink;
+        topEntry = top; 
         
         return numPushes;
     }
@@ -2701,7 +2710,7 @@ if (definition.getName().equals("set_phase")) {
                         }
                     }
                     params = nextDef.getParamsForArgs(args, this);
-                    push(nextDef, params, args, false); //true);
+                    push(nextDef, params, args, true);
                     numPushes++;
                 }
                 if (def != nextDef) {

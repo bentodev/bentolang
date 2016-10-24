@@ -82,16 +82,21 @@ public class ResolvedInstance extends Instantiation implements Value {
         if (def instanceof BoundDefinition) {
             resolutionContext = ((BoundDefinition) def).getBoundContext();
         } else if (!def.isIdentity()) {
-            if (args != null && args.isDynamic()) {
-                args = instantiateArguments(args, context);
-                setArguments(args);
-            }
-            ParameterList params = def.getParamsForArgs(args, context);
-            try {
-                context.push(def, params, args, false);
+            Context.Entry entry = context.peek();
+            if (!def.equals(entry.def) || (args != null && !args.equals(entry.args))) {
+                if (args != null && args.isDynamic()) {
+                    args = instantiateArguments(args, context);
+                    setArguments(args);
+                }
+                ParameterList params = def.getParamsForArgs(args, context);
+                try {
+                    context.push(def, params, args, false);
+                    resolutionContext = context.clone(false);
+                } finally {
+                    context.pop();
+                }
+            } else {
                 resolutionContext = context.clone(false);
-            } finally {
-                context.pop();
             }
         } else {
             resolutionContext = context.clone(false);

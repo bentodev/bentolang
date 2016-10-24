@@ -3282,7 +3282,7 @@ oct [=
   //eval(sub_3);
   //sub_3.g;
   parent_obj;
-  parent_obj.ccobj.hi;
+  //parent_obj.ccobj.hi;
 
   parent_obj.set_ccobj(sub_6);
   parent_obj.ccobj.hi;
