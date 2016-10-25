@@ -955,6 +955,9 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                                     if (holder.nominalDef.getDurability() != Definition.DYNAMIC && !((BentoNode) holder.nominalDef).isDynamic() && (args == null || !args.isDynamic())) {
                                         if (holder.data != null && holder.data != UNDEFINED) {
                                             data = holder.data;
+                                            if (data instanceof BentoObjectWrapper && (n - np) == 1 && generate) {
+                                            	return ((BentoObjectWrapper) data).getChildData(restOfName);
+                                            }
                                         }
                                         if (prefixArgs == null && (holder.nominalArgs != null || holder.args != null)) {
                                             prefixArgs = (holder.nominalArgs != null ? holder.nominalArgs : holder.args);
@@ -1071,7 +1074,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                 }
                 
                 Context resolutionContext = context;
-                if (holder != null && holder.resolvedInstance != null &&  holder.data != null) {
+                if (holder != null && holder.resolvedInstance != null && holder.data != null) {
                     resolutionContext = holder.resolvedInstance.getResolutionContext();
                 }
                 

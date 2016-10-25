@@ -505,13 +505,14 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                         }
                         
                         if (data instanceof BentoObjectWrapper) {
-                            Definition objDef = ((BentoObjectWrapper) data).getDefinition();
-                            if (objDef != null) {
-                                def = objDef;
-                            }
                             Construction construction = ((BentoObjectWrapper) data).getConstruction();
                             if (construction instanceof ResolvedInstance) {
                                 ri = (ResolvedInstance) construction;
+                            }
+                            Definition objDef = ((BentoObjectWrapper) data).getDefinition();
+                            if (objDef != null) {
+                                def = objDef;
+                                args = (construction instanceof Instantiation ? ((Instantiation) construction).getArguments() : null);
                             }
                         }
                         if (def != null) {
