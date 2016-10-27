@@ -2405,7 +2405,7 @@ if (definition.getName().equals("set_ccobj")) {
      *  the passed definition remaining on top.  This is designed to accommodate instantiation of children
      *  which reference parameters. 
      */
-    public int pushSupers(Definition def, Definition superDef) throws Redirection {
+    private int pushSupers(Definition def, Definition superDef) throws Redirection {
         int numPushes = 0;
         Definition contextDef = def;
         
@@ -2439,6 +2439,15 @@ if (definition.getName().equals("set_ccobj")) {
         
         return numPushes;
     }
+    
+    private void unpushSupers(int numPushes) {
+        unpush();
+        for (int i = 0; i < numPushes; i++) {
+            pop();
+        }
+        repush();
+    }
+    
     
     public int pushSupersAndAliases(Definition def, ArgumentList args, Definition childDef) throws Redirection {
         // track back through superdefinitions and aliases to push intermediate definitions
@@ -2613,6 +2622,7 @@ if (definition.getName().equals("set_ccobj")) {
         boolean dynamicChild = (childArgs != null && childArgs.isDynamic());
         List<Index> childIndexes = childName.getIndexes();
         int numPushes = 0;
+        int numSuperPushes = 0;
         ComplexName restOfName = null;
         int numNameParts = name.numParts();
         if (numNameParts > 1) {
@@ -2719,7 +2729,7 @@ if (definition.getName().equals("set_ccobj")) {
                 }
                 
                 if (superDef != null) {
-                    numPushes += pushSupers(def, superDef);
+                    numSuperPushes = pushSupers(def, superDef);
                 }
             }
 
@@ -2815,6 +2825,9 @@ if (definition.getName().equals("set_ccobj")) {
             }
 
         } finally {
+            if (numSuperPushes > 0) {
+                unpushSupers(numSuperPushes);
+            }
             while (numPushes-- > 0) {
                 pop();
             }

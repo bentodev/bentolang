@@ -955,9 +955,10 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                                     if (holder.nominalDef.getDurability() != Definition.DYNAMIC && !((BentoNode) holder.nominalDef).isDynamic() && (args == null || !args.isDynamic())) {
                                         if (holder.data != null && holder.data != UNDEFINED) {
                                             data = holder.data;
-                                            if (data instanceof BentoObjectWrapper && (n - np) == 1 && generate) {
-                                            	return ((BentoObjectWrapper) data).getChildData(restOfName);
-                                            }
+                                            // the following breaks a bunch of pent_game_tests for some reason
+                                            //if (data instanceof BentoObjectWrapper && (n - np) == 1 && generate) {
+                                            //    return ((BentoObjectWrapper) data).getChildData(restOfName);
+                                            //}
                                         }
                                         if (prefixArgs == null && (holder.nominalArgs != null || holder.args != null)) {
                                             prefixArgs = (holder.nominalArgs != null ? holder.nominalArgs : holder.args);
@@ -1793,8 +1794,8 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         } else if (reference instanceof NameNode) {
             NameNode nameNode = getReferenceName();
             String name = nameNode.getName();
-if (name.indexOf("parent_obj.") >= 0) {
- System.out.println(name + " at Inst 1794");    
+if (name.indexOf("pent_game.set_") >= 0) {
+ System.out.println(name + " at Inst 1797");    
 }
             if (localDef != null) {
                 data = instantiate(context, localDef);
