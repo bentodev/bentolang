@@ -1284,6 +1284,9 @@ if (definition.getName().equals("set_ccobj")) {
         if (name == null || name.length() == 0) {
             return null;
         }
+if (name.indexOf("phase") >= 0) {
+  System.out.println("getData " + name + " at ctx 12888");    
+}
         String fullName = (def == null ? name : def.getFullNameInContext(this));
 
         Object data = null;
@@ -1514,6 +1517,9 @@ if (definition.getName().equals("set_ccobj")) {
      */
     synchronized public void putData(Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, List<Index> indexes, String name, Object data, ResolvedInstance resolvedInstance) throws Redirection {
         if (topEntry != null && name != null && name.length() > 0) {
+if (name.indexOf("phase") >= 0) {
+ System.out.println("putData " + name + " = " + (data == null ? "(null)" : data.toString()) + " at ctx 1518");    
+}
             int maxCacheLevels = getMaxCacheLevels(nominalDef);
             updateDynamicKeeps(name, args);
 
@@ -2728,7 +2734,7 @@ if (definition.getName().equals("set_ccobj")) {
                     superDef = def.getSuperDefinition(this);
                 }
                 
-                if (superDef != null) {
+                if (superDef != null && topEntry.def.equalsOrExtends(superDef)) {
                     numSuperPushes = pushSupers(def, superDef);
                 }
             }
@@ -3683,7 +3689,7 @@ while (e != null) {
     e = e.link;
 }
 if (calcSize != size) {
-  System.out.println("Ctx 3761 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+  System.out.println("Ctx 3692 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
 }
     }
 
@@ -3739,7 +3745,7 @@ while (e != null) {
     e = e.link;
 }
 if (calcSize != size) {
-  System.out.println("Ctx 3796 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+  System.out.println("Ctx 3748 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
 }
 //System.out.println("ctx " + Integer.toHexString(hashCode()) + " size v" + size);            
             return entry;
@@ -3759,7 +3765,7 @@ if (calcSize != size) {
 
     public synchronized void repush() {
 if (unpushedEntries == null) {
- System.out.println("Null!!! ctx 3608");    
+ System.out.println("Null!!! ctx 3768");    
 }
         Entry entry = unpushedEntries.pop();
         // by pre-setting the link to topEntry, we avoid the logic in _push that clones
