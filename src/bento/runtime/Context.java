@@ -1517,7 +1517,7 @@ if (name.indexOf("phase") >= 0) {
      */
     synchronized public void putData(Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, List<Index> indexes, String name, Object data, ResolvedInstance resolvedInstance) throws Redirection {
         if (topEntry != null && name != null && name.length() > 0) {
-if (name.indexOf("phase") >= 0) {
+if (name.equals("phase") || name.indexOf(".phase") >= 0) {
  System.out.println("putData " + name + " = " + (data == null ? "(null)" : data.toString()) + " at ctx 1518");    
 }
             int maxCacheLevels = getMaxCacheLevels(nominalDef);

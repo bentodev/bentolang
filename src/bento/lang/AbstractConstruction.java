@@ -375,6 +375,9 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
             Definition defInCache = null;
             Definition nominalDefInCache = null;
             String name = getDefinitionName();
+if (name != null && name.startsWith("game")) {
+  System.out.println("getData for " + name + " at ctx 379");    
+}
             NameNode nameNode = getReferenceName();
             Holder holder = null;
             if (context != null && name != null) {
