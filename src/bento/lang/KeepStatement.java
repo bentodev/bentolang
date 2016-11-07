@@ -157,7 +157,7 @@ public class KeepStatement extends BentoStatement {
         return false;
     }
 
-    public ResolvedInstance[] getResolvedInstances(Context context) throws Redirection {
+    synchronized public ResolvedInstance[] getResolvedInstances(Context context) throws Redirection {
         int len = names.length;
         NameNode as = getAsName(context);
         boolean included = getAsIncluded(context);
