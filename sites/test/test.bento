@@ -3146,7 +3146,7 @@ cu [=
         name = "Object Child Test"
         key = "object_child"
 
-        expected = "ABCDEFGHIJ"
+        expected = "ABCDEFGHIJK"
 
         obj [=
             a [| x |]
@@ -3218,6 +3218,23 @@ cu [=
 
             set_ccobj(sub_5);            
         =]
+        
+        obj sub_8 [=
+            keep: k(x) = x
+            dynamic set_k [=
+                eval(k(: "K" :));
+            =]
+            eval(k("x"));
+            this;
+        =]
+
+        sub_8 sub_8_obj [/]
+
+        show_xk(sub_8 kobj) [=
+            kobj.k;
+            kobj.set_k;
+            kobj.k;
+        =]
 
 
         sub_1.a;
@@ -3245,48 +3262,35 @@ cu [=
         eval(sub_7.j("x"));
         parent_obj.set_ccobj_j;
         sub_7.j;
+            sub_8 kobj = sub_8
+            
+        eval(sub_8_obj);
+        if (show_xk(sub_8_obj) == "xK") [=
+            "K";
+        =] else [=
+            show_xk;
+        =]        
     =]
 
 oct [=
-  obj [=
-    g = "x"
-    hi(y) = y
-    this;
-  =]
-  dynamic obj sub_1 [=
-    g = "G"
-  =]
-  dynamic obj sub_3 [=
-    if (true) [=
-        sub_1;
+    sub_8 [=
+        keep: k(x) = x
+        dynamic set_k [=
+            eval(k(: "K" :));
+        =]
+        eval(k("x"));
+        this;
     =]
-  =]
-  parent_obj [=
-    keep: obj ccobj(obj o) = o
 
-    dynamic set_ccobj(obj oo) [=
-        eval(ccobj(: oo :));
+    sub_8 sub_8_obj [/]
+
+    show_xk(sub_8 kobj) [=
+        kobj.k;
+        kobj.set_k;
+        kobj.k;
     =]
-    set_ccobj(sub_5);            
-  =]
-  dynamic obj sub_5 [=
-    eval(hi(: "H" :));
-    this;
-  =]
-
-  dynamic obj sub_6 [=
-    eval(hi(: "I" :));
-     this;
-  =]
-
-  //eval(sub_3);
-  //sub_3.g;
-  parent_obj;
-  //parent_obj.ccobj.hi;
-
-  parent_obj.set_ccobj(sub_6);
-  parent_obj.ccobj.hi;
-  
+    eval(sub_8_obj);
+    show_xk(sub_8_obj);
 =]
     cocotest [=
     
@@ -3633,7 +3637,9 @@ ceot [=
         external_obj aliased_obj(v) = org.bentodev.test.ExternalTest(v)            
         identity_obj(o) = o
 
-    /---    aliased_obj(: "F" :); ---/
+        eval(identity_obj(aliased_obj(: "E" :)));
+        identity_obj.e;
+        aliased_obj(: "F" :);
         aliased_obj(: :).other(: "J" :);
         " - ";
         aliased_obj(: :).other.methodZ;

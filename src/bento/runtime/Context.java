@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("set_ccobj")) {
+if (definition.getName().indexOf("obj") > 0) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -1284,8 +1284,8 @@ if (definition.getName().equals("set_ccobj")) {
         if (name == null || name.length() == 0) {
             return null;
         }
-if (name.indexOf("phase") >= 0) {
-  System.out.println("getData " + name + " at ctx 12888");    
+if (name.indexOf("k") == 0 || name.indexOf(".k") >= 0) {
+  System.out.println("getData " + name + " at ctx 1288");    
 }
         String fullName = (def == null ? name : def.getFullNameInContext(this));
 
@@ -1517,7 +1517,7 @@ if (name.indexOf("phase") >= 0) {
      */
     synchronized public void putData(Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, List<Index> indexes, String name, Object data, ResolvedInstance resolvedInstance) throws Redirection {
         if (topEntry != null && name != null && name.length() > 0) {
-if (name.equals("phase") || name.indexOf(".phase") >= 0) {
+if (name.indexOf("_obj") >= 0) {
  System.out.println("putData " + name + " = " + (data == null ? "(null)" : data.toString()) + " at ctx 1518");    
 }
             int maxCacheLevels = getMaxCacheLevels(nominalDef);

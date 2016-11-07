@@ -790,7 +790,6 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
        return def;
    }
 
-   
    /** If this is a parameter, and the associated argument in the given context is an instantiation,
     *  then return it, otherwise return this instantiation. */
    public Instantiation getUltimateInstance(Context context) throws Redirection {
@@ -1794,7 +1793,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         } else if (reference instanceof NameNode) {
             NameNode nameNode = getReferenceName();
             String name = nameNode.getName();
-if (name.indexOf("pent_game.set_") >= 0) {
+if (name.indexOf("show_xk") >= 0) {
  System.out.println(name + " at Inst 1797");    
 }
             if (localDef != null) {

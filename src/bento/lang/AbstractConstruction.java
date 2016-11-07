@@ -245,7 +245,10 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
     public boolean isParameter() {
         return false;
     }
-    
+
+    public boolean isParameterKind() {
+        return false;
+    }
 
     protected void setTrailingDelimiter(boolean flag) {
         trailingDelimiter = flag;
@@ -356,6 +359,10 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
         return getData(context, null);
     }
     
+    public Instantiation getUltimateInstance(Context context) throws Redirection {
+        return null;
+    }
+    
     transient private Object staticData = null;
     public Object getData(Context context, Definition def) throws Redirection {
         BentoDebugger debugger = (context != null ? context.getDebugger() : null);
@@ -375,7 +382,15 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
             Definition defInCache = null;
             Definition nominalDefInCache = null;
             String name = getDefinitionName();
-if (name != null && name.startsWith("game")) {
+            ArgumentList args = getArguments();
+            Instantiation ultimateInstance = getUltimateInstance(context);
+System.out.println("name: " + name + "  ultimate name: " + (ultimateInstance == null ? "(null)" : ultimateInstance.getName()));     
+            if (ultimateInstance != null && isParameterKind()) { 
+                name = ultimateInstance.getName();
+                args = ultimateInstance.getArguments();
+            }
+            
+if (name != null && name.startsWith("game.")) {
   System.out.println("getData for " + name + " at ctx 379");    
 }
             NameNode nameNode = getReferenceName();
@@ -458,7 +473,6 @@ if (name != null && name.startsWith("game")) {
                         }
                     }
                 }
-                ArgumentList args = getArguments();
                 List<Index> indexes = getIndexes();
                 if (data == null) {
                     if (Name.THIS.equals(name)) {

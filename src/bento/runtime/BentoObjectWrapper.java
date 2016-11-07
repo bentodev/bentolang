@@ -49,6 +49,9 @@ public class BentoObjectWrapper {
      */
     public BentoObjectWrapper(Definition def, ArgumentList args, List<Index> indexes, Context context) throws Redirection {
         def = def.getSubdefInContext(context);
+if (def.getName().equals("new_game")) {
+ System.out.println(def.getName() + " at BOW 53");    
+}
         ResolvedInstance ri = new ResolvedInstance(def, context, args, indexes);
         construction = ri;
         
