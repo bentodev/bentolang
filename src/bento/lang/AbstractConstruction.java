@@ -383,11 +383,14 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
             Definition nominalDefInCache = null;
             String name = getDefinitionName();
             ArgumentList args = getArguments();
+
+            String altName = null;
+            ArgumentList altArgs = null;
             Instantiation ultimateInstance = getUltimateInstance(context);
 System.out.println("name: " + name + "  ultimate name: " + (ultimateInstance == null ? "(null)" : ultimateInstance.getName()));     
             if (ultimateInstance != null && isParameterKind()) { 
-                name = ultimateInstance.getName();
-                args = ultimateInstance.getArguments();
+                altName = ultimateInstance.getName();
+                altArgs = ultimateInstance.getArguments();
             }
             
 if (name != null && name.startsWith("game.")) {
@@ -562,6 +565,9 @@ if (name != null && name.startsWith("game.")) {
                         //    name = nominalDef.getName();
                         //}
                         context.putData(nominalDef, nominalArgs, def, args, indexes, name, data, ri);
+                        if (altName != null) {
+                            //context.putData(nominalDef, nominalArgs, def, altArgs, indexes, altName, data, ri);
+                        }
                     }
                 }
                 return data;
