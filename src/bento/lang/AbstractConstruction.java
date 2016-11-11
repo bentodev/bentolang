@@ -246,6 +246,10 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
         return false;
     }
 
+    public boolean isParameterChild() {
+        return false;
+    }
+
     public boolean isParameterKind() {
         return false;
     }
@@ -386,16 +390,14 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
 
             String altName = null;
             ArgumentList altArgs = null;
-            Instantiation ultimateInstance = getUltimateInstance(context);
-System.out.println("name: " + name + "  ultimate name: " + (ultimateInstance == null ? "(null)" : ultimateInstance.getName()));     
-            if (ultimateInstance != null && isParameterKind()) { 
-                altName = ultimateInstance.getName();
-                altArgs = ultimateInstance.getArguments();
+            if (isParameterChild()) {
+                Instantiation ultimateInstance = getUltimateInstance(context);
+                if (ultimateInstance != null) { 
+                    name = ultimateInstance.getName();
+                    args = ultimateInstance.getArguments();
+                }
             }
-            
-if (name != null && name.startsWith("game.")) {
-  System.out.println("getData for " + name + " at ctx 379");    
-}
+           
             NameNode nameNode = getReferenceName();
             Holder holder = null;
             if (context != null && name != null) {
@@ -565,9 +567,6 @@ if (name != null && name.startsWith("game.")) {
                         //    name = nominalDef.getName();
                         //}
                         context.putData(nominalDef, nominalArgs, def, args, indexes, name, data, ri);
-                        if (altName != null) {
-                            //context.putData(nominalDef, nominalArgs, def, altArgs, indexes, altName, data, ri);
-                        }
                     }
                 }
                 return data;
