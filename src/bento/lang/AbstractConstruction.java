@@ -388,8 +388,8 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
             String name = getDefinitionName();
             ArgumentList args = getArguments();
 
-            String altName = null;
-            ArgumentList altArgs = null;
+            String defName = name;
+            ArgumentList defArgs = args;
             if (isParameterChild()) {
                 Instantiation ultimateInstance = getUltimateInstance(context);
                 if (ultimateInstance != null) { 
@@ -566,7 +566,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                         //if (isParameter() && nominalDef != null && !name.equals(nominalDef.getName())) {
                         //    name = nominalDef.getName();
                         //}
-                        context.putData(nominalDef, nominalArgs, def, args, indexes, name, data, ri);
+                        context.putData(nominalDef, nominalArgs, def, defArgs, indexes, defName, data, ri);
                     }
                 }
                 return data;

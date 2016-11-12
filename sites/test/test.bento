@@ -3262,7 +3262,6 @@ cu [=
         eval(sub_7.j("x"));
         parent_obj.set_ccobj_j;
         sub_7.j;
-            sub_8 kobj = sub_8
             
         eval(sub_8_obj);
         if (show_xk(sub_8_obj) == "xK") [=
@@ -3291,6 +3290,27 @@ oct [=
     =]
     eval(sub_8_obj);
     show_xk(sub_8_obj);
+=]
+
+oct9 [=
+    sub_9(z) [=
+        keep: l(x) = x
+        dynamic set_l [=
+            eval(l(: z :));
+        =]
+        eval(l("x"));
+        this;
+    =]
+
+  sub_9 lobj = sub_9("L");
+  eval(lobj);
+  test_cons(lobj);
+         
+  dynamic test_cons(sub_9 gm) [=
+    gm.set_l;
+    gm.l;
+  =]
+
 =]
     cocotest [=
     
