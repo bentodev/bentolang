@@ -462,8 +462,8 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                     if (defInCache == null) {
                         //cachevlog(" - - - no definition in cache for " + name + " - - - ");
 
-                    } else if (cacheInfo.def != null && !cacheInfo.def.equals(defInCache) && !cacheInfo.def.equals(nominalDefInCache) && !(ultimateDef == null || ultimateDef.equals(defInCache))) {
-                        //cachevlog(" - - - def is " + cacheInfo.def.getFullName() + " but defInCache is " + defInCache.getFullName());
+                    //} else if (cacheInfo.def != null && !cacheInfo.def.equals(defInCache) && !cacheInfo.def.equals(nominalDefInCache) && !(ultimateDef == null || ultimateDef.equals(defInCache))) {
+                    //    //cachevlog(" - - - def is " + cacheInfo.def.getFullName() + " but defInCache is " + defInCache.getFullName());
                         
                     } else if (data == null) {
                         if (def == null) {

@@ -890,6 +890,8 @@ if (definition.getName().equals("this_scene")) {
         try {
             List<Construction> constructions = definition.getConstructions(this);
             boolean constructed = false;
+            Definition aliasDef = null;
+            Instantiation aliasInstance = null;
 
             NamedDefinition superDef = definition.getSuperDefinition(this);
             Type st = definition.getSuper(this);
@@ -899,9 +901,8 @@ if (definition.getName().equals("this_scene")) {
                 // check to see if this is an alias, and the alias definition extends or equals the
                 // superdefinition, in which case we shouldn't bother constructing the superdef here,
                 // it will get constructed when the alias is constructed
-                Definition aliasDef = null;
                 if (definition.isAliasInContext(this)) {
-                    Instantiation aliasInstance = definition.getAliasInstanceInContext(this);
+                    aliasInstance = definition.getAliasInstanceInContext(this);
                     if (aliasInstance != null) {
                         if (definition.isParamAlias()) {
                             aliasInstance = aliasInstance.getUltimateInstance(this);
@@ -938,19 +939,9 @@ if (definition.getName().equals("this_scene")) {
                     Construction construction = constructions.get(0);
                     if (construction instanceof Value) {
                         data = construction;
+                    } else if (aliasInstance != null) {
+                        data = aliasInstance.getData(this, aliasDef);
                     } else if (construction instanceof ValueGenerator) {
-
-                        // no this isn't right
-//                        if (construction instanceof Instantiation) {
-//                            Instantiation instance = (Instantiation) construction;
-//                            ArgumentList instanceArgs = instance.getArguments();
-//                            if (instanceArgs != null) {
-//                                if (args == null || instanceArgs.size() != args.size()) {
-//                                    construction = new Instantiation(instance, args, instance.getIndexes());
-//                                }
-//                            }
-//                        }
-                        
                         data = ((ValueGenerator) construction).getData(this);
                     } else {
                         data = construction.getData(this);
@@ -3188,43 +3179,43 @@ if (name.indexOf("_obj") >= 0) {
             paramType = param.getType();
             Definition lastDef = null;
             // don't dereference global definitions, or we might miss a globally cached value
-            while (!(arg instanceof ResolvedInstance) && argDef != lastDef && !argDef.isGlobal() && argDef.isAliasInContext(this)) {
-                lastDef = argDef;
-                NameNode alias = argDef.isParamAlias() ? argDef.getParamAlias() : argDef.getAliasInContext(this);
-                if (alias == null) {
-                    break;
-                }
-                ArgumentList aliasArgs = alias.getArguments();
-                Instantiation aliasInstance = argDef.getAliasInstanceInContext(this);
-                if (aliasInstance == null) {
-                    break;
-                }
-                numPushes += pushParts(aliasInstance);
-                
-                Context.Entry aliasEntry = getParameterEntry(alias, aliasInstance.isContainerParameter(this));
-                if (aliasEntry == null) {
-                    List<Index> aliasIndexes = alias.getIndexes();
-                    for (Definition owner = argDef.getOwner(); owner != null; owner = owner.getOwner()) {
-                        owner = getSubdefinitionInContext(owner);
-                        Definition aliasDef = owner.getChildDefinition(alias, aliasArgs, aliasIndexes, args, this, null);
-                        if (aliasDef != null) {
-                            argDef = aliasDef;
-                            argArgs = aliasArgs;
-                            argParams = argDef.getParamsForArgs(argArgs, this);
-                            push(argDef, argParams, argArgs);
-                            numPushes++;
-                            break;
-                        }
-                    }
-                } else {
-                    argDef = aliasEntry.def;
-                    argArgs = aliasEntry.args;
-                    argParams = aliasEntry.params;
-                    push(aliasEntry);
-                    numPushes++;
-                }
-                
-            }
+//            while (!(arg instanceof ResolvedInstance) && argDef != lastDef && !argDef.isGlobal() && argDef.isAliasInContext(this)) {
+//                lastDef = argDef;
+//                NameNode alias = argDef.isParamAlias() ? argDef.getParamAlias() : argDef.getAliasInContext(this);
+//                if (alias == null) {
+//                    break;
+//                }
+//                ArgumentList aliasArgs = alias.getArguments();
+//                Instantiation aliasInstance = argDef.getAliasInstanceInContext(this);
+//                if (aliasInstance == null) {
+//                    break;
+//                }
+//                numPushes += pushParts(aliasInstance);
+//                
+//                Context.Entry aliasEntry = getParameterEntry(alias, aliasInstance.isContainerParameter(this));
+//                if (aliasEntry == null) {
+//                    List<Index> aliasIndexes = alias.getIndexes();
+//                    for (Definition owner = argDef.getOwner(); owner != null; owner = owner.getOwner()) {
+//                        owner = getSubdefinitionInContext(owner);
+//                        Definition aliasDef = owner.getChildDefinition(alias, aliasArgs, aliasIndexes, args, this, null);
+//                        if (aliasDef != null) {
+//                            argDef = aliasDef;
+//                            argArgs = aliasArgs;
+//                            argParams = argDef.getParamsForArgs(argArgs, this);
+//                            push(argDef, argParams, argArgs);
+//                            numPushes++;
+//                            break;
+//                        }
+//                    }
+//                } else {
+//                    argDef = aliasEntry.def;
+//                    argArgs = aliasEntry.args;
+//                    argParams = aliasEntry.params;
+//                    push(aliasEntry);
+//                    numPushes++;
+//                }
+//                
+//            }
 
             // dereference the argument definition if the reference includes indexes
             NameNode paramNameNode = (checkForChild ? (NameNode) name.getChild(0) : name);
