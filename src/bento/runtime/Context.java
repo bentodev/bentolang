@@ -877,7 +877,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().indexOf("obj") > 0) {
+if (definition.getName().equals("this_scene")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -2718,10 +2718,12 @@ if (name.indexOf("_obj") >= 0) {
                                 if (numNameParts == 1) {
                                     return obj.getChildData(resolveArgsIndexes(childName));
                                 } else {
-                                    Definition objDef = obj.getDefinition();
-                                    Context resolutionContext = obj.getResolutionContext();
-                                    return resolutionContext.getDescendant(objDef, childArgs, name, generate, obj);
+                                    return obj.getChildData(resolveArgsIndexes(name));
                                 }
+                                //    Definition objDef = obj.getDefinition();
+                                //    Context resolutionContext = obj.getResolutionContext();
+                                //    return resolutionContext.getDescendant(objDef, childArgs, name, generate, obj);
+                                //}
                             }
                         }
                     }

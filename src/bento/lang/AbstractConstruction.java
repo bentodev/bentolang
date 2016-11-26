@@ -383,36 +383,37 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
             return staticData;
 
         } else {
-            Definition defInCache = null;
-            Definition nominalDefInCache = null;
-            String name = getDefinitionName();
-            ArgumentList args = getArguments();
-
-            String defName = name;
-            ArgumentList defArgs = args;
-            if (isParameterChild()) {
-                Instantiation ultimateInstance = getUltimateInstance(context);
-                if (ultimateInstance != null) { 
-                    name = ultimateInstance.getName();
-                    args = ultimateInstance.getArguments();
-                }
-            }
-           
-            NameNode nameNode = getReferenceName();
-            Holder holder = null;
-            if (context != null && name != null) {
-                holder = context.getDefHolder(name, null, getArguments(), getIndexes(), false);
-                if (holder != null && holder.def != null) {
-                    defInCache = holder.def;
-                    nominalDefInCache = holder.nominalDef;
-                }
-            }
             CacheabilityInfo cacheInfo = getCacheability(context, def);
             int cacheability = cacheInfo.cacheability;
             if (cacheability == NOT_CACHEABLE) {
                 return generateData(context, cacheInfo.def, debugger);
 
             } else {
+                Definition defInCache = null;
+                Definition nominalDefInCache = null;
+                String name = getDefinitionName();
+                ArgumentList args = getArguments();
+
+                String defName = name;
+                ArgumentList defArgs = args;
+                if (isParameterChild()) {
+                    Instantiation ultimateInstance = getUltimateInstance(context);
+                    if (ultimateInstance != null) { 
+                        name = ultimateInstance.getName();
+                        args = ultimateInstance.getArguments();
+                    }
+                }
+               
+                NameNode nameNode = getReferenceName();
+                Holder holder = null;
+                if (context != null && name != null) {
+                    holder = context.getDefHolder(name, null, getArguments(), getIndexes(), false);
+                    if (holder != null && holder.def != null) {
+                        defInCache = holder.def;
+                        nominalDefInCache = holder.nominalDef;
+                    }
+                }
+
                 // this logic needs improvement to properly handle multipart names.  Right now
                 // multipart and single name references to the same object are not recognized
                 // as being the same, so a cache lookup might erroneously fail, leading to

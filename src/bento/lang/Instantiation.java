@@ -947,7 +947,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                             nm = prefix.getName();
                             prefixIndexes = prefix.getIndexes();
                             prefixArgs = prefix.getArguments();
-                            if (prefixIndexes == null) {
+                            //if (prefixIndexes == null) {
                                 holder = context.getDefHolder(nm, null, prefixArgs, prefixIndexes, false);
                                 if (holder != null && holder.nominalDef != null && !holder.nominalDef.equals(context.getDefiningDef())) {
                                     def = holder.nominalDef;
@@ -979,7 +979,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
                                     }
                                     break;
                                 }
-                            }
+                            //}
                         }                           
                                                  
 
@@ -1793,7 +1793,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         } else if (reference instanceof NameNode) {
             NameNode nameNode = getReferenceName();
             String name = nameNode.getName();
-if (name.indexOf("show_xk") >= 0) {
+if (name.indexOf("this_scene.objs") >= 0 || name.equals("new_scene")) {
  System.out.println(name + " at Inst 1797");    
 }
             if (localDef != null) {
