@@ -104,6 +104,10 @@ public class Context {
         private final static int WRAP_AROUND_STATE = 1001;
         private int state = -1;
         public StateFactory() {}
+        
+        public StateFactory(StateFactory factory) {
+            state = factory.state;
+        }
 
         public int nextState() {
             ++state;
@@ -877,7 +881,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("this_scene")) {
+if (definition.getName().equals("this_scene") || definition.getName().equals("home")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -1508,7 +1512,7 @@ if (name.indexOf("k") == 0 || name.indexOf(".k") >= 0) {
      */
     synchronized public void putData(Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, List<Index> indexes, String name, Object data, ResolvedInstance resolvedInstance) throws Redirection {
         if (topEntry != null && name != null && name.length() > 0) {
-if (name.indexOf("_obj") >= 0) {
+if (name.indexOf("objs") >= 0) {
  System.out.println("putData " + name + " = " + (data == null ? "(null)" : data.toString()) + " at ctx 1518");    
 }
             int maxCacheLevels = getMaxCacheLevels(nominalDef);
@@ -3682,7 +3686,7 @@ while (e != null) {
     e = e.link;
 }
 if (calcSize != size) {
-  System.out.println("Ctx 3692 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+  System.out.println("Ctx 3689 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
 }
     }
 
@@ -3738,7 +3742,7 @@ while (e != null) {
     e = e.link;
 }
 if (calcSize != size) {
-  System.out.println("Ctx 3748 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+  System.out.println("Ctx 3745 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
 }
 //System.out.println("ctx " + Integer.toHexString(hashCode()) + " size v" + size);            
             return entry;
@@ -3998,7 +4002,7 @@ if (calcSize != context.size) {
 
         // copy the global state variables
         stateCount = context.stateCount;
-        stateFactory = context.stateFactory;
+        stateFactory = new StateFactory(context.stateFactory);
         size = context.size;
         errorThreshhold = context.errorThreshhold;
 
