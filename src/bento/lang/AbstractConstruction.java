@@ -394,6 +394,10 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                 String name = getDefinitionName();
                 ArgumentList args = getArguments();
 
+if ("home.objs".equals(name)) {
+ System.out.println(name + " at AbsCon 398");    
+}
+                
                 String defName = name;
                 ArgumentList defArgs = args;
                 if (isParameterChild()) {

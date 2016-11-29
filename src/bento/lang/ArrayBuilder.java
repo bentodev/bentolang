@@ -30,7 +30,6 @@ public class ArrayBuilder extends CollectionBuilder {
         Object arrayInstance = arrayObject;
         if (arrayObject instanceof Object[]) {
             int size = ((Object[]) arrayObject).length;
-            arrayInstance = new Object[size];
             for (int i = 0; i < size; i++) {
                 Object data = ((Object[]) arrayObject)[i];
 

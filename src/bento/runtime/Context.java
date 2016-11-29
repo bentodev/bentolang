@@ -3727,6 +3727,15 @@ if (calcSize != size) {
     }
 
     private Entry _pop() {
+int calcSize = 0;
+Entry e = topEntry;
+while (e != null) {
+    calcSize++;
+    e = e.link;
+}
+if (calcSize != size) {
+  System.out.println("Ctx 3737 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+}
         if (size > 0) {
             if (topEntry == popLimit) {
                 vlog("popping context beyond popLimit");
@@ -3735,14 +3744,14 @@ if (calcSize != size) {
             Entry entry = topEntry;
             setTop(entry.getPrevious());
             size--;
-int calcSize = 0;
-Entry e = topEntry;
+calcSize = 0;
+e = topEntry;
 while (e != null) {
     calcSize++;
     e = e.link;
 }
 if (calcSize != size) {
-  System.out.println("Ctx 3745 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+  System.out.println("Ctx 3754 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
 }
 //System.out.println("ctx " + Integer.toHexString(hashCode()) + " size v" + size);            
             return entry;
