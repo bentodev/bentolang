@@ -394,7 +394,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                 String name = getDefinitionName();
                 ArgumentList args = getArguments();
 
-if ("home.objs".equals(name)) {
+if ("pent_game.player_A".equals(name)) {
  System.out.println(name + " at AbsCon 398");    
 }
                 

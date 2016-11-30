@@ -648,6 +648,7 @@ public class Context {
             if (pushed) {
                 pop();
             }
+            validateSize();
         }
         return data;
     }
@@ -881,7 +882,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("this_scene") || definition.getName().equals("home")) {
+if (definition.getName().equals("test_pent_game_choose_players")) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -1018,6 +1019,8 @@ if (definition.getName().equals("this_scene") || definition.getName().equals("ho
                 pop();
             }
             instantiatedDef = oldInstantiatedDef;
+
+            validateSize();
         }
     }
 
@@ -1258,6 +1261,7 @@ if (definition.getName().equals("this_scene") || definition.getName().equals("ho
                 numUnpushes--;
             }
             addingDynamicKeeps = false;
+            validateSize();
         }
     }
     
@@ -1279,9 +1283,6 @@ if (definition.getName().equals("this_scene") || definition.getName().equals("ho
         if (name == null || name.length() == 0) {
             return null;
         }
-if (name.indexOf("k") == 0 || name.indexOf(".k") >= 0) {
-  System.out.println("getData " + name + " at ctx 1288");    
-}
         String fullName = (def == null ? name : def.getFullNameInContext(this));
 
         Object data = null;
@@ -1512,9 +1513,6 @@ if (name.indexOf("k") == 0 || name.indexOf(".k") >= 0) {
      */
     synchronized public void putData(Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, List<Index> indexes, String name, Object data, ResolvedInstance resolvedInstance) throws Redirection {
         if (topEntry != null && name != null && name.length() > 0) {
-if (name.indexOf("objs") >= 0) {
- System.out.println("putData " + name + " = " + (data == null ? "(null)" : data.toString()) + " at ctx 1518");    
-}
             int maxCacheLevels = getMaxCacheLevels(nominalDef);
             updateDynamicKeeps(name, args);
 
@@ -1734,6 +1732,8 @@ if (name.indexOf("objs") >= 0) {
             while (numUnpushes-- > 0) {
                 repush();
             }
+            
+            validateSize();
         }
     }
     
@@ -1813,6 +1813,7 @@ if (name.indexOf("objs") >= 0) {
                 while (numUnpushes-- > 0) {
                     repush();
                 }
+                validateSize();
             }
         }
     }
@@ -2047,6 +2048,8 @@ if (name.indexOf("objs") >= 0) {
             for (int i = 0; i < numUnpushes; i++) {
                 repush();
             }
+            
+            validateSize();
         }
         return data;
     }
@@ -2399,6 +2402,7 @@ if (name.indexOf("objs") >= 0) {
             while (numPushes-- > 0) {
                 pop();
             }
+            validateSize();
         }
     }
 
@@ -2437,7 +2441,8 @@ if (name.indexOf("objs") >= 0) {
         
         top.link = nextLink;
         topEntry = top; 
-        
+
+        validateSize();
         return numPushes;
     }
     
@@ -2447,6 +2452,7 @@ if (name.indexOf("objs") >= 0) {
             pop();
         }
         repush();
+        validateSize();
     }
     
     
@@ -2527,6 +2533,7 @@ if (name.indexOf("objs") >= 0) {
             numPushes++;
         }
   
+        validateSize();
         return numPushes;
     }
 
@@ -2600,6 +2607,7 @@ if (name.indexOf("objs") >= 0) {
             while (numUnpushes-- > 0) {
                 repush();
             }
+            validateSize();
         }
 
         return data;
@@ -2834,6 +2842,7 @@ if (name.indexOf("objs") >= 0) {
             while (numPushes-- > 0) {
                 pop();
             }
+            validateSize();
         }
     }
             
@@ -3302,6 +3311,7 @@ if (name.indexOf("objs") >= 0) {
             if (mustUnpush) {
                 repush();
             }
+            validateSize();
         }
     }
 
@@ -3466,7 +3476,7 @@ if (name.indexOf("objs") >= 0) {
                 }
             }
         } finally {
-           ;
+            validateSize();
         }
         return numPushes;
     }
@@ -3660,7 +3670,6 @@ if (name.indexOf("objs") >= 0) {
         } else if (size == 50) {
             System.err.println("**** context exceeding 50 ****");
         }
-        size++;
 
 //System.out.println("ctx " + Integer.toHexString(hashCode()) + " size ^" + size);            
 
@@ -3679,20 +3688,14 @@ if (name.indexOf("objs") >= 0) {
         }
         setTop(entry);
 
-int calcSize = 0;
-Entry e = topEntry;
-while (e != null) {
-    calcSize++;
-    e = e.link;
-}
-if (calcSize != size) {
-  System.out.println("Ctx 3689 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+if (!isCorrectSize()) {
+  System.out.println("Ctx 3692 context size incorrect");
 }
     }
 
     private void setRootEntry(Entry entry) {
         rootEntry = entry;
-
+        
         Site site = entry.def.getSite();
         List<Name> adoptedSites = site.getAdoptedSiteList();
         if (adoptedSites != null) {
@@ -3708,6 +3711,25 @@ if (calcSize != size) {
             rootEntry.setSiteCacheMap(siteCaches, adoptedSites);
         }
         
+    }
+
+    
+    public void validateSize() {
+        if (!isCorrectSize()) {
+            RuntimeException e = new IllegalStateException("context has wrong size");
+            e.printStackTrace();
+            throw e;
+        }
+    }
+    
+    private boolean isCorrectSize() {
+        int calcSize = 0;
+        Entry e = topEntry;
+        while (e != null) {
+            calcSize++;
+            e = e.link;
+        }
+        return (calcSize == size);
     }
     
     public synchronized void pop() {
@@ -3727,14 +3749,8 @@ if (calcSize != size) {
     }
 
     private Entry _pop() {
-int calcSize = 0;
-Entry e = topEntry;
-while (e != null) {
-    calcSize++;
-    e = e.link;
-}
-if (calcSize != size) {
-  System.out.println("Ctx 3737 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+if (!isCorrectSize()) {
+  System.out.println("Ctx 3754 context size incorrect");
 }
         if (size > 0) {
             if (topEntry == popLimit) {
@@ -3743,15 +3759,8 @@ if (calcSize != size) {
             }
             Entry entry = topEntry;
             setTop(entry.getPrevious());
-            size--;
-calcSize = 0;
-e = topEntry;
-while (e != null) {
-    calcSize++;
-    e = e.link;
-}
-if (calcSize != size) {
-  System.out.println("Ctx 3754 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
+if (!isCorrectSize()) {
+  System.out.println("Ctx 3764 context size incorrect");
 }
 //System.out.println("ctx " + Integer.toHexString(hashCode()) + " size v" + size);            
             return entry;
@@ -3985,21 +3994,18 @@ if (unpushedEntries == null) {
         if (topEntry != null) {
             topEntry.incRefCount();
         }
+        int calcSize = 0;
+        Entry e = topEntry;
+        while (e != null) {
+            calcSize++;
+            e = e.link;
+        }
+        size = calcSize;        
     }
 
     /** Makes this context a copy of the passed context. */
     synchronized private void copy(Context context, boolean clearCache) {
         clear();
-
-int calcSize = 0;
-Entry e = context.topEntry;
-while (e != null) {
-    calcSize++;
-    e = e.link;
-}
-if (calcSize != context.size) {
- System.out.println("Ctx 4031 context size incorrect (stored size = " + context.size + ", real size = " + calcSize + ")" );
-}
 
         // copy the root
         rootContext = context.rootContext;
@@ -4038,8 +4044,9 @@ if (calcSize != context.size) {
                     // clone the top entry only.  This assumes that entries from the root
                     // up to just below the top will not be modified in the new context,
                     // because those entries are shared with the original context.
-                    setTop(newEntry(context.topEntry, true));
-                    topEntry.setPrevious(context.topEntry.getPrevious());
+                    Entry top = newEntry(context.topEntry, true);
+                    top.setPrevious(context.topEntry.getPrevious());
+                    setTop(top);
                 }
             }
         
@@ -4049,15 +4056,7 @@ if (calcSize != context.size) {
             setRootEntry(newEntry(context.rootEntry, false));
             setTop(rootEntry);
         }
-calcSize = 0;
-e = topEntry;
-while (e != null) {
-    calcSize++;
-    e = e.link;
-}
-if (calcSize != size) {
-    System.out.println("Ctx 4114 context size incorrect (stored size = " + size + ", real size = " + calcSize + ")" );
-}
+        validateSize();
     }
 
     public int hashCode() {
@@ -5132,11 +5131,6 @@ if (calcSize != size) {
             boolean persist = false;
             Pointer p = null;
             Object oldData = cache.get(key);
-
-if ("phase".equals(key)) {
-     System.out.println("caching " + key + " in entry " + this.toString() + ", value: " + ((holder == null || holder.data == null) ? "(null)" : holder.data.toString()));     
-}
-
 
             // if this is the first entry, set up any required pointers for keep tables
             // and modifiers, save the data and return
