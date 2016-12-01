@@ -3671,8 +3671,6 @@ if (definition.getName().equals("test_pent_game_choose_players")) {
             System.err.println("**** context exceeding 50 ****");
         }
 
-//System.out.println("ctx " + Integer.toHexString(hashCode()) + " size ^" + size);            
-
         if (rootEntry == null) {
             if (entry.getPrevious() != null) {
                 entry = newEntry(entry, true);
@@ -3762,7 +3760,6 @@ if (!isCorrectSize()) {
 if (!isCorrectSize()) {
   System.out.println("Ctx 3764 context size incorrect");
 }
-//System.out.println("ctx " + Integer.toHexString(hashCode()) + " size v" + size);            
             return entry;
         } else {
             return null;
