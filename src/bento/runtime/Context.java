@@ -2666,7 +2666,7 @@ if (definition.getName().equals("test_pent_game_choose_players")) {
             
             if (!def.isExternal() && (!def.isCollection() || parentObj == null)) {
                 ParameterList params = def.getParamsForArgs(args, this);
-                if (!def.isIdentity()) {
+                if (!def.isIdentity() && !topEntry.def.equals(def)) {
                     boolean newFrame = !topEntry.def.equalsOrExtends(def);
                     push(def, params, args, newFrame);
                     numPushes++;
@@ -5015,6 +5015,10 @@ if (unpushedEntries == null) {
          */
         public void put(String key, Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, Context context, Object data, ResolvedInstance resolvedInstance, int maxLevels) {
             Holder holder = new Holder(nominalDef, nominalArgs, def, args, context, data, resolvedInstance);
+if (key.equals("pent_player")) {
+ System.out.println("put " + key + " at ctx 5019");    
+}
+            
             put(key, holder, context, maxLevels);
         }
         
