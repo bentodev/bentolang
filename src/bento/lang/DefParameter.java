@@ -149,7 +149,7 @@ public class DefParameter extends NamedDefinition {
             } else if (obj instanceof BentoObjectWrapper) {
                 def = ((BentoObjectWrapper) obj).getDefinition();
             } else {
-                def = new ExternalDefinition(getName(), getParent(), getOwner(), getType(), getAccess(), getDurability(), obj, null);
+                def = new ExternalDefinition(getNameNode(), getParent(), getOwner(), getType(), getAccess(), getDurability(), obj, null);
             }
         }
         return def;

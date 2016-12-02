@@ -84,13 +84,14 @@ public class ExternalDefinition extends ComplexDefinition {
             SiteBuilder.vlog("No external definition for " + name);
             return null;
         }
-	
-        ExternalDefinition externalDef = new ExternalDefinition(name, (BentoNode) owner, owner, superType, access, dur, externalClass, namePart.getArguments());
+
 
         if (n == numParts) {
-        	return externalDef;
-
-        } else if (context == null) {
+            return new ExternalDefinition(nameNode, (BentoNode) owner, owner, superType, access, dur, externalClass, namePart.getArguments());
+        }
+        
+        ExternalDefinition externalDef = new ExternalDefinition(name, (BentoNode) owner, owner, superType, access, dur, externalClass, namePart.getArguments());
+        if (context == null) {
             NameNode[] parts = new NameNode[numParts - n];
             for (int i = n; i < numParts; i++) {
                 parts[i - n] = (NameNode) nameNode.getChild(i);
@@ -141,11 +142,11 @@ public class ExternalDefinition extends ComplexDefinition {
     }
 
     public ExternalDefinition(ExternalDefinition def) {
-        this(def.getName(), def.getParent(), def.getOwner(), def.getSuper(), def.getAccess(), def.getDurability(), def.getObject(), null);
+        this(def.getNameNode(), def.getParent(), def.getOwner(), def.getSuper(), def.getAccess(), def.getDurability(), def.getObject(), null);
     }
 
     public ExternalDefinition(ExternalDefinition def, ArgumentList args) {
-        this(def.getName(), def.getParent(), def.getOwner(), def.getSuper(), def.getAccess(), def.getDurability(), def.getObject(), args);
+        this(def.getNameNode(), def.getParent(), def.getOwner(), def.getSuper(), def.getAccess(), def.getDurability(), def.getObject(), args);
     }
 
     //public ExternalDefinition(Definition owner, Type superType, int access, int dur, Object object, ArgumentList args) {
@@ -153,14 +154,12 @@ public class ExternalDefinition extends ComplexDefinition {
     //}
 
     public ExternalDefinition(String internalName, BentoNode parent, Definition owner, Type superType, int access, int dur, Object object, ArgumentList args) {
-        super();
-        NameNode name = null;
-        // need to handle array class names properly here
-        if (internalName != null) {
-            name = new ComplexName(internalName);
-            setName(name);
-        }
+        this(createNameNode(internalName), parent, owner, superType, access, dur, object, args);
+    }
         
+        
+    public ExternalDefinition(NameNode name, BentoNode parent, Definition owner, Type superType, int access, int dur, Object object, ArgumentList args) {
+        super();
         setAccess(access);
         setDurability(dur);
         setOwner(owner);
@@ -182,11 +181,10 @@ public class ExternalDefinition extends ComplexDefinition {
         } else {
             c = object.getClass();
         }
-        if (internalName == null) {
-            internalName = c.getName();
-            name = new ComplexName(internalName);
-            setName(name);
+        if (name == null) {
+            name = new ComplexName(c.getName());
         }
+        setName(name);
         AbstractNode contents = null;
         if (object instanceof AbstractNode) {
             contents = (AbstractNode) object;

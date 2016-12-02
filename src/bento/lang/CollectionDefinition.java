@@ -462,7 +462,7 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
         } else if (isPrimitiveValue(element)) {
             return new ElementDefinition(this, element);
         } else {
-            return new ExternalDefinition(null, this, this, getElementType(), getAccess(), getDurability(), element, null);
+            return new ExternalDefinition((NameNode) null, this, this, getElementType(), getAccess(), getDurability(), element, null);
         }
     }
     

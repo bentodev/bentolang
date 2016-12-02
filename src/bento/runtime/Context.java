@@ -3782,7 +3782,7 @@ if (unpushedEntries == null) {
         Entry entry = unpushedEntries.pop();
         // by pre-setting the link to topEntry, we avoid the logic in _push that clones
         // the entry being pushed
-        entry.setPrevious(topEntry);
+        //entry.setPrevious(topEntry);
         _push(entry);
     }
 

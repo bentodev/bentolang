@@ -25,7 +25,7 @@ public class AliasedDefinition extends ExternalDefinition {
     NamedDefinition def;
 
     public AliasedDefinition(NamedDefinition def, NameNode alias) {
-        super(def.getName(), def.getParent(), def.getOwner(), null, Definition.SITE_ACCESS, Definition.IN_CONTEXT, def, null);
+        super(def.getNameNode(), def.getParent(), def.getOwner(), null, Definition.SITE_ACCESS, Definition.IN_CONTEXT, def, null);
         this.def = def;
         setName(alias);
         Site site = def.getSite();
