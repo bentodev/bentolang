@@ -6309,12 +6309,9 @@ memt [=
 
 
     growing_array_example [=
-        char[] char_array = []
-        char[] initial_array = []
         char[] growing_array(char[] x) = x
         dynamic add_to_array(char c) = eval(growing_array(:growing_array + c:))
         
-        eval(growing_array(initial_array));
         [| <b> |]
         for char letter from 'A' through 'J' [=
             add_to_array(letter);
