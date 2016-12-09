@@ -882,7 +882,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("test_pent_game_choose_players")) {
+if (definition.getName().indexOf("player_A") >= 0) {
  System.out.println(definition.getName() + " at ctx 881");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -2720,8 +2720,8 @@ if (definition.getName().equals("test_pent_game_choose_players")) {
                                 BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
                                 if (numNameParts == 1) {
                                     return obj.getChildData(resolveArgsIndexes(childName));
-                                } else {
-                                    return obj.getChildData(resolveArgsIndexes(name));
+                                //} else {
+                                //    return obj.getChildData(resolveArgsIndexes(name));
                                 }
                                 //    Definition objDef = obj.getDefinition();
                                 //    Context resolutionContext = obj.getResolutionContext();
