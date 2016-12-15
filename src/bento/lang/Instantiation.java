@@ -1793,7 +1793,7 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
         } else if (reference instanceof NameNode) {
             NameNode nameNode = getReferenceName();
             String name = nameNode.getName();
-if (name.indexOf("this_scene.objs") >= 0 || name.equals("world_domain.get_array")) {
+if (name.equals("game.set_phase")) {
  System.out.println(name + " at Inst 1797");    
 }
             if (localDef != null) {

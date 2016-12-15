@@ -38,12 +38,12 @@ public class ResolvedInstance extends Instantiation implements Value {
         for (int i = 0; i < args.size(); i++) {
             Construction arg = args.get(i);
             if (arg instanceof Instantiation && !(arg instanceof ResolvedInstance)) {
-                Instantiation argInstance = (Instantiation) arg;
+                Instantiation argInstance = ((Instantiation) arg).getUltimateInstance(sharedContext);
                 if (resolvedArgs == args) {
                     resolvedArgs = new ArgumentList(args);
                     sharedContext = context.clone(false);
                 }
-                ResolvedInstance ri = new ResolvedInstance(argInstance, sharedContext, true);
+                ResolvedInstance ri = (argInstance instanceof ResolvedInstance ? (ResolvedInstance) argInstance : new ResolvedInstance(argInstance, sharedContext, true));
                 resolvedArgs.set(i, ri);
             } else if (arg instanceof Expression) {
                 arg = ((Expression) arg).resolveExpression(sharedContext);
