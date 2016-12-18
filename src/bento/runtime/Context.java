@@ -882,8 +882,8 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("set_phase")) {
- System.out.println(definition.getName() + " at ctx 881");    
+if (definition.getName().indexOf("scene") >= 0) {
+ System.out.println(definition.getName() + " at ctx 886");    
 }
             // get the arguments and parameters, if any, to push on the
             // context stack with the definition
@@ -2713,7 +2713,7 @@ if (definition.getName().equals("set_phase")) {
                                 holder = ri.getResolutionContext().getDefHolder(nm, fullNm, null, null, false);
                             }
                         }
-                        if (holder != null && holder.nominalDef != null && holder.nominalDef.getDurability() != Definition.DYNAMIC && !((BentoNode) holder.nominalDef).isDynamic()) {
+                        if (holder != null && holder.nominalDef != null && holder.nominalDef.getDurability() != Definition.DYNAMIC && !((BentoNode) holder.nominalDef).isDynamic() && (nextDef.equals(holder.nominalDef) || nextDef.equals(holder.def))) {
                             nextDef = holder.nominalDef;
                             args = holder.nominalArgs;
                             if (generate && holder.data != null && holder.data instanceof BentoObjectWrapper) {
