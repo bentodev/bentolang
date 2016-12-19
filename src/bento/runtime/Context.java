@@ -1825,7 +1825,10 @@ if (definition.getName().indexOf("scene") >= 0) {
         List<Index> indexes = argName.getIndexes();
         int numUnpushes = 0;
         boolean pushedOwner = false;
-        if (arg instanceof AbstractNode) {
+
+        Context resolutionContext = (arg instanceof ResolvedInstance ? ((ResolvedInstance) arg).getResolutionContext() : this);
+        
+        if (arg instanceof AbstractNode && this == resolutionContext) {
             Definition argOwner = ((AbstractNode) arg).getOwner();
             Entry entry = topEntry;
             while (!entry.def.equalsOrExtends(argOwner)) {
@@ -1849,9 +1852,8 @@ if (definition.getName().indexOf("scene") >= 0) {
             // handle parameters which reference parameters in their containers
             if (argRef instanceof NameNode && isParam) {
                 for (int i = 0; i < numUnpushes; i++) {
-                    unpush();
+                    resolutionContext.unpush();
                 }
-                Context resolutionContext = (arg instanceof ResolvedInstance ? ((ResolvedInstance) arg).getResolutionContext() : this);
                 try {
                     argDef = argInstance.getDefinition(this);
                     data = resolutionContext.getParameterInstance((NameNode) argRef, argInstance.isParamChild, inContainer);
@@ -1866,7 +1868,7 @@ if (definition.getName().indexOf("scene") >= 0) {
                     
                 } finally {
                     for (int i = 0; i < numUnpushes; i++) {
-                        repush();
+                        resolutionContext.repush();
                     }
                 }
                 if (data != null) {
