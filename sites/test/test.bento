@@ -5342,7 +5342,14 @@ hot [=
    ho_test_3(f) [=
        f(func_1, "E");
    =]
-   ho_test_3(func_3);
+   
+   ho_test(f, b) [=
+       f(b);
+   =]
+   
+   ho_test(func_1, "B");
+   
+   //ho_test_3(func_3);
 =]
 
 

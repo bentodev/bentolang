@@ -1826,9 +1826,14 @@ if (definition.getName().indexOf("scene") >= 0) {
         int numUnpushes = 0;
         boolean pushedOwner = false;
 
-        Context resolutionContext = (arg instanceof ResolvedInstance ? ((ResolvedInstance) arg).getResolutionContext() : this);
+        if (arg instanceof ResolvedInstance) {
+            Context resolutionContext = ((ResolvedInstance) arg).getResolutionContext();
+            if (resolutionContext != this) {
+                return resolutionContext.instantiateParameter(param, arg, argName);
+            }
+        }
         
-        if (arg instanceof AbstractNode && this == resolutionContext) {
+        if (arg instanceof AbstractNode) {
             Definition argOwner = ((AbstractNode) arg).getOwner();
             Entry entry = topEntry;
             while (!entry.def.equalsOrExtends(argOwner)) {
@@ -1852,11 +1857,11 @@ if (definition.getName().indexOf("scene") >= 0) {
             // handle parameters which reference parameters in their containers
             if (argRef instanceof NameNode && isParam) {
                 for (int i = 0; i < numUnpushes; i++) {
-                    resolutionContext.unpush();
+                    unpush();
                 }
                 try {
                     argDef = argInstance.getDefinition(this);
-                    data = resolutionContext.getParameterInstance((NameNode) argRef, argInstance.isParamChild, inContainer);
+                    data = getParameterInstance((NameNode) argRef, argInstance.isParamChild, inContainer);
                     if (argDef != null) {
                         String key = argInstance.getName();
                         // too expensive for a large loop
@@ -1868,7 +1873,7 @@ if (definition.getName().indexOf("scene") >= 0) {
                     
                 } finally {
                     for (int i = 0; i < numUnpushes; i++) {
-                        resolutionContext.repush();
+                        repush();
                     }
                 }
                 if (data != null) {
