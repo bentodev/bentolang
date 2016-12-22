@@ -1826,11 +1826,12 @@ if (definition.getName().indexOf("scene") >= 0) {
         int numUnpushes = 0;
         boolean pushedOwner = false;
 
+        Context resolutionContext = this;
         if (arg instanceof ResolvedInstance) {
-            Context resolutionContext = ((ResolvedInstance) arg).getResolutionContext();
-            if (resolutionContext != this) {
-                return resolutionContext.instantiateParameter(param, arg, argName);
-            }
+            resolutionContext = ((ResolvedInstance) arg).getResolutionContext();
+            //if (resolutionContext != this) {
+            //    return resolutionContext.instantiateParameter(param, arg, argName);
+            //}
         }
         
         if (arg instanceof AbstractNode) {
@@ -1849,7 +1850,6 @@ if (definition.getName().indexOf("scene") >= 0) {
 
         if (arg instanceof Instantiation) {
             Instantiation argInstance = (Instantiation) arg;
-            boolean inContainer = argInstance.isContainerParameter(this);      
             boolean isParam = argInstance.isParameterKind();
             BentoNode argRef = argInstance.getReference();
             Definition argDef = null;
@@ -1857,23 +1857,24 @@ if (definition.getName().indexOf("scene") >= 0) {
             // handle parameters which reference parameters in their containers
             if (argRef instanceof NameNode && isParam) {
                 for (int i = 0; i < numUnpushes; i++) {
-                    unpush();
+                    resolutionContext.unpush();
                 }
                 try {
-                    argDef = argInstance.getDefinition(this);
-                    data = getParameterInstance((NameNode) argRef, argInstance.isParamChild, inContainer);
+                    argDef = argInstance.getDefinition(resolutionContext);
+                    boolean inContainer = argInstance.isContainerParameter(resolutionContext);      
+                    data = resolutionContext.getParameterInstance((NameNode) argRef, argInstance.isParamChild, inContainer);
                     if (argDef != null) {
                         String key = argInstance.getName();
                         // too expensive for a large loop
                         //if (argInstance.isForParameter()) {
                         //    key = key + addLoopModifier();
                         //}
-                        putData(argDef, argArgs, argDef, argArgs, indexes, key, data, null);
+                        resolutionContext.putData(argDef, argArgs, argDef, argArgs, indexes, key, data, null);
                     }
                     
                 } finally {
                     for (int i = 0; i < numUnpushes; i++) {
-                        repush();
+                        resolutionContext.repush();
                     }
                 }
                 if (data != null) {
