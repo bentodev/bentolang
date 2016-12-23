@@ -1857,10 +1857,10 @@ if (definition.getName().indexOf("scene") >= 0) {
             // handle parameters which reference parameters in their containers
             if (argRef instanceof NameNode && isParam) {
                 for (int i = 0; i < numUnpushes; i++) {
-                    resolutionContext.unpush();
+                    unpush();
                 }
                 try {
-                    argDef = argInstance.getDefinition(resolutionContext);
+                    argDef = argInstance.getDefinition(this);
                     boolean inContainer = argInstance.isContainerParameter(resolutionContext);      
                     data = resolutionContext.getParameterInstance((NameNode) argRef, argInstance.isParamChild, inContainer);
                     if (argDef != null) {
@@ -1869,12 +1869,12 @@ if (definition.getName().indexOf("scene") >= 0) {
                         //if (argInstance.isForParameter()) {
                         //    key = key + addLoopModifier();
                         //}
-                        resolutionContext.putData(argDef, argArgs, argDef, argArgs, indexes, key, data, null);
+                        putData(argDef, argArgs, argDef, argArgs, indexes, key, data, null);
                     }
                     
                 } finally {
                     for (int i = 0; i < numUnpushes; i++) {
-                        resolutionContext.repush();
+                        repush();
                     }
                 }
                 if (data != null) {
