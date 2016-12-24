@@ -1802,10 +1802,10 @@ if (definition.getName().indexOf("scene") >= 0) {
                     // except for the first
                     List<Index> indexes = ((NameNode) name.getChild(0)).getIndexes();
                     ComplexName childName = new ComplexName(name, 1, name.getNumChildren());
-                    data = instantiateParameterChild(childName, param, arg, indexes);
+                    data = resolutionContext.instantiateParameterChild(childName, param, arg, indexes);
         
                 } else {
-                    data = instantiateParameter(param, arg, name);
+                    data = resolutionContext.instantiateParameter(param, arg, name);
                 }
                 return data;
             
