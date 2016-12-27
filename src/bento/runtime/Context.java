@@ -882,7 +882,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().indexOf("scene") >= 0) {
+if (definition.getName().equals("set_phase")) {
  System.out.println(definition.getName() + " at ctx 886");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -1512,6 +1512,14 @@ if (definition.getName().indexOf("scene") >= 0) {
      *  in the current context.
      */
     synchronized public void putData(Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, List<Index> indexes, String name, Object data, ResolvedInstance resolvedInstance) throws Redirection {
+if ("phase".equals(name)) {
+  if (data == null) {
+     System.out.println("putData null data for " + name);
+  } else {
+     System.out.println("putData data for " + name + ": " + data.toString());
+  }
+}
+        
         if (topEntry != null && name != null && name.length() > 0) {
             int maxCacheLevels = getMaxCacheLevels(nominalDef);
             updateDynamicKeeps(name, args);

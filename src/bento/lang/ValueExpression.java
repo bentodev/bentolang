@@ -42,7 +42,7 @@ public class ValueExpression extends Expression {
                 }
             }
         }
-        return new NullValue();
+        return NullValue.NULL_VALUE;
     }
 
     public Type getType(Context context, boolean generate) {

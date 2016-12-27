@@ -62,7 +62,7 @@ abstract public class ResolvedCollection extends ResolvedInstance implements Col
         try {
             return getConstructionForElement(element, getResolutionContext());
         } catch (Redirection r) {
-            return new NullValue();
+            return NullValue.NULL_VALUE;
         }
     }
     

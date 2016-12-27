@@ -48,7 +48,7 @@ public class InOperator extends BinaryOperator {
             
             if (list != null) {
                 Iterator<Object> it = (Iterator<Object>) list.iterator();
-                while (it.hasNext()) {
+                while (it.hasNext() && !isIn) {
                     Object element = it.next();
                     if (element.equals(memberObj)) {
                         isIn = true;

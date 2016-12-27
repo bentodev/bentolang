@@ -84,7 +84,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
     
     public static Construction getConstructionForObject(Object obj) {
         if (obj == null) {
-            return new NullValue();
+            return NullValue.NULL_VALUE;
         } else if (obj instanceof Construction) {
             return (Construction) obj;
         } else if (obj instanceof Holder) {
@@ -103,7 +103,7 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
 
     public static Construction getConstructionForElement(Object element, Context context) throws Redirection {
         if (element == null) {
-            return new NullValue();
+            return NullValue.NULL_VALUE;
         } else if (element instanceof Construction) {
             return (Construction) element;
         } else if (element instanceof Holder) {

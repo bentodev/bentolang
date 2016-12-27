@@ -5,17 +5,17 @@ import bento.lang.NullValue;
 
 public class IncompleteDefinitionVisitor extends BentoCompilerVisitor {
 
-	boolean foundIncompleteDefinition = false;
+    boolean foundIncompleteDefinition = false;
 
-	public void visit( AbstractNode target ) {
-		if ( target instanceof NullValue ) {
-			NullValue nvTarget = (NullValue)target;
-			foundIncompleteDefinition = nvTarget.isAbstract(null);
-		}
-	}
-	
-	public boolean isIncomplete() {
-		return foundIncompleteDefinition;
-	}
+    public void visit( AbstractNode target ) {
+        if ( target instanceof NullValue ) {
+            NullValue nvTarget = (NullValue)target;
+            foundIncompleteDefinition = nvTarget.isAbstract(null);
+        }
+    }
+    
+    public boolean isIncomplete() {
+        return foundIncompleteDefinition;
+    }
 
 }
