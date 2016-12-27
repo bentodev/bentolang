@@ -882,7 +882,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("set_phase")) {
+if (definition.getName().equals("phase")) {
  System.out.println(definition.getName() + " at ctx 886");    
 }
             // get the arguments and parameters, if any, to push on the
@@ -2735,7 +2735,12 @@ if ("phase".equals(name)) {
                             if (generate && holder.data != null && holder.data instanceof BentoObjectWrapper) {
                                 BentoObjectWrapper obj = (BentoObjectWrapper) holder.data;
                                 if (numNameParts == 1) {
-                                    return obj.getChildData(resolveArgsIndexes(childName));
+                                    try {
+                                        unpush();
+                                        return obj.getChildData(resolveArgsIndexes(childName));
+                                    } finally {
+                                        repush();
+                                    }
                                 }
                                 //} else {
 

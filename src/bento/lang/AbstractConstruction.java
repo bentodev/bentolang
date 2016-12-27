@@ -390,13 +390,13 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
 
             } else {
                 Definition defInCache = null;
-                Definition nominalDefInCache = null;
+                //Definition nominalDefInCache = null;
                 String name = getDefinitionName();
                 ArgumentList args = getArguments();
 
-if ("game.set_phase".equals(name) || "game.get_phase".equals(name)) {
- System.out.println(name + " at AbsCon 398");    
-}
+//if ("game.set_phase".equals(name) || "game.get_phase".equals(name)) {
+// System.out.println(name + " at AbsCon 398");
+//}
                 
                 String defName = name;
                 ArgumentList defArgs = args;
@@ -414,7 +414,7 @@ if ("game.set_phase".equals(name) || "game.get_phase".equals(name)) {
                     holder = context.getDefHolder(name, null, getArguments(), getIndexes(), false);
                     if (holder != null && holder.def != null) {
                         defInCache = holder.def;
-                        nominalDefInCache = holder.nominalDef;
+                        //nominalDefInCache = holder.nominalDef;
                     }
                 }
 
@@ -436,10 +436,10 @@ if ("game.set_phase".equals(name) || "game.get_phase".equals(name)) {
                         holder = context.getDefHolder(name, null, getArguments(), getIndexes(), false);
                         if (holder != null) {
                             defInCache = holder.def;
-                            nominalDefInCache = holder.nominalDef;
+                            //nominalDefInCache = holder.nominalDef;
                         }
                     }
-                    Definition ultimateDef = (cacheInfo.def != null ? cacheInfo.def.getUltimateDefinition(context) : null);
+                    //Definition ultimateDef = (cacheInfo.def != null ? cacheInfo.def.getUltimateDefinition(context) : null);
                     if (holder != null && holder.data != null) {
 
                         // if this is the child of a cached object, get the data from the
