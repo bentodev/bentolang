@@ -1802,7 +1802,7 @@ if ("phase".equals(name)) {
                     unpush();
                 }
 
-                Context resolutionContext = (arg instanceof ResolvedInstance ? ((ResolvedInstance) arg).getResolutionContext() : this);
+                Context resolutionContext = this; //(arg instanceof ResolvedInstance ? ((ResolvedInstance) arg).getResolutionContext() : this);
                 
                 if (checkForChild) {
                     // the child consists of everything past the first dot, which is the
