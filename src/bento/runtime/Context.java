@@ -882,8 +882,8 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("phase")) {
- System.out.println(definition.getName() + " at ctx 886");    
+if (definition.getName().equals("name") && definition.getOwner().getName().equals("pent_player")) {
+ System.out.println(definition.getName() + " at ctx 886, owner: " + definition.getOwner().getName());    
 }
             // get the arguments and parameters, if any, to push on the
             // context stack with the definition
@@ -1512,14 +1512,6 @@ if (definition.getName().equals("phase")) {
      *  in the current context.
      */
     synchronized public void putData(Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, List<Index> indexes, String name, Object data, ResolvedInstance resolvedInstance) throws Redirection {
-if ("phase".equals(name)) {
-  if (data == null) {
-     System.out.println("putData null data for " + name);
-  } else {
-     System.out.println("putData data for " + name + ": " + data.toString());
-  }
-}
-        
         if (topEntry != null && name != null && name.length() > 0) {
             int maxCacheLevels = getMaxCacheLevels(nominalDef);
             updateDynamicKeeps(name, args);
