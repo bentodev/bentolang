@@ -108,8 +108,17 @@ if (def.getName().equals("new_game")) {
     }
 
     public Object getChildData(NameNode name) {
+        Definition parentDef = def;
+        ArgumentList args = getArguments();
+        int n = name.numParts();
         try {
-            return def.getChildData(name, null, context, getArguments());
+            
+            if (n == 0) {
+                return parentDef.getChildData(name, null, context, args);
+            } else {
+                return parentDef.getChild(name, name.getArguments(), name.getIndexes(), args, context, true, true, this, null);
+            }
+
         } catch (Redirection r) {
             return null;
         }
