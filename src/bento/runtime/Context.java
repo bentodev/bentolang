@@ -2733,16 +2733,11 @@ if (definition.getName().equals("name") && definition.getOwner().getName().equal
                                     } finally {
                                         repush();
                                     }
+                                } else {
+                                    Definition objDef = obj.getDefinition();
+                                    Context resolutionContext = obj.getResolutionContext();
+                                    return resolutionContext.getDescendant(objDef, childArgs, name, generate, obj);
                                 }
-                                //} else {
-
-                                //    return obj.getChildData(resolveArgsIndexes(name));
-                                //}
-                                
-                                //    Definition objDef = obj.getDefinition();
-                                //    Context resolutionContext = obj.getResolutionContext();
-                                //    return resolutionContext.getDescendant(objDef, childArgs, name, generate, obj);
-                                //}
                             }
                         }
                     }
