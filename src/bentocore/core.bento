@@ -971,6 +971,14 @@ core [=
             log("test_log: " + msg);
         =]
 
+        /** a test can log an error message at any point **/
+        dynamic error_log(msg) [=
+            err_msg = "<span style='color:red'>" + msg + "</span>"
+            eval(logged_messages(: logged_messages + err_msg :));
+            log("error_log: " + msg);
+        =]
+
+
         sub;    
     =] 
 
