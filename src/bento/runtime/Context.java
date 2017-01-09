@@ -2465,6 +2465,7 @@ if (definition.getName().equals("name") && definition.getOwner().getName().equal
     
     
     public int pushSupersAndAliases(Definition def, ArgumentList args, Definition childDef) throws Redirection {
+        validateSize();
         // track back through superdefinitions and aliases to push intermediate definitions
         if (childDef != null  /* && !isSpecialDefinition(childDef) */ ) {
 
@@ -5024,7 +5025,7 @@ if (unpushedEntries == null) {
         public void put(String key, Definition nominalDef, ArgumentList nominalArgs, Definition def, ArgumentList args, Context context, Object data, ResolvedInstance resolvedInstance, int maxLevels) {
             Holder holder = new Holder(nominalDef, nominalArgs, def, args, context, data, resolvedInstance);
 if (key.equals("pent_player")) {
- System.out.println("put " + key + " at ctx 5019");    
+ System.out.println("put " + key + " at ctx 5027");    
 }
             
             put(key, holder, context, maxLevels);

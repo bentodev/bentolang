@@ -11,6 +11,7 @@
 package bento.runtime;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import bento.lang.*;
 
@@ -21,6 +22,8 @@ import bento.lang.*;
 
 public class BentoObjectWrapper {
 
+    public static ArrayList contextList = new ArrayList();
+    
     Construction construction;
     Context context;
     Type type;
@@ -49,14 +52,14 @@ public class BentoObjectWrapper {
      */
     public BentoObjectWrapper(Definition def, ArgumentList args, List<Index> indexes, Context context) throws Redirection {
         def = def.getSubdefInContext(context);
-if (def.getName().equals("new_game")) {
- System.out.println(def.getName() + " at BOW 53");    
-}
         ResolvedInstance ri = new ResolvedInstance(def, context, args, indexes);
         construction = ri;
         
         Context resolutionContext = ri.getResolutionContext();
+
         this.context = (resolutionContext == context ? context.clone(false) : resolutionContext);
+        this.context.validateSize();
+        contextList.add(this.context);
         
         this.def = def;
         type = def.getType();
@@ -87,6 +90,7 @@ if (def.getName().equals("new_game")) {
     }
     
     public Object getData() throws Redirection {
+        context.validateSize();
         return construction.getData(context);
     }
 
@@ -100,6 +104,7 @@ if (def.getName().equals("new_game")) {
     }
 
     public Object getChildData(NameNode name, Type type, ArgumentList args) {
+        context.validateSize();
         try {
             return def.getChildData(name, type, context, args);
         } catch (Redirection r) {
@@ -108,6 +113,7 @@ if (def.getName().equals("new_game")) {
     }
 
     public Object getChildData(NameNode name) {
+        context.validateSize();
         Definition parentDef = def;
         ArgumentList args = getArguments();
         int n = name.numParts();

@@ -20,7 +20,7 @@ import java.util.Map;
 import bento.parser.ParsedStringLiteral;
 import bento.runtime.Context;
 import bento.runtime.Logger;
-
+import bento.runtime.BentoObjectWrapper;
 /**
  * AnonymousDefinition is a definition without a name or type.  It is also the
  * base class of more complex definition types.
