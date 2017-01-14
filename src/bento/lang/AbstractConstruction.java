@@ -2,7 +2,7 @@
  *
  * $Id: AbstractConstruction.java,v 1.130 2015/06/18 13:18:08 sthippo Exp $
  *
- * Copyright (c) 2002-2016 by bentodev.org
+ * Copyright (c) 2002-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -95,7 +95,6 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                 def = new AliasedDefinition((NamedDefinition) def, def.getNameNode());
             }
             return new PrimitiveValue(def);
-            //return new Instantiation(def);
         } else {    
             return new PrimitiveValue(obj);
         }
@@ -306,14 +305,12 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
     public Construction getUltimateConstruction(Context context) {
         return this;
     }
-    
-    
+
     /** Returns the list of constructions owned by this container. */
     public List<Construction> getConstructions(Context context) {
         return new EmptyList<Construction>();
     }
 
-    
     /** Returns true if this chunk is abstract, i.e., if it cannot be 
      *  instantiated because to do so would require instantiating an abstract
      *  definition.
@@ -393,11 +390,6 @@ abstract public class AbstractConstruction extends AbstractNode implements Const
                 //Definition nominalDefInCache = null;
                 String name = getDefinitionName();
                 ArgumentList args = getArguments();
-
-//if ("game.set_phase".equals(name) || "game.get_phase".equals(name)) {
-// System.out.println(name + " at AbsCon 398");
-//}
-                
                 String defName = name;
                 ArgumentList defArgs = args;
                 if (isParameterChild()) {

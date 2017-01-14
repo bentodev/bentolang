@@ -2,7 +2,7 @@
  *
  * $Id: AnonymousDefinition.java,v 1.135 2015/07/13 13:10:44 sthippo Exp $
  *
- * Copyright (c) 2002-2016 by bentodev.org
+ * Copyright (c) 2002-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html

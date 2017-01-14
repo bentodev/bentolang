@@ -2,7 +2,7 @@
  *
  * $Id: CollectionDefinition.java,v 1.90 2015/06/18 13:18:09 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -10,7 +10,6 @@
 
 package bento.lang;
 
-import bento.runtime.BentoObjectWrapper;
 import bento.runtime.Context;
 import bento.runtime.Holder;
 
@@ -321,21 +320,14 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
                         }
                     }
                 }
-
-            // array defined with an instantiation
-          //  } else if (contents instanceof Instantiation) {
-          //      dynamic = true;
             }
         }
         return dynamic;
     }
 
-
-    
     public boolean isGrowable() {
         return (majorDimType != Dim.TYPE.DEFINITE);
     }
-
 
     public Object getObjectForElement(Object element) {
         if (element instanceof ElementDefinition) {
@@ -523,6 +515,3 @@ public class CollectionDefinition extends ComplexDefinition /* implements Dynami
         return sb.toString();
     }
 }
-
-
-

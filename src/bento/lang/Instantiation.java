@@ -2,7 +2,7 @@
  *
  * $Id: Instantiation.java,v 1.272 2015/06/16 14:46:12 sthippo Exp $
  *
- * Copyright (c) 2002-2016 by bentodev.org
+ * Copyright (c) 2002-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html

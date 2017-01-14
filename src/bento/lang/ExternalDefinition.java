@@ -2,7 +2,7 @@
  *
  * $Id: ExternalDefinition.java,v 1.163 2015/06/09 13:15:28 sthippo Exp $
  *
- * Copyright (c) 2002-2016 by bentodev.org
+ * Copyright (c) 2002-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html

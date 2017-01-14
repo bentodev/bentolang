@@ -2,7 +2,7 @@
  *
  * $Id: ValueExpression.java,v 1.8 2015/06/18 13:18:09 sthippo Exp $
  *
- * Copyright (c) 2002-2016 by bentodev.org
+ * Copyright (c) 2002-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html

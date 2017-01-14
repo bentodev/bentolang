@@ -2,7 +2,7 @@
  *
  * $Id: AliasedDefinition.java,v 1.15 2015/04/22 13:03:43 sthippo Exp $
  *
- * Copyright (c) 2008-2015 by bentodev.org
+ * Copyright (c) 2008-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html

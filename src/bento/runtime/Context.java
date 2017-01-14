@@ -2,7 +2,7 @@
  *
  * $Id: Context.java,v 1.421 2015/07/13 20:04:24 sthippo Exp $
  *
- * Copyright (c) 2002-2016 by bentodev.org
+ * Copyright (c) 2002-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -2422,44 +2422,48 @@ if (definition.getName().equals("name") && definition.getOwner().getName().equal
         int numPushes = 0;
         Definition contextDef = def;
         
-        // get the link from the top entry before we do all the pushing
-        Entry nextLink = topEntry.link;
+        // remember the current top entry before we do all the pushing
+        Entry oldTop = topEntry;
         
         while (superDef != null) {
-            Type st = def.getSuper(this); 
-            ArgumentList args = st.getArguments(this);
-            ParameterList params = superDef.getParamsForArgs(args, this);
-            Entry entry = newEntry(contextDef, superDef, params, args);
-            push(entry);
-            numPushes++;
+            Type st = def.getSuper(this);
+            //if (superDef != topEntry.superdef) {
+                ArgumentList args = st.getArguments(this);
+                ParameterList params = superDef.getParamsForArgs(args, this);
+                Entry entry = newEntry(contextDef, superDef, params, args);
+                push(entry);
+                numPushes++;
+            //}
             def = superDef;
             superDef = def.getSuperDefinition(this);
         }
         
-        // get the top entery after all the pushing (not the same as before)
-        Entry top = topEntry;
+        if (numPushes > 0) {
+            Entry top = topEntry;
+            Entry nextLink = oldTop;
 
-        for (int i = 0; i < numPushes; i++) {
-            // now reverse the order of the top numPushes entries
-            Entry nextTop = top.link;
+            for (int i = 0; i < numPushes - 1; i++) {
+                // now reverse the order of the just pushed entries
+                Entry nextTop = top.link;
+                top.link = nextLink;
+                nextLink = top;
+                top = nextTop;
+            }
+            
             top.link = nextLink;
-            nextLink = top;
-            top = nextTop;
+            topEntry = top;
+            push(newEntry(oldTop, true));
+            numPushes++;
+            validateSize();
         }
-        
-        top.link = nextLink;
-        topEntry = top; 
-
-        validateSize();
+        // get the top entry after all the pushing (not the same as before)
         return numPushes;
     }
     
     private void unpushSupers(int numPushes) {
-        unpush();
         for (int i = 0; i < numPushes; i++) {
             pop();
         }
-        repush();
         validateSize();
     }
     

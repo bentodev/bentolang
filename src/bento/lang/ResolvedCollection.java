@@ -2,7 +2,7 @@
  *
  * $Id: ResolvedCollection.java,v 1.16 2015/03/02 14:14:25 sthippo Exp $
  *
- * Copyright (c) 2004-2015 by bentodev.org
+ * Copyright (c) 2004-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html

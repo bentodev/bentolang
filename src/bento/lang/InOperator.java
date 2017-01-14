@@ -2,7 +2,7 @@
  *
  * $Id: InOperator.java,v 1.1 2009/04/06 13:16:46 sthippo Exp $
  *
- * Copyright (c) 2009-2016 by bentodev.org
+ * Copyright (c) 2009-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
