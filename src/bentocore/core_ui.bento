@@ -586,7 +586,7 @@ core [=
                                               (name, value, onchange_script) [|
         <input type="text" id="[= (id ? id : name); =]" class="[= owner.type; =]" name="[= name; =]" value="[= value; =]" [=
             with (size) [| size="[= size; =]" |] with (maxlength) [/ maxlength="[= maxlength; =]" |]
-        =] onchange="[= onchange_script; =]" oninput="[= onchange_script; =]">
+        =] onchange='[= onchange_script; =]' oninput='[= onchange_script; =]'>
     |]
 
 
