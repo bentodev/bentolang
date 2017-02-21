@@ -2,7 +2,7 @@
  *
  * ResolvedArray.java
  *
- * Copyright (c) 2015-2016 by bentodev.org
+ * Copyright (c) 2015-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -73,8 +73,14 @@ class ResolvedArray extends ResolvedCollection {
      *  of an unexpected type, a ClassCastException is thrown.
      */
     private static BentoArray createArray(Definition def, Context context, ArgumentList args) throws Redirection {
-        ParameterList params = def.getParamsForArgs(args, context);
-        context.push(def, params, args, false);
+        boolean pushed = false;
+        Context.Entry entry = context.peek();
+        
+        if (!def.equals(entry.def) || (args != null && !args.equals(entry.args))) {
+            ParameterList params = def.getParamsForArgs(args, context);
+            context.push(def, params, args, false);
+            pushed = true;
+        }
         try {
             CollectionDefinition collectionDef = def.getCollectionDefinition(context, args);
             if (collectionDef == null) {
@@ -135,7 +141,9 @@ class ResolvedArray extends ResolvedCollection {
 
             return array;
         } finally {
-            context.pop();
+            if (pushed) {
+                context.pop();
+            }
         }
     }
 

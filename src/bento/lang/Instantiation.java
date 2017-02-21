@@ -1257,40 +1257,50 @@ public class Instantiation extends AbstractConstruction implements ValueGenerato
             NamedDefinition container = (NamedDefinition) owner.getOwner();
     
             // if the container is at the site level, we handle it a little differently
-            while (container != null  && !(container instanceof Site)) {
-                Iterator<Context.Entry> it = context.iterator();
-                while (it.hasNext()) {
-                    Context.Entry entry = (Context.Entry) it.next();
-                    if (!(entry.def instanceof NamedDefinition)) {
-                        continue;
+            int numUnpushes = 0;
+            int limit = context.size() - 1;
+            try {
+                while (numUnpushes < limit && container != null  && !(container instanceof Site)) {
+                    Iterator<Context.Entry> it = context.iterator();
+                    while (it.hasNext()) {
+                        Context.Entry entry = (Context.Entry) it.next();
+                        if (!(entry.def instanceof NamedDefinition)) {
+                            continue;
+                        }
+                        
+                        NamedDefinition ndef = (NamedDefinition) entry.def;
+                        
+                        if (ndef.equals(owner) || owner.isSubDefinition(ndef)) {
+                            continue;    
+    
+                        } else if (ndef.equals(container) || container.isSubDefinition(ndef)) {
+                            if (ndef.isAlias()) {
+                                Instantiation aliasInstance = ndef.getAliasInstance();
+                                ndef = (NamedDefinition) aliasInstance.getDefinition(context);
+                            } else if (ndef.isIdentity()) {
+                                Holder holder = entry.getDefHolder(ndef.getName(), ndef.getFullName(), null, false);
+                                if (holder != null && holder.def != null) {
+                                    ndef = (NamedDefinition) holder.def;
+                                }
+                            }
+                            container = ndef;
+                            break;
+                        }
                     }
                     
-                    NamedDefinition ndef = (NamedDefinition) entry.def;
-                    
-                    if (ndef.equals(owner) || owner.isSubDefinition(ndef)) {
-                        continue;    
-
-                    } else if (ndef.equals(container) || container.isSubDefinition(ndef)) {
-                        if (ndef.isAlias()) {
-                            Instantiation aliasInstance = ndef.getAliasInstance();
-                            ndef = (NamedDefinition) aliasInstance.getDefinition(context);
-                        } else if (ndef.isIdentity()) {
-                            Holder holder = entry.getDefHolder(ndef.getName(), ndef.getFullName(), null, false);
-                            if (holder != null && holder.def != null) {
-                                ndef = (NamedDefinition) holder.def;
-                            }
-                        }
-                        container = ndef;
+                    def = container.getChildDefinition(name, context);
+                    if (def != null) {
                         break;
                     }
+                    context.unpush();
+                    numUnpushes++;
+                    //container = ComplexDefinition.getComplexOwner(container.getOwner());
+                    container = (NamedDefinition) container.getOwnerInContext(context);
                 }
-                
-                def = container.getChildDefinition(name, context);
-                if (def != null) {
-                    break;
+            } finally {
+                while (numUnpushes-- > 0) {
+                    context.repush();
                 }
-                //container = ComplexDefinition.getComplexOwner(container.getOwner());
-                container = (NamedDefinition) container.getOwnerInContext(context);
             }
             
             if (def == null && container instanceof Site) {
