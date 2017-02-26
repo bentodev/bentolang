@@ -1143,9 +1143,14 @@ public class NamedDefinition extends AnonymousDefinition {
             int n = node.getNumChildren();
             node = new ComplexName(node, 1, n);
             // if there's another owner prefix, forward to the owner
-            if (node.getName() == Name.OWNER || (node.isComplex() && ((Name) node.getChild(0)).getName() == Name.OWNER)) {
-                return getOwner().getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
+            //if (node.getName() == Name.OWNER || (node.isComplex() && ((Name) node.getChild(0)).getName() == Name.OWNER)) {
+            try {
+                context.unpush();
+                return getOwnerInContext(context).getChild(node, args, indexes, parentArgs, context, generate, trySuper, parentObj, resolver);
+            } finally {
+                context.repush();
             }
+            //}
         }
 
         // Check for complex names includinga built-in field such as <code>count</code>
