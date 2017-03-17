@@ -654,8 +654,8 @@ core [=
 
         [| <input type='button' name='[= name; =]' value='[= value; =]' id='[= name; =]_button' class=''[= owner.type; =]' onclick=' |]
 
-        with (req_component) [| queryComponentByName("[= element_id; =]", "[= req_component.name; =]", [= params; =])'/> |]
-        else                 [| queryComponentByName("[= element_id; =]", "[= req_id; =]", [= params; =])'/> |]
+        with (req_component) [| queryComponentByName("[= element_id; =]", "[= req_component.name; =]", [= params; =], null)'/> |]
+        else                 [| queryComponentByName("[= element_id; =]", "[= req_id; =]", [= params; =], null)'/> |]
     =]
 
 
