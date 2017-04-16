@@ -3,11 +3,14 @@
  --                                                                         --
  --  Core JavaScript definitions for Bento.                                 --
  --                                                                         --
- --  Copyright (c) 2006-2014 by bentodev.org.  All rights reserved.         --
+ --  Copyright (c) 2006-2017 by bentodev.org.  All rights reserved.         --
  --                                                                         --
  -----------------------------------------------------------------------------/
 
 core [=
+
+    /** base class for definitions that instantiate javascript. **/
+    javascript [/]
 
     dynamic core_scripts(boolean{} options, find_element_function, page_name) [=
 
@@ -50,7 +53,7 @@ core [=
     =]
 
     /** Base class for cross-browser functions to handle events. **/
-    event_handler [|
+    javascript event_handler [|
         function [= type; =](e) {
             if (!e) {
                e = window.event;
@@ -62,7 +65,7 @@ core [=
     |]
     
     /** Inspired by Scott Andrew's code at http://www.scottandrew.com/weblog/articles/cbs-events **/
-    add_handler(event_type, event_handler eh) [|
+    javascript add_handler(event_type, event_handler eh) [|
         [=/** W3C support **/=]
         if (document.addEventListener) {
             document.addEventListener([= event_type; =], [= eh.type; =], false);
@@ -87,7 +90,7 @@ core [=
         }
     |]                    
 
-    init_draggable [=
+    javascript init_draggable [=
         for d in site.descendants_of_type("draggable") [=
             if (d.id) [|
                 draggable["[= d.id; =]"] = true;
@@ -95,7 +98,7 @@ core [=
         =]
     =]
 
-    init_selectable [= 
+    javascript init_selectable [= 
         [| var selectableElement; |]
         for s in site.descendants_of_type("selectable") [=
             if (s.id) [|
@@ -110,7 +113,7 @@ core [=
         [| selectable.length = topz; |]
     =]
     
-    drag_script [|
+    javascript drag_script [|
         var eventModel;
         var selectedElement;
         var dragElement;
@@ -324,7 +327,7 @@ core [=
         window.onload = pageLoad;
     |]
 
-    ajax_script(page_name, find_element_function, boolean use_wait_cursor) [|
+    javascript ajax_script(page_name, find_element_function, boolean use_wait_cursor) [|
     
         [= find_element_function; =]
         
@@ -632,7 +635,7 @@ core [=
          }
     |]
 
-    graphics_script [|
+    javascript graphics_script [|
         function getWindowHeight() {
             var windowHeight = 0;
             if (typeof(window.innerHeight) == 'number') {
