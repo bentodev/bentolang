@@ -2,7 +2,7 @@
  *
  * $Id: PrimitiveValue.java,v 1.38 2015/07/04 17:41:13 sthippo Exp $
  *
- * Copyright (c) 2002-2016 by bentodev.org
+ * Copyright (c) 2002-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -251,6 +251,9 @@ public class PrimitiveValue extends AbstractNode implements Construction, Value 
             return ((Character) value).charValue();
         } else {
             String str = getStringFor(value);
+            if (str == null || str.length() == 0) {
+                return 0;
+            }
             if (str.charAt(0) == '#') {
                 return hexValueOf(str.substring(1));
             }
