@@ -2,7 +2,7 @@
  *
  * $Id: BentoServer.java,v 1.83 2015/07/13 20:04:24 sthippo Exp $
  *
- * Copyright (c) 2004-2016 bentodev.org
+ * Copyright (c) 2004-2017 bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -1088,11 +1088,20 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
             String location = r.getLocation();
             String message = r.getMessage();
             if (location != null) {
-                if (message != null) {
-                    location = location + "?message=" + message; 
+                if (isStatusCode(location)) {
+                    int status = Integer.parseInt(location);
+                    if (message != null) {
+                        response.sendError(status, message);
+                    } else {
+                        response.sendError(status);
+                    }
+                } else {
+                    if (message != null) {
+                        location = location + "?message=" + message; 
+                    }
+                    String newLocation = response.encodeRedirectURL(location);
+                    response.sendRedirect(newLocation);
                 }
-                String newLocation = response.encodeRedirectURL(location);
-                response.sendRedirect(newLocation);
                 result = true;
             }
         }
@@ -1247,7 +1256,29 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         }
         return str;
     }
-    
+
+    private static boolean isStatusCode(String str) {
+        if (str == null) {
+            return false;
+        }
+        int length = str.length();
+        if (length != 3) {
+            return false;
+        }
+        char c = str.charAt(0);
+        if (c < '1' || c > '5') {
+            return false;
+        }
+        c = str.charAt(1);
+        if (c < '0' || c > '9') {
+            return false;
+        }
+        c = str.charAt(2);
+        if (c < '0' || c > '9') {
+            return false;
+        }
+        return true;
+    }
     
 
     /** Class to provide Java access to Bento site_config object. **/

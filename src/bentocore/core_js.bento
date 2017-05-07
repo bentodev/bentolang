@@ -535,27 +535,27 @@ core [=
         function getComponentResponder(req, id, successFunction, successParam) {
             [= if (use_wait_cursor) [| document.body.style.cursor = 'wait'; |] =]
             return function() {
-                var element = findElement(id);
-                if (element && element !== undefined) {
-                    if (req.readyState == 4) {
-                        if (req.status == 200) {
-                            var responseText = req.responseText.trim();
-                            if (responseText.length > 9 && responseText.substring(0, 9) === "<!DOCTYPE") {
-                                document.open("text/html", "replace");
-                                document.write(responseText);
-                                document.close();
-                                
-                            } else {
+                var element;
+                if (req.readyState == 4) {
+                    if (req.status == 200) {
+                        var responseText = req.responseText.trim();
+                        if (responseText.length > 9 && responseText.substring(0, 9) === "<!DOCTYPE") {
+                            document.open("text/html", "replace");
+                            document.write(responseText);
+                            document.close();
+                        } else {
+                            element = findElement(id);
+                            if (element && element !== undefined) {
                                 replaceElement(element, responseText);
                             }
                             if (successFunction && successFunction !== undefined) {
                                 successFunction(successParam);
                             }
-                        } else {
-                            console.log("Error " + req.status + ": " + req.statusText);
                         }
-                        [= if (use_wait_cursor) [| document.body.style.cursor = 'default'; |] =]
+                    } else {
+                        console.log("Error " + req.status + ": " + req.statusText);
                     }
+                    [= if (use_wait_cursor) [| document.body.style.cursor = 'default'; |] =]
                 }
             }
         }
