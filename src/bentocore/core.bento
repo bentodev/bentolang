@@ -1020,7 +1020,25 @@ core [=
 
     
 
-    /--------------- standard error pages --------------/
+    /--------------- error handling --------------/
+
+    /**
+     * Base class for errors.
+     */
+    
+    error(int stat, msg, bento_context ctx),
+         (int stat, msg),
+         (msg, bento_context ctx),
+         (msg) [=
+         
+        int status = stat ?? stat : 200
+        message = msg
+        context = ctx
+        
+        this;
+    =]
+         
+
 
     /**
      *  Standard error page.
