@@ -2,7 +2,7 @@
  *
  * $Id: Redirection.java,v 1.13 2014/12/15 14:10:26 sthippo Exp $
  *
- * Copyright (c) 2002-2015 by bentodev.org
+ * Copyright (c) 2002-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -24,6 +24,7 @@ public class Redirection extends Throwable {
     public static final String STANDARD_ERROR_PAGE = "/error_page";
     public static final String STANDARD_ERROR_DIV = "/$error_div";
 
+    private int status = 307;  // 307 == temporary redirect
     private String location;
     private String message;
     private ResolvedInstance instance;
@@ -49,6 +50,18 @@ public class Redirection extends Throwable {
         this.location = location;
         this.message = message;
         bento.runtime.SiteBuilder.vlog("Creating redirection to location: " + location + " with message: " + message);
+    }
+
+    public Redirection(int status, String location, String message) {
+        super(message);
+        this.status = status;
+        this.location = location;
+        this.message = message;
+        bento.runtime.SiteBuilder.vlog("Creating redirection to location: " + location + " with message: " + message + " and status: " + status);
+    }
+
+    public int getStatus() {
+        return status;
     }
 
     public String getLocation() {

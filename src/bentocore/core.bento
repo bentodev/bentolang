@@ -522,7 +522,9 @@ core [=
         int max_inactive = -1
     =]
 
-    response [/]
+    response [=
+        int status = 200
+    =]
     
     response server_response [=
     
@@ -1044,17 +1046,20 @@ core [=
      *  Standard error page.
      */
 
-    page error_page(request r) [=
+    page error_page(request r),(error err) [=
         title = [| Error |]
         color bgcolor = "#EEDDAA"
+
+        int status = err ?? err.status : 500
 
         error_div(r);        
     =]    
     
-    component error_div(request r) [=
+    component error_div(request r),(error err) [=
         
         error_message [=
-            if (r.params{"message"}) [= r.params{"message"}; =]
+            with (err) [= err.message; =]
+            else if (r.params{"message"}) [= r.params{"message"}; =]
             else if (r.query) [= trim_leading(r.query, "message="); =]
             else [/]     
        =]

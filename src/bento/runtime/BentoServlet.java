@@ -135,7 +135,7 @@ public class BentoServlet extends BentoServer {
             } else { // file is a directory
 
                 if (site != null && exception == null) {
-                    if (respond(site, request, response, servletContext)) {
+                    if (respond(site, request, response, servletContext) < 400) {
                         return;
                     }
                 }
@@ -158,7 +158,7 @@ public class BentoServlet extends BentoServer {
 
             // try site first
             if (site != null && exception == null) {
-                if (respond(site, request, response, servletContext)) {
+                if (respond(site, request, response, servletContext) < 400) {
                     return;
                 }
                 // site doesn't have the page; look for a file

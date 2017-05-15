@@ -40,6 +40,16 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
 
     public static final String REQUEST_STATE_ATTRIBUTE = "bento_request_state";
 
+    /** Status codes **/
+    
+    public static final int OK = 200;
+    public static final int NO_CONTENT = 204;
+    public static final int BAD_REQUEST = 400;
+    public static final int NOT_FOUND = 404;
+    public static final int SERVER_ERROR = 500;
+    public static final int TIMEOUT = 504;
+    
+    
     /** This enum signifies the stage in the lifecycle of the request 
      *  containing it.
      */
@@ -877,8 +887,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
 
         try {
             PrintWriter writer = new PrintWriter(serialDataWriter);
-            boolean result = respond(site, requestName, request, session, writer);
-            // not sure if we care about result
+            respond(site, requestName, request, session, writer);
             
         } catch (Exception e) {
             throw new Redirection(Redirection.STANDARD_ERROR, "Exception getting " + requestName + ": " + e.toString());
@@ -950,7 +959,10 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                 try {
                     String qstring = (request.getQueryString() == null ? "" : "?" + request.getQueryString());
                     log("Request: " + request.getRequestURI() + qstring);
-                    respond(site, request, response, servletContext);
+                    int status = respond(site, request, response, servletContext);
+                    if (status >= 400) {
+                        response.sendError(status);
+                    }
                     RequestState state = (RequestState) request.getAttribute(REQUEST_STATE_ATTRIBUTE);
                     if (state == null) {
                         slog("Request state is null");
@@ -1065,7 +1077,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         return site.canRespond(pageName);
     }
 
-    public boolean respond(BentoSite site, HttpServletRequest httpRequest, HttpServletResponse response, ServletContext servletContext) throws IOException {
+    public int respond(BentoSite site, HttpServletRequest httpRequest, HttpServletResponse response, ServletContext servletContext) throws IOException {
         // contexts are stored under a name that is not a legal name
         // in Bento, so that it won't collide with cached Bento values.
         String pageName = getPageName(site, httpRequest);
@@ -1081,15 +1093,18 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         }
         response.setContentType(mimeType);
 
-        boolean result = false;
+        int status = 0;
         try {
-            result = respond(site, pageName, request, session, response.getWriter());
+            status = respond(site, pageName, request, session, response.getWriter());
         } catch (Redirection r) {
+            status = r.getStatus();
             String location = r.getLocation();
             String message = r.getMessage();
             if (location != null) {
                 if (isStatusCode(location)) {
-                    int status = Integer.parseInt(location);
+                    status = Integer.parseInt(location);
+                }
+                if (status >= 400) {
                     if (message != null) {
                         response.sendError(status, message);
                     } else {
@@ -1102,16 +1117,15 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                     String newLocation = response.encodeRedirectURL(location);
                     response.sendRedirect(newLocation);
                 }
-                result = true;
             }
         }
 
         handlePendingServerRunners();
         
-        return result;
+        return status;
     }
 
-    public boolean respond(BentoSite site, String name, Request request, Session session, PrintWriter writer) throws IOException, Redirection {
+    public int respond(BentoSite site, String name, Request request, Session session, PrintWriter writer) throws IOException, Redirection {
         
         Construction bentoRequest = createRequestArg(site, request);
         Construction bentoSession = createSessionArg(site, request.getSession());
@@ -1140,11 +1154,17 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
             context = bentoContext.getContext();
         }
         
-        boolean result = false;
+        int status = 0;
         try {
             synchronized (context) {
-                result = site.respond(name, requestParams, bentoRequest, bentoSession, context, writer);
+                status = site.respond(name, requestParams, bentoRequest, bentoSession, context, writer);
             }
+
+        } catch (Redirection r) {
+            status = r.getStatus();
+
+        } catch (Exception e) {
+            status = BentoServer.SERVER_ERROR;
 
         } finally {
             synchronized (bentoContext) {
@@ -1152,21 +1172,22 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
             }
         }
 
-        return result;
+        return status;
     }
     
     /** Respond to a service request from another BentoServer **/
-    public boolean respond(Context context, String requestName, Map<String, String> params, PrintWriter writer) {
+    public int respond(Context context, String requestName, Map<String, String> params, PrintWriter writer) {
         BentoSite site = mainSite;
 
         Construction requestParams = createParamsArg(site, params);
-        boolean result = false;
+        int status = 0;
         try {
             synchronized (context) {
-                result = site.respond(requestName, requestParams, null, null, context, writer);
+                status = site.respond(requestName, requestParams, null, null, context, writer);
             }
 
         } catch (Redirection r) {
+            status = r.getStatus();
             String location = r.getLocation();
             String message = r.getMessage();
             params = null;
@@ -1178,7 +1199,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                 requestParams = createParamsArg(site, params);
                 try {
                     synchronized (context) {
-                        result = site.respond(location, requestParams, null, null, context, writer);
+                        status = site.respond(location, requestParams, null, null, context, writer);
                     }
                 } catch (Redirection rr) {
                     ;
@@ -1188,7 +1209,7 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
         
         handlePendingServerRunners();
         
-        return result;
+        return status;
         
     }
     

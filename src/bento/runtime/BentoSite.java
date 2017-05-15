@@ -2,7 +2,7 @@
  *
  * $Id: BentoSite.java,v 1.110 2015/06/15 13:18:24 sthippo Exp $
  *
- * Copyright (c) 2002-2016 by bentodev.org
+ * Copyright (c) 2002-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -317,7 +317,7 @@ public class BentoSite extends BentoDomain {
     }
     
     
-    public boolean respond(String pageName, Construction paramsArg, Construction requestArg, Construction sessionArg, Context context, PrintWriter out) throws Redirection {
+    public int respond(String pageName, Construction paramsArg, Construction requestArg, Construction sessionArg, Context context, PrintWriter out) throws Redirection {
         ArgumentList[] argLists = getArgumentLists(paramsArg, requestArg, sessionArg);
         Instantiation page = getPageInstance(cleanForBento(pageName), argLists, context);
         boolean respondWithPage = true;
@@ -327,7 +327,7 @@ public class BentoSite extends BentoDomain {
 
         } else {
             if (pageName == null) {
-                return false;
+                return BentoServer.BAD_REQUEST;
             }
             
             boolean handleAsObj = (pageName.charAt(0) == '$' || handleAsObject(pageName));
@@ -371,7 +371,7 @@ public class BentoSite extends BentoDomain {
                     instance = getGeneralResponseInstance(argLists, context);
                 }
                 if (instance == null) {
-                    return false;
+                    return BentoServer.NOT_FOUND;
                 }
                 // record the page name (which has the $ prefix) rather than the
                 // object name in order to preserve the differentiation between
@@ -424,7 +424,7 @@ public class BentoSite extends BentoDomain {
                     if (data == null) {
                         Type type = instance.getType(context, false);
                         log(type.getName() + " " + (pageName.charAt(0) == '$' ? pageName.substring(1) : pageName) + " is empty.");
-                        return false;
+                        return BentoServer.NO_CONTENT;
                     }
                     String str = getStringForData(data);
                     out.println(str);
@@ -450,17 +450,17 @@ public class BentoSite extends BentoDomain {
                     throw r;
                 }
             } else {
-                return false;
+                return BentoServer.NOT_FOUND;
             }
         }
-        return true;
+        return BentoServer.OK;
     }
 
     private BentoDebugger createDebugger() {
         return new SimpleDebugger();
     }
 
-    public boolean respond(Instantiation page, Context context, PrintWriter out) throws Redirection {
+    public int respond(Instantiation page, Context context, PrintWriter out) throws Redirection {
         
         String pageName = page.getName();
         recordRequest(pageName, pageTracker);
@@ -469,7 +469,7 @@ public class BentoSite extends BentoDomain {
             Definition pageDef = page.getDefinition(context);
             if (pageDef == null) {
                 log("Page " + pageName + " is undefined.");
-                return false;
+                return BentoServer.NOT_FOUND;
             }
             Site pageSite = pageDef.getSite();
             if (pageSite != null && !pageSite.equals(context.peek().def) && !(pageSite instanceof Core)) {
@@ -481,7 +481,7 @@ public class BentoSite extends BentoDomain {
             }
             if (pageData == null) {
                 log("Page " + pageName + " is empty.");
-                return false;
+                return BentoServer.NO_CONTENT;
             }
             String str = getStringForData(pageData);
 
@@ -509,7 +509,7 @@ public class BentoSite extends BentoDomain {
             recordRequest(location, redirectTracker);
             throw r;
         }
-        return true;
+        return BentoServer.OK;
     }
 
     public boolean respondWithFile(File file, String mimeType, OutputStream out) throws IOException {
