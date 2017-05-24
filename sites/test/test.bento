@@ -6049,7 +6049,7 @@ show_this_context [=
 
     basepage[] custom_test_pages = [ memoization_test_page, reflection_test_page, session_test_page, auto_test_page, ajax_test_page, file_test_page,
                                      cli_int_test_page, internal_mem_test, external_mem_test, exec_test_page, server_launch_test_page,
-                                     base_test_test_page ]
+                                     base_test_test_page, error_test_page ]
 
     basepage(r, s) memoization_test_page(request r, session s) [=
         label = "Memoization Tests"
@@ -7569,4 +7569,54 @@ tlm [=
             sp;
         =]
     =]
+
+
+    basepage(r, s) error_test_page(request r, session s) [=
+        label = "Error Tests"
+
+        dynamic throw_null_pointer = org.bentodev.test.ErrorTest.throwNullPointerException
+        dynamic throw_class_not_found = org.bentodev.test.ErrorTest.throwClassNotFoundException
+        dynamic throw_no_such_method = org.bentodev.test.ErrorTest.throwNoSuchMethodException
+        dynamic throw_number_format = org.bentodev.test.ErrorTest.throwNumberFormatException
+        dynamic throw_illegal_argument = org.bentodev.test.ErrorTest.throwIllegalArgumentException
+        dynamic throw_no_class_def_found = org.bentodev.test.ErrorTest.throwNoClassDefFoundError
+        dynamic throw_redirection = org.bentodev.test.ErrorTest.throwRedirection
+        dynamic throw_404_redirection = org.bentodev.test.ErrorTest.throw404Redirection
+        
+        dynamic content(request r, session s) [=
+            generate_error = r.params{"error"}
+            
+            if (generate_error == "nullpointer") [=
+                throw_null_pointer;
+            =] else if (generate_error == "classnotfound") [=
+                throw_class_not_found;
+            =] else if (generate_error == "nosuchmethod") [=
+                throw_no_such_method;
+            =] else if (generate_error == "numberformat") [=
+                throw_number_format;
+            =] else if (generate_error == "illegalargument") [=
+                throw_illegal_argument;
+            =] else if (generate_error == "noclassdeffound") [=
+                throw_no_class_def_found;
+            =] else if (generate_error == "redirection") [=
+                throw_redirection;
+            =] else if (generate_error == "404redirection") [=
+                throw_404_redirection;
+            =]
+            
+            [|
+                <h2>Errors</h2><ul>
+                <li><a href="error_test_page?error=nullpointer">null pointer exceptionr</a></li>
+                <li><a href="error_test_page?error=classnotfound">class not found exception</a></li>
+                <li><a href="error_test_page?error=nosuchmethod">no such method exception</a></li>
+                <li><a href="error_test_page?error=numberformat">number format exception</a></li>
+                <li><a href="error_test_page?error=illegalargument">illegal argument exception</a></li>
+                <li><a href="error_test_page?error=noclassdeffound">no class def found error</a></li>
+                <li><a href="error_test_page?error=redirection">redirection</a></li>
+                <li><a href="error_test_page?error=404redirection">redirection to 404 error</a></li>
+                </ul>
+             |]                          
+        =]
+    =]
+
 =]

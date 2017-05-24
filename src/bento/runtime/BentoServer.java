@@ -1322,13 +1322,12 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
             return site_config.getChildText("bentopath");
             
         }
-        
+
         /** The directories and/or files containing the Bento source
          *  code for core.
          **/
         public String corepath() {
             return site_config.getChildText("corepath");
-            
         }
         
         /** The directories and/or files containing the Bento source
