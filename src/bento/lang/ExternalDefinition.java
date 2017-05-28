@@ -1711,14 +1711,14 @@ class MethodConstruction extends ExternalConstruction {
                 String message = "Exception in external method " + method.getName() + ": " + t;
                 log(message);
                 t.printStackTrace();
-                throw new Redirection(Redirection.STANDARD_ERROR, message);
+                throw new Redirection(Redirection.SERVER_ERROR_STATUS, Redirection.STANDARD_ERROR, message);
             }
  
         } catch (Exception e) {
             String message = "Exception generating data via external method " + method.getName() + ": " + e;
             log(message);
             e.printStackTrace();
-            throw new Redirection(Redirection.STANDARD_ERROR, message);
+            throw new Redirection(Redirection.SERVER_ERROR_STATUS, Redirection.STANDARD_ERROR_PAGE, message);
         }
     }
 }
@@ -1766,7 +1766,7 @@ class FieldDefinition extends ExternalDefinition {
                 return field.get(instance);
             } catch (Exception e) {
                 log("Exception generating data via external field: " + e);
-                return null;
+                throw new Redirection(Redirection.SERVER_ERROR_STATUS, Redirection.STANDARD_ERROR_PAGE, e.toString());
             }
         }
     }

@@ -8,13 +8,7 @@
 
 package org.bentodev.test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import bento.lang.Redirection;
-
-import java.util.HashMap;
 
 
 /** ErrorTest is a test class that throws various exceptions,

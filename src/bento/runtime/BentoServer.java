@@ -1160,9 +1160,9 @@ public class BentoServer extends HttpServlet implements BentoProcessor {
                 status = site.respond(name, requestParams, bentoRequest, bentoSession, context, writer);
             }
 
-        } catch (Redirection r) {
-            status = r.getStatus();
-
+//        } catch (Redirection r) {
+//            status = r.getStatus();
+//
         } catch (Exception e) {
             status = BentoServer.SERVER_ERROR;
 

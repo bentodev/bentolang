@@ -23,6 +23,8 @@ public class Redirection extends Throwable {
     public static final String STANDARD_ERROR = "error";
     public static final String STANDARD_ERROR_PAGE = "/error_page";
     public static final String STANDARD_ERROR_DIV = "/$error_div";
+    
+    public static final int SERVER_ERROR_STATUS = 500;
 
     private int status = 307;  // 307 == temporary redirect
     private String location;
