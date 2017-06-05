@@ -14,6 +14,9 @@ core [=
     extern java javax.**
     extern java bento.**
 
+    /------ Redirection ------/
+    
+    dynamic redirection = bento.lang.Redirection
 
     /------ Concurrent execution control ------/
     

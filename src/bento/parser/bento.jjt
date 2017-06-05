@@ -754,6 +754,9 @@ void RedirectStatement() :
 {
     "redirect"
     (        DynamicElementBlock() { jjtThis.setDynamic(true); }      |
+        LOOKAHEAD(Name() ("." | "[" | "{" | "(:" | "("))
+        Instance()
+      | 
         ComplexName()
     ) [";"]
 }

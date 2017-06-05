@@ -882,7 +882,7 @@ public class Context {
         // No need to push external definitions, because external names are
         // resolved externally
         if (!definition.isAnonymous() && !definition.isExternal()) {
-if (definition.getName().equals("is_draggable")) {
+if (definition.getName().startsWith("add_piece")) {
  System.out.println(definition.getName() + " at ctx 886, owner: " + definition.getOwner().getName());    
 }
             // get the arguments and parameters, if any, to push on the

@@ -2,7 +2,7 @@
  *
  * $Id: RedirectStatement.java,v 1.9 2015/04/01 13:11:27 sthippo Exp $
  *
- * Copyright (c) 2002-2016 by bentodev.org
+ * Copyright (c) 2002-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -47,7 +47,9 @@ public class RedirectStatement extends BentoStatement implements Construction {
                 throw new IllegalArgumentException("Dynamic redirection requires an instantiation");
             }
         } else {
-            if (child instanceof Name) {
+            if (child instanceof Instantiation) {
+                return new Redirection((Instantiation) child, context);
+            } else if (child instanceof Name) {
                 return new Redirection(child.getName());
             } else {
                 throw new IllegalArgumentException("Non-dynamic redirection requires a name");
@@ -95,32 +97,43 @@ public class RedirectStatement extends BentoStatement implements Construction {
         return this;
     }
 
-	public String getString(Context context) throws Redirection {
+    public String getString(Context context) throws Redirection {
         throw new UnsupportedOperationException();
-	}
+    }
 
-	public byte getByte(Context context) throws Redirection {
+    public byte getByte(Context context) throws Redirection {
         throw new UnsupportedOperationException();
-	}
+    }
 
-	public char getChar(Context context) throws Redirection {
+    public char getChar(Context context) throws Redirection {
         throw new UnsupportedOperationException();
-	}
+    }
 
-	public int getInt(Context context) throws Redirection {
+    public int getInt(Context context) throws Redirection {
         throw new UnsupportedOperationException();
-	}
+    }
 
-	public long getLong(Context context) throws Redirection {
+    public long getLong(Context context) throws Redirection {
         throw new UnsupportedOperationException();
-	}
+    }
 
-	public double getDouble(Context context) throws Redirection {
+    public double getDouble(Context context) throws Redirection {
         throw new UnsupportedOperationException();
-	}
+    }
 
-	public Value getValue(Context context) throws Redirection {
+    public Value getValue(Context context) throws Redirection {
         throw new UnsupportedOperationException();
-	}
+    }
 
+    public String toString(String prefix) {
+        StringBuffer sb = new StringBuffer(prefix);
+        sb.append("redirect ");
+        sb.append(getChild(0).toString());
+        sb.append(" ? ");
+        sb.append(getChild(1).toString());
+        sb.append(" : ");
+        sb.append(getChild(2).toString());
+        sb.append(')');
+        return sb.toString();
+    }
 }
