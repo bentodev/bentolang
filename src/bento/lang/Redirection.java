@@ -10,6 +10,7 @@
 
 package bento.lang;
 
+import bento.runtime.BentoObjectWrapper;
 import bento.runtime.Context;
 
 /**
@@ -34,8 +35,15 @@ public class Redirection extends Throwable {
     public Redirection(Instantiation instance, Context context) {
         super();
         this.instance = new ResolvedInstance(instance, context, false);
+        Type type = this.instance.getType();
+        if (type.isTypeOf("error")) {
+            BentoObjectWrapper obj = new BentoObjectWrapper(this.instance, null);
+            status = obj.getChildInt("status");
+            message = obj.getChildText("message");
+        } else {
+            message = null;
+        }
         location = null;
-        message = null;
         bento.runtime.SiteBuilder.vlog("Creating redirection to instance: " + instance.getName());
     }
     

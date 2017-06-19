@@ -2,7 +2,7 @@
  *
  * $Id: BentoObjectWrapper.java,v 1.11 2015/07/10 12:51:11 sthippo Exp $
  *
- * Copyright (c) 2005-2016 by bentodev.org
+ * Copyright (c) 2005-2017 by bentodev.org
  *
  * Use of this code in source or compiled form is subject to the
  * Bento Poetic License at http://www.bentodev.org/poetic-license.html
@@ -131,7 +131,7 @@ public class BentoObjectWrapper {
 
     public boolean getChildBoolean(String name) {
         try {
-            return PrimitiveValue.getBooleanFor(def.getChildData(new NameNode(name), null, context, null));
+            return PrimitiveValue.getBooleanFor(def.getChildData(new NameNode(name), null, context, getArguments()));
         } catch (Redirection r) {
             return false;
         }
@@ -142,6 +142,14 @@ public class BentoObjectWrapper {
             return PrimitiveValue.getStringFor(def.getChildData(new NameNode(name), null, context, getArguments()));
         } catch (Redirection r) {
             return null;
+        }
+    }
+
+    public int getChildInt(String name) {
+        try {
+            return PrimitiveValue.getIntFor(def.getChildData(new NameNode(name), null, context, getArguments()));
+        } catch (Redirection r) {
+            throw new NumberFormatException("unable to get int for " + name);
         }
     }
 
