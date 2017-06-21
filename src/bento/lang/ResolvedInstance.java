@@ -209,12 +209,12 @@ public class ResolvedInstance extends Instantiation implements Value {
     }
 
     public Context getResolutionContext() {
-        resolutionContext.validateSize();
+        //resolutionContext.validateSize();
         return resolutionContext;
     }
 
     public Object getData(Context context) throws Redirection {
-        resolutionContext.validateSize();
+        //resolutionContext.validateSize();
         return super.getData(resolutionContext, getDefinition(context));
     }
 
@@ -230,12 +230,12 @@ public class ResolvedInstance extends Instantiation implements Value {
     }
 
     public List<Construction> generateConstructions(Context context) throws Redirection {
-        resolutionContext.validateSize();
+        //resolutionContext.validateSize();
         return super.generateConstructions(resolutionContext);
     }
 
     public Definition getDefinition(Context context) {
-        resolutionContext.validateSize();
+        //resolutionContext.validateSize();
         if (def == null) {
             return super.getDefinition(resolutionContext);
         } else {
@@ -248,7 +248,7 @@ public class ResolvedInstance extends Instantiation implements Value {
     }
 
     public Object instantiate(Context context, Definition definition, ArgumentList args, List<Index> indexes) throws Redirection {
-        resolutionContext.validateSize();
+        //resolutionContext.validateSize();
         Object data = null;
         int numPushes = 0;
         try {
@@ -266,18 +266,18 @@ public class ResolvedInstance extends Instantiation implements Value {
     // Following are overloaded versions of the above with no context parameter
     //
     public Object generateData() throws Redirection {
-        resolutionContext.validateSize();
+        //resolutionContext.validateSize();
         data = super.generateData(resolutionContext, null);
         return data;
     }
 
     public List<Construction> generateConstructions() throws Redirection {
-        resolutionContext.validateSize();
+        //resolutionContext.validateSize();
         return super.generateConstructions(resolutionContext);
     }
 
     public Definition getDefinition() {
-        resolutionContext.validateSize();
+        //resolutionContext.validateSize();
         if (def == null) {
             def = super.getDefinition(resolutionContext);
         }

@@ -58,7 +58,7 @@ public class BentoObjectWrapper {
         Context resolutionContext = ri.getResolutionContext();
 
         this.context = (resolutionContext == context ? context.clone(false) : resolutionContext);
-        this.context.validateSize();
+        //this.context.validateSize();
         contextList.add(this.context);
         
         this.def = def;
@@ -90,7 +90,7 @@ public class BentoObjectWrapper {
     }
     
     public Object getData() throws Redirection {
-        context.validateSize();
+        //context.validateSize();
         return construction.getData(context);
     }
 
@@ -104,7 +104,7 @@ public class BentoObjectWrapper {
     }
 
     public Object getChildData(NameNode name, Type type, ArgumentList args) {
-        context.validateSize();
+        //context.validateSize();
         try {
             return def.getChildData(name, type, context, args);
         } catch (Redirection r) {
@@ -113,7 +113,7 @@ public class BentoObjectWrapper {
     }
 
     public Object getChildData(NameNode name) {
-        context.validateSize();
+        //context.validateSize();
         Definition parentDef = def;
         ArgumentList args = getArguments();
         int n = name.numParts();

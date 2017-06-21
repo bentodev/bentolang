@@ -648,7 +648,7 @@ public class Context {
             if (pushed) {
                 pop();
             }
-            validateSize();
+            //validateSize();
         }
         return data;
     }
@@ -1020,7 +1020,7 @@ if (definition.getName().startsWith("add_piece")) {
             }
             instantiatedDef = oldInstantiatedDef;
 
-            validateSize();
+            //validateSize();
         }
     }
 
@@ -1261,7 +1261,7 @@ if (definition.getName().startsWith("add_piece")) {
                 numUnpushes--;
             }
             addingDynamicKeeps = false;
-            validateSize();
+            //validateSize();
         }
     }
     
@@ -1733,7 +1733,7 @@ if (definition.getName().startsWith("add_piece")) {
                 repush();
             }
             
-            validateSize();
+            //validateSize();
         }
     }
     
@@ -1813,7 +1813,7 @@ if (definition.getName().startsWith("add_piece")) {
                 while (numUnpushes-- > 0) {
                     repush();
                 }
-                validateSize();
+                //validateSize();
             }
         }
     }
@@ -2057,7 +2057,7 @@ if (definition.getName().startsWith("add_piece")) {
                 repush();
             }
             
-            validateSize();
+            //validateSize();
         }
         return data;
     }
@@ -2410,7 +2410,7 @@ if (definition.getName().startsWith("add_piece")) {
             while (numPushes-- > 0) {
                 pop();
             }
-            validateSize();
+            //validateSize();
         }
     }
 
@@ -2454,7 +2454,7 @@ if (definition.getName().startsWith("add_piece")) {
             topEntry = top;
             push(newEntry(oldTop, true));
             numPushes++;
-            validateSize();
+            //validateSize();
         }
         // get the top entry after all the pushing (not the same as before)
         return numPushes;
@@ -2464,12 +2464,12 @@ if (definition.getName().startsWith("add_piece")) {
         for (int i = 0; i < numPushes; i++) {
             pop();
         }
-        validateSize();
+        //validateSize();
     }
     
     
     public int pushSupersAndAliases(Definition def, ArgumentList args, Definition childDef) throws Redirection {
-        validateSize();
+        //validateSize();
         // track back through superdefinitions and aliases to push intermediate definitions
         if (childDef != null  /* && !isSpecialDefinition(childDef) */ ) {
 
@@ -2546,7 +2546,7 @@ if (definition.getName().startsWith("add_piece")) {
             numPushes++;
         }
   
-        validateSize();
+        //validateSize();
         return numPushes;
     }
 
@@ -2620,7 +2620,7 @@ if (definition.getName().startsWith("add_piece")) {
             while (numUnpushes-- > 0) {
                 repush();
             }
-            validateSize();
+            //validateSize();
         }
 
         return data;
@@ -2858,7 +2858,7 @@ if (definition.getName().startsWith("add_piece")) {
             while (numPushes-- > 0) {
                 pop();
             }
-            validateSize();
+            //validateSize();
         }
     }
             
@@ -3327,7 +3327,7 @@ if (definition.getName().startsWith("add_piece")) {
             if (mustUnpush) {
                 repush();
             }
-            validateSize();
+            //validateSize();
         }
     }
 
@@ -3492,7 +3492,7 @@ if (definition.getName().startsWith("add_piece")) {
                 }
             }
         } finally {
-            validateSize();
+            //validateSize();
         }
         return numPushes;
     }
@@ -4069,7 +4069,7 @@ if (unpushedEntries == null) {
             setRootEntry(newEntry(context.rootEntry, false));
             setTop(rootEntry);
         }
-        validateSize();
+        //validateSize();
     }
 
     public int hashCode() {
