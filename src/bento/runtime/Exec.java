@@ -137,7 +137,18 @@ public class Exec {
     }
     
     public String toString() {
-        return commands.toString();
+        StringBuilder sb = new StringBuilder();
+        for (String cmd: commands) {
+            sb.append(cmd);
+            sb.append(" ");
+        }
+        int len = sb.length();
+        
+        // trim the last space if present
+        if (len > 0) {
+            sb.setLength(len - 1);
+        }
+        return sb.toString();
     }
     
     class ProcessRunner extends Thread {

@@ -7259,8 +7259,17 @@ ft [=
         =]
     =]
     
-    exec command_exec(params{}) = exec(params{"command_in"})
+    exec command_exec(cmd) = exec(cmd)
     boolean exec_is_running(boolean running) = running
+
+    allowed_commands[] = [ "cat", "ls", "echo", "ps", "date", "help", "pwd" ]
+
+    dynamic safe_command(command) [=
+        words[] = split(command, " ")
+        if (words[0] in allowed_commands) [=
+            command;
+        =]
+    =]
     
     basepage(r, s) exec_test_page(request r, session s) [=
         label = "External command exec test"
@@ -7276,17 +7285,25 @@ ft [=
         
         dynamic component command_out(params{}) [=
             id = "command_out"
+            safe_command_in = safe_command(params{"command_in"})
             
             log("exec_is_running: " + exec_is_running);
-            if (exec_is_running) [=
+            if (!safe_command_in && params{"command_in"}) [=
+                "Only the following commands allowed: ";
+                for cmd in allowed_commands and int x from 0 [=
+                    if (x > 0) [= ", "; =]
+                    cmd;
+                =]
+            
+            =] else if (exec_is_running) [=
                 if (params{"command_in"}) [=
-                    command_exec.read_in(params{"command_in"});
+                    eval(command_exec.read_in(safe_command_in));
                 =]
             
             =] else if (params{"command_in"}) [=
                 log("running exec " + params{"command_in"});
                 [| <tt>$&nbsp; |]
-                command_exec(: params :);
+                command_exec(: safe_command_in :);
                 eval(exec_is_running(: true :));
                 br;
                 for int i from 0 until (!command_exec.is_running) [=
@@ -7319,7 +7336,7 @@ ft [=
         
         content(request r, session s) [=
             input_panel(r.params);
-            command_out(r.params);
+            command_out(r.params); 
         =]
         
     =]
