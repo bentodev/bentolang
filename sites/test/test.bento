@@ -7361,7 +7361,7 @@ ft [=
          =]
        
         dynamic boolean server_started = (this_server.get_server("test_server") != null);
-        dynamic boolean server_is_running = (this_server.get_server("test_server").is_running == true);
+        dynamic boolean server_is_running = (server_started && this_server.get_server("test_server").is_running);
         
         dynamic get_a = this_server.get_server("test_server").get("a")
         dynamic get_bc = [%  this_server.get_server("test_server").get("bc"); %]
