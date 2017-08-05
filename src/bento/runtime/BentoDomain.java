@@ -230,7 +230,7 @@ public class BentoDomain implements bento_domain {
 
     public boolean load(String domainPath, String filter, boolean recursive, Core sharedCore, SiteLoader.LoadOptions options) {
         if (sharedCore == null) {
-            sharedCore = new Core();
+            sharedCore = new Core(true);
         }
         this.core = sharedCore;
         this.loadOptions = options;

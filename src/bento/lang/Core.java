@@ -27,11 +27,15 @@ public class Core extends Site {
     private Map<String, Map<String, Object>> globalCacheTable = null;
     
     public Core() {
+        this(false);
+    }
+    
+    public Core(boolean fromScratch) {
         super("core");
         
-        // only allow one Core to be constructed from scratch; every
-        // further Core is a copy of the first 
-        if (originalCore != null) {
+        // unless fromScratch is true, only allow one Core to be constructed from
+        // scratch; every further Core is a copy of the first 
+        if (!fromScratch && originalCore != null) {
             siteTable = originalCore.siteTable;
             defTableTable = originalCore.defTableTable;
             globalCacheTable = originalCore.globalCacheTable;
